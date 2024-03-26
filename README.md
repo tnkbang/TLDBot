@@ -1,0 +1,3 @@
+# TLDBot
+
+Discord bot build with Discord.Net and Lavalink....

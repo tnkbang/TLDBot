@@ -1,0 +1,19 @@
+{
+    "profiles": {
+        "TLDBot_Develop": {
+            "commandName": "Project",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "dotnetRunMessages": true
+        },
+        "TLDBot_Release": {
+            "commandName": "Project",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Release"
+            },
+            "dotnetRunMessages": false
+        }
+    },
+    "$schema": "http://json.schemastore.org/launchsettings.json"
+}
