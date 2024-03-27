@@ -65,8 +65,26 @@ namespace TLDBot.Structs
 
 		private Task InteractionCreated(SocketInteraction interaction)
 		{
-			var interactionContext = new SocketInteractionContext(_Client, interaction);
-			return _Service!.ExecuteCommandAsync(interactionContext, _Provider);
+			//Get interaction
+			if(interaction is SocketSlashCommand)
+			{
+				var interactionContext = new SocketInteractionContext(_Client, interaction);
+				return _Service!.ExecuteCommandAsync(interactionContext, _Provider);
+			}
+
+			//Get button click
+			if(interaction is SocketMessageComponent)
+			{
+				var cbn = (SocketMessageComponent)interaction;
+				if (cbn.Data.CustomId == "btn" + Helper.ACTION_PAUSE)
+				{
+					//To do....
+				}
+				var interactionContext = new SocketInteractionContext(_Client, interaction);
+				return _Service!.ExecuteCommandAsync(interactionContext, _Provider);
+			}
+
+			return Task.CompletedTask;
 		}
 
 		private async Task ClientReady()

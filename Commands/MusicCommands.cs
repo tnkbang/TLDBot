@@ -4,6 +4,7 @@ using Lavalink4NET.Players;
 using Lavalink4NET.Rest.Entities.Tracks;
 using Lavalink4NET;
 using Lavalink4NET.DiscordNet;
+using TLDBot.Structs;
 
 namespace TLDBot.Commands
 {
@@ -77,7 +78,7 @@ namespace TLDBot.Commands
 
 			if (position is 0)
 			{
-				await FollowupAsync($"🔈 Playing: {track.Uri}").ConfigureAwait(false);
+				await FollowupAsync($"🔈 Playing: {track.Uri}", components: Helper.CreateButtonPlaying()).ConfigureAwait(false);
 			}
 			else
 			{
