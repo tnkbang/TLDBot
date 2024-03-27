@@ -13,6 +13,7 @@ builder.Services.AddSingleton<InteractionService>();
 Lavalink.Start();
 
 //Bot hosted
+builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 builder.Services.AddHostedService<Bot>();
 
 // Lavalink

@@ -10,16 +10,19 @@ namespace TLDBot.Structs
 		private readonly DiscordSocketClient _Client;
 		private readonly InteractionService _Service;
 		private readonly IServiceProvider _Provider;
+		private readonly IConfiguration _Config;
 
-		public Bot(DiscordSocketClient Client, InteractionService Service, IServiceProvider Provider)
+		public Bot(DiscordSocketClient Client, InteractionService Service, IServiceProvider Provider, IConfiguration Config)
 		{
 			ArgumentNullException.ThrowIfNull(Client);
 			ArgumentNullException.ThrowIfNull(Service);
 			ArgumentNullException.ThrowIfNull(Provider);
+			ArgumentNullException.ThrowIfNull(Config);
 
 			_Client = Client;
 			_Service = Service;
 			_Provider = Provider;
+			_Config = Config;
 		}
 
 		public async Task StartAsync(CancellationToken cancellationToken)
@@ -29,8 +32,7 @@ namespace TLDBot.Structs
 			_Client.Ready += ClientReady;
 			_Client.Log += Log;
 
-			var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
-			await _Client.LoginAsync(TokenType.Bot, config["DiscordToken"]).ConfigureAwait(false);
+			await _Client.LoginAsync(TokenType.Bot, _Config["DiscordToken"]).ConfigureAwait(false);
 			await _Client.StartAsync().ConfigureAwait(false);
 		}
 
