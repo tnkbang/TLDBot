@@ -8,6 +8,11 @@ var builder = new HostApplicationBuilder(args);
 // Discord
 builder.Services.AddSingleton<DiscordSocketClient>(Helper.Client);
 builder.Services.AddSingleton<InteractionService>();
+
+//Run Lavalink.jar
+Lavalink.Start();
+
+//Bot hosted
 builder.Services.AddHostedService<Bot>();
 
 // Lavalink

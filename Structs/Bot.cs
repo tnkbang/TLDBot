@@ -40,7 +40,8 @@ namespace TLDBot.Structs
 			_Client.MessageReceived -= MessageReceived;
 			_Client.Ready -= ClientReady;
 			_Client.Log -= Log;
-
+			
+			Lavalink.Stop();
 			await _Client.StopAsync().ConfigureAwait(false);
 		}
 
