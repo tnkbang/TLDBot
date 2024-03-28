@@ -5,6 +5,7 @@ using Lavalink4NET.Rest.Entities.Tracks;
 using Lavalink4NET;
 using Lavalink4NET.DiscordNet;
 using TLDBot.Structs;
+using System.Reflection;
 
 namespace TLDBot.Commands
 {
@@ -26,13 +27,27 @@ namespace TLDBot.Commands
 			_audioService = audioService;
 		}
 
+		/// <summary>
+		/// Get command music playing
+		/// </summary>
+		/// <param name="cmdName">Command name</param>
+		/// <returns></returns>
+		public async Task ExecuteCommandAsync(string cmdName)
+		{
+			MethodInfo? method = GetType().GetMethod(cmdName + "Async");
+			if (method != null) _ = method.Invoke(this, null) as Task;
+
+			Console.WriteLine("Func not found: " + cmdName + "Async");
+			await Task.CompletedTask;
+		}
+
 		#region Disconnect command
 		/// <summary>
 		/// Disconnects from the current voice channel connected to asynchronously.
 		/// </summary>
 		/// <returns>A task that represents the asynchronous operation</returns>
 		[SlashCommand("disconnect", "Disconnects from the current voice channel connected to", runMode: RunMode.Async)]
-		public async Task Disconnect()
+		public async Task DisconnectAsync()
 		{
 			var player = await GetPlayerAsync().ConfigureAwait(false);
 
@@ -53,7 +68,7 @@ namespace TLDBot.Commands
 		/// <param name="query">The search query</param>
 		/// <returns>A task that represents the asynchronous operation</returns>
 		[SlashCommand("play", description: "Plays music", runMode: RunMode.Async)]
-		public async Task Play(string query)
+		public async Task PlayAsync(string query)
 		{
 			await DeferAsync().ConfigureAwait(false);
 
@@ -78,7 +93,8 @@ namespace TLDBot.Commands
 
 			if (position is 0)
 			{
-				await FollowupAsync($"🔈 Playing: {track.Uri}", components: Helper.CreateButtonPlaying()).ConfigureAwait(false);
+				await FollowupAsync($"🔈 Playing: {track.Uri}", 
+					components: Helper.CreateButtons([Helper.ACTION_PAUSE, Helper.ACTION_LOOP, Helper.ACTION_SKIP, Helper.ACTION_STOP])).ConfigureAwait(false);
 			}
 			else
 			{
@@ -93,7 +109,7 @@ namespace TLDBot.Commands
 		/// </summary>
 		/// <returns>A task that represents the asynchronous operation</returns>
 		[SlashCommand("position", description: "Shows the track position", runMode: RunMode.Async)]
-		public async Task Position()
+		public async Task PositionAsync()
 		{
 			var player = await GetPlayerAsync(connectToVoiceChannel: false).ConfigureAwait(false);
 
@@ -118,7 +134,7 @@ namespace TLDBot.Commands
 		/// </summary>
 		/// <returns>A task that represents the asynchronous operation</returns>
 		[SlashCommand("stop", description: "Stops the current track", runMode: RunMode.Async)]
-		public async Task Stop()
+		public async Task StopAsync()
 		{
 			var player = await GetPlayerAsync(connectToVoiceChannel: false);
 
@@ -145,7 +161,7 @@ namespace TLDBot.Commands
 		/// <param name="volume">The volume (1 - 1000)</param>
 		/// <returns>A task that represents the asynchronous operation</returns>
 		[SlashCommand("volume", description: "Sets the player volume (0 - 1000%)", runMode: RunMode.Async)]
-		public async Task Volume(int volume = 100)
+		public async Task VolumeAsync(int volume = 100)
 		{
 			if (volume is > 1000 or < 0)
 			{
@@ -171,7 +187,7 @@ namespace TLDBot.Commands
 		/// </summary>
 		/// <returns>A task that represents the asynchronous operation</returns>
 		[SlashCommand("skip", description: "Skips the current track", runMode: RunMode.Async)]
-		public async Task Skip()
+		public async Task SkipAsync()
 		{
 			var player = await GetPlayerAsync(connectToVoiceChannel: false);
 

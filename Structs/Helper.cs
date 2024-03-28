@@ -9,6 +9,7 @@ namespace TLDBot.Structs
 		public static readonly string ACTION_PLAY		= "Play";
 		public static readonly string ACTION_PAUSE		= "Pause";
 		public static readonly string ACTION_RESUME		= "Resume";
+		public static readonly string ACTION_LOOP		= "Loop";
 		public static readonly string ACTION_SKIP		= "Skip";
 		public static readonly string ACTION_STOP		= "Stop";
 
@@ -28,20 +29,19 @@ namespace TLDBot.Structs
 		}
 
 		/// <summary>
-		/// Create button in music playing message
+		/// Create button
 		/// </summary>
-		/// <param name="id">Context interaction id</param>
+		/// <param name="lstAction">List button action type</param>
 		/// <returns></returns>
-		public static MessageComponent CreateButtonPlaying()
+		public static MessageComponent CreateButtons(string[] lstAction)
 		{
 			ComponentBuilder builder = new ComponentBuilder();
-			ActionRowBuilder firstRow = new ActionRowBuilder();
 
-			builder.WithButton(ACTION_PAUSE,	"btn" + ACTION_PAUSE,		ButtonStyle.Primary)
-					.WithButton(ACTION_SKIP,	"btn" + ACTION_SKIP,		ButtonStyle.Success)
-					.WithButton(ACTION_STOP,	"btn" + ACTION_STOP,		ButtonStyle.Danger);
-
-			builder.AddRow(firstRow);
+			foreach (string action in lstAction)
+			{
+				ButtonComponents btnC = new ButtonComponents();
+				builder.WithButton(btnC.ExecuteButtonBuilder(action, ButtonComponents.TYPE_MUSIC));
+			}
 
 			return builder.Build();
 		}

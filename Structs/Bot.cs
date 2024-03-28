@@ -2,6 +2,8 @@
 using Discord;
 using Discord.Interactions;
 using System.Reflection;
+using Lavalink4NET;
+using TLDBot.Commands;
 
 namespace TLDBot.Structs
 {
@@ -59,7 +61,7 @@ namespace TLDBot.Structs
 			if (message == null) return;
 			if(message.Interaction != null) return;
 
-			if (message.Content == $"<@{_Client.CurrentUser.Id}>")
+			if (message.Content.Contains($"<@{_Client.CurrentUser.Id}>"))
 			{
 				await message.Channel.SendMessageAsync("Please using slash commands. Prefix commands is development....");
 			}
@@ -70,20 +72,20 @@ namespace TLDBot.Structs
 			//Get interaction
 			if(interaction is SocketSlashCommand)
 			{
-				var interactionContext = new SocketInteractionContext(_Client, interaction);
+				SocketInteractionContext interactionContext = new SocketInteractionContext(_Client, interaction);
 				return _Service!.ExecuteCommandAsync(interactionContext, _Provider);
 			}
 
 			//Get button click
 			if(interaction is SocketMessageComponent)
 			{
-				var cbn = (SocketMessageComponent)interaction;
-				if (cbn.Data.CustomId == "btn" + Helper.ACTION_PAUSE)
+				SocketMessageComponent cbn = (SocketMessageComponent)interaction;
+				if (cbn.Data.CustomId == ButtonComponents.PREFIX_ID + Helper.ACTION_PAUSE)
 				{
-					//To do....
+					MessageComponent btn = Helper.CreateButtons([Helper.ACTION_RESUME, Helper.ACTION_SKIP, Helper.ACTION_STOP]);
+					cbn.UpdateAsync(msg => msg.Components = btn);
 				}
-				var interactionContext = new SocketInteractionContext(_Client, interaction);
-				return _Service!.ExecuteCommandAsync(interactionContext, _Provider);
+				//new MusicCommands(_Provider.GetService<IAudioService>()).ExecuteCommandAsync(cbn.Data.CustomId.Substring(ButtonComponents.PREFIX_ID.Length)).ConfigureAwait(true);
 			}
 
 			return Task.CompletedTask;
