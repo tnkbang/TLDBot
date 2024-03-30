@@ -1,7 +1,8 @@
 using Discord.Interactions;
 using Discord.WebSocket;
 using Lavalink4NET.Extensions;
-using TLDBot.Structs;
+using TLDBot.Services;
+using TLDBot.Utility;
 
 var builder = new HostApplicationBuilder(args);
 
@@ -14,7 +15,7 @@ Lavalink.Start();
 
 //Bot hosted
 builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-builder.Services.AddHostedService<Bot>();
+builder.Services.AddHostedService<BotService>();
 
 // Lavalink
 builder.Services.AddLavalink();

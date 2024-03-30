@@ -1,7 +1,7 @@
 ﻿using Discord.WebSocket;
 using Discord;
 
-namespace TLDBot.Structs
+namespace TLDBot.Utility
 {
 	public class Helper
 	{

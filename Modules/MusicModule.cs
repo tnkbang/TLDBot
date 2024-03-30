@@ -4,23 +4,23 @@ using Lavalink4NET.Players;
 using Lavalink4NET.Rest.Entities.Tracks;
 using Lavalink4NET;
 using Lavalink4NET.DiscordNet;
-using TLDBot.Structs;
 using System.Reflection;
+using TLDBot.Utility;
 
-namespace TLDBot.Commands
+namespace TLDBot.Modules
 {
-	public sealed class MusicCommands : InteractionModuleBase<SocketInteractionContext>
+	public sealed class MusicModule : InteractionModuleBase<SocketInteractionContext>
 	{
 		private readonly IAudioService _audioService;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="MusicCommands"/> class.
+		/// Initializes a new instance of the <see cref="MusicModule"/> class.
 		/// </summary>
 		/// <param name="audioService">The audio service</param>
 		/// <exception cref="ArgumentNullException">
 		/// Thrown if the specified <paramref name="audioService"/> is <see langword="null"/>.
 		/// </exception>
-		public MusicCommands(IAudioService audioService)
+		public MusicModule(IAudioService audioService)
 		{
 			ArgumentNullException.ThrowIfNull(audioService);
 

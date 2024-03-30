@@ -1,7 +1,7 @@
 ﻿using Discord;
 using System.Reflection;
 
-namespace TLDBot.Structs
+namespace TLDBot.Utility
 {
 	public class ButtonComponents
 	{

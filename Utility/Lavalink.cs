@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace TLDBot.Structs
+namespace TLDBot.Utility
 {
 	public class Lavalink
 	{

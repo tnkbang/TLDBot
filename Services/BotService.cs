@@ -2,19 +2,18 @@
 using Discord;
 using Discord.Interactions;
 using System.Reflection;
-using Lavalink4NET;
-using TLDBot.Commands;
+using TLDBot.Utility;
 
-namespace TLDBot.Structs
+namespace TLDBot.Services
 {
-	internal sealed class Bot : IHostedService
+	internal sealed class BotService : IHostedService
 	{
 		private readonly DiscordSocketClient _Client;
 		private readonly InteractionService _Service;
 		private readonly IServiceProvider _Provider;
 		private readonly IConfiguration _Config;
 
-		public Bot(DiscordSocketClient Client, InteractionService Service, IServiceProvider Provider, IConfiguration Config)
+		public BotService(DiscordSocketClient Client, InteractionService Service, IServiceProvider Provider, IConfiguration Config)
 		{
 			ArgumentNullException.ThrowIfNull(Client);
 			ArgumentNullException.ThrowIfNull(Service);
