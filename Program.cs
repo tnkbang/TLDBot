@@ -21,4 +21,4 @@ builder.Services.AddHostedService<BotService>();
 builder.Services.AddLavalink();
 builder.Services.AddLogging(x => x.AddConsole().SetMinimumLevel(LogLevel.Trace));
 
-builder.Build().Run();
+await builder.Build().RunAsync();
