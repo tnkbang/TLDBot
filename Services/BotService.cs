@@ -3,6 +3,9 @@ using Discord;
 using Discord.Interactions;
 using System.Reflection;
 using TLDBot.Utility;
+using TLDBot.Modules;
+using Lavalink4NET;
+using Discord.Commands;
 
 namespace TLDBot.Services
 {
@@ -84,7 +87,12 @@ namespace TLDBot.Services
 					MessageComponent btn = Helper.CreateButtons([Helper.ACTION_RESUME, Helper.ACTION_SKIP, Helper.ACTION_STOP]);
 					cbn.UpdateAsync(msg => msg.Components = btn);
 				}
-				//new MusicCommands(_Provider.GetService<IAudioService>()).ExecuteCommandAsync(cbn.Data.CustomId.Substring(ButtonComponents.PREFIX_ID.Length)).ConfigureAwait(true);
+				IAudioService? audioService = _Provider.GetService<IAudioService>();
+				if(audioService is not null)
+				{
+					CommandContext context = new CommandContext(_Client, cbn.Message);
+					new ButtonModule(audioService, context).DisconnectAsync().ConfigureAwait(true);
+				}
 			}
 
 			return Task.CompletedTask;

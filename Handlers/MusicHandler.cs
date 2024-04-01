@@ -6,6 +6,7 @@ using Lavalink4NET.Rest.Entities.Tracks;
 using System.Reflection;
 using Lavalink4NET.DiscordNet;
 using TLDBot.Utility;
+using Discord.Commands;
 
 
 namespace TLDBot.Handlers
@@ -39,6 +40,19 @@ namespace TLDBot.Handlers
 
 			await player.DisconnectAsync().ConfigureAwait(false);
 			await context.Interaction.RespondAsync("Disconnect.");
+		}
+
+		public async Task DisconnectAsync2(IAudioService audioService, CommandContext context)
+		{
+			VoteLavalinkPlayer? player = await GetPlayerAsync2(audioService, context).ConfigureAwait(false);
+			if (player is null) 
+			{ 
+				await context.Channel.SendMessageAsync("Not playing").ConfigureAwait(false);
+				return;
+			}
+
+			await player.DisconnectAsync().ConfigureAwait(false);
+			await context.Channel.SendMessageAsync("Disconnect.").ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -222,6 +236,31 @@ namespace TLDBot.Handlers
 				};
 
 				await context.Interaction.FollowupAsync(errorMessage).ConfigureAwait(false);
+				return null;
+			}
+
+			return result.Player;
+		}
+
+		private async ValueTask<VoteLavalinkPlayer?> GetPlayerAsync2(IAudioService audioService, CommandContext context, bool connectToVoiceChannel = true)
+		{
+			var retrieveOptions = new PlayerRetrieveOptions(
+				ChannelBehavior: connectToVoiceChannel ? PlayerChannelBehavior.Join : PlayerChannelBehavior.None);
+
+			var result = await audioService.Players
+				.RetrieveAsync(context, playerFactory: PlayerFactory.Vote, retrieveOptions)
+				.ConfigureAwait(false);
+
+			if (!result.IsSuccess)
+			{
+				var errorMessage = result.Status switch
+				{
+					PlayerRetrieveStatus.UserNotInVoiceChannel => "You are not connected to a voice channel.",
+					PlayerRetrieveStatus.BotNotConnected => "The bot is currently not connected.",
+					_ => "Unknown error.",
+				};
+
+				await context.Channel.SendMessageAsync(errorMessage).ConfigureAwait(false);
 				return null;
 			}
 
