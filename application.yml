@@ -1,9 +1,9 @@
 server: # REST and WS server
-  port: 2333
+  port: 2323
   address: 127.0.0.1
 lavalink:
   server:
-    password: "youshallnotpass"
+    password: "on6tyeqwxdtvo3ld"
     sources:
       youtube: true
       bandcamp: true
