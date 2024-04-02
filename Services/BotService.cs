@@ -69,33 +69,41 @@ namespace TLDBot.Services
 			}
 		}
 
-		private Task InteractionCreated(SocketInteraction interaction)
+		private async Task InteractionCreated(SocketInteraction interaction)
 		{
 			//Get interaction
 			if(interaction is SocketSlashCommand)
 			{
 				SocketInteractionContext interactionContext = new SocketInteractionContext(_Client, interaction);
-				return _Service!.ExecuteCommandAsync(interactionContext, _Provider);
+				await _Service!.ExecuteCommandAsync(interactionContext, _Provider).ConfigureAwait(false);
 			}
 
 			//Get button click
 			if(interaction is SocketMessageComponent)
 			{
 				SocketMessageComponent cbn = (SocketMessageComponent)interaction;
-				if (cbn.Data.CustomId == ButtonComponents.PREFIX_ID + Helper.ACTION_PAUSE)
-				{
-					MessageComponent btn = Helper.CreateButtons([Helper.ACTION_RESUME, Helper.ACTION_SKIP, Helper.ACTION_STOP]);
-					cbn.UpdateAsync(msg => msg.Components = btn);
-				}
 				IAudioService? audioService = _Provider.GetService<IAudioService>();
-				if(audioService is not null)
+
+				if (audioService is not null)
 				{
-					CommandContext context = new CommandContext(_Client, cbn.Message);
-					new ButtonModule(audioService, context).DisconnectAsync().ConfigureAwait(true);
+					SocketCommandContext commandContext = new SocketCommandContext(_Client, cbn.Message);
+					ButtonModule buttonModule = new ButtonModule(audioService, commandContext);
+
+					await buttonModule.ExecuteCommandAsync(cbn.Data.CustomId.Substring(ButtonComponents.PREFIX_ID.Length)).ConfigureAwait(false);
+
+					if (cbn.Data.CustomId == ButtonComponents.PREFIX_ID + Helper.ACTION_PAUSE)
+					{
+						MessageComponent btn = Helper.CreateButtons([Helper.ACTION_RESUME, Helper.ACTION_LOOP, Helper.ACTION_SKIP, Helper.ACTION_STOP]);
+						await cbn.UpdateAsync(msg => msg.Components = btn).ConfigureAwait(false);
+					}
+					else if (cbn.Data.CustomId == ButtonComponents.PREFIX_ID + Helper.ACTION_RESUME)
+					{
+						MessageComponent btn = Helper.CreateButtons([Helper.ACTION_PAUSE, Helper.ACTION_LOOP, Helper.ACTION_SKIP, Helper.ACTION_STOP]);
+						await cbn.UpdateAsync(msg => msg.Components = btn).ConfigureAwait(false);
+					}
+					else await cbn.RespondAsync().ConfigureAwait(false);
 				}
 			}
-
-			return Task.CompletedTask;
 		}
 
 		private async Task ClientReady()
