@@ -49,6 +49,9 @@ namespace TLDBot.Modules
 		[SlashCommand("skip", description: "Skips the current track", runMode: RunMode.Async)]
 		public async Task SkipAsync() => await _musicHandler!.SkipAsync().ConfigureAwait(false);
 
+		[SlashCommand("loop", description: "Loop/Unloop the current track/queue", runMode: RunMode.Async)]
+		public async Task LoopAsync() => await _musicHandler!.LoopAsync().ConfigureAwait(false);
+
 		[SlashCommand("pause", description: "Pauses the player.", runMode: RunMode.Async)]
 		public async Task PauseAsync() => await _musicHandler!.PauseAsync().ConfigureAwait(false);
 

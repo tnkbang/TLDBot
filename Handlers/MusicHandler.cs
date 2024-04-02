@@ -5,6 +5,7 @@ using Discord;
 using Lavalink4NET;
 using Lavalink4NET.Players;
 using Lavalink4NET.Players.Vote;
+using Lavalink4NET.Players.Queued;
 using Lavalink4NET.Rest.Entities.Tracks;
 using Lavalink4NET.DiscordNet;
 using TLDBot.Utility;
@@ -155,6 +156,32 @@ namespace TLDBot.Handlers
 			else
 			{
 				await RespondAsync("Skipped. Stopped playing because the queue is now empty.").ConfigureAwait(false);
+			}
+		}
+
+		/// <summary>
+		/// Loop or unloop the current track and queue.
+		/// </summary>
+		/// <returns>A task that represents the asynchronous operation</returns>
+		public async Task LoopAsync()
+		{
+			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false);
+			if (player is null) return;
+
+			switch (player.RepeatMode)
+			{
+				case TrackRepeatMode.None:
+					player.RepeatMode = TrackRepeatMode.Track;
+					await RespondAsync("Loop the current track.").ConfigureAwait(false);
+					break;
+				case TrackRepeatMode.Track:
+					player.RepeatMode = TrackRepeatMode.Queue;
+					await RespondAsync("Loop the current queue.").ConfigureAwait(false);
+					break;
+				case TrackRepeatMode.Queue:
+					player.RepeatMode = TrackRepeatMode.None;
+					await RespondAsync("Unloop the current queue.").ConfigureAwait(false);
+					break;
 			}
 		}
 
