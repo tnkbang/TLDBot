@@ -60,8 +60,8 @@ namespace TLDBot.Services
 		private async Task MessageReceived(SocketMessage messageParam)
 		{
 			var message = messageParam as SocketUserMessage;
-			if (message == null) return;
-			if(message.Interaction != null) return;
+			if (message is null) return;
+			if(message.Interaction is not null) return;
 
 			if (message.Content.Contains($"<@{_Client.CurrentUser.Id}>"))
 			{
@@ -81,27 +81,14 @@ namespace TLDBot.Services
 			//Get button click
 			if(interaction is SocketMessageComponent)
 			{
-				SocketMessageComponent cbn = (SocketMessageComponent)interaction;
+				SocketMessageComponent messageComponent = (SocketMessageComponent)interaction;
 				IAudioService? audioService = _Provider.GetService<IAudioService>();
 
 				if (audioService is not null)
 				{
-					SocketCommandContext commandContext = new SocketCommandContext(_Client, cbn.Message);
-					ButtonModule buttonModule = new ButtonModule(audioService, commandContext);
-
-					await buttonModule.ExecuteCommandAsync(cbn.Data.CustomId.Substring(ButtonComponents.PREFIX_ID.Length)).ConfigureAwait(false);
-
-					if (cbn.Data.CustomId == ButtonComponents.PREFIX_ID + Helper.ACTION_PAUSE)
-					{
-						MessageComponent btn = Helper.CreateButtons([Helper.ACTION_RESUME, Helper.ACTION_LOOP, Helper.ACTION_SKIP, Helper.ACTION_STOP]);
-						await cbn.UpdateAsync(msg => msg.Components = btn).ConfigureAwait(false);
-					}
-					else if (cbn.Data.CustomId == ButtonComponents.PREFIX_ID + Helper.ACTION_RESUME)
-					{
-						MessageComponent btn = Helper.CreateButtons([Helper.ACTION_PAUSE, Helper.ACTION_LOOP, Helper.ACTION_SKIP, Helper.ACTION_STOP]);
-						await cbn.UpdateAsync(msg => msg.Components = btn).ConfigureAwait(false);
-					}
-					else await cbn.RespondAsync().ConfigureAwait(false);
+					SocketCommandContext commandContext = new SocketCommandContext(_Client, messageComponent.Message);
+					ButtonModule buttonModule = new ButtonModule(audioService, messageComponent, commandContext);
+					await buttonModule.ExecuteCommandAsync(messageComponent.Data.CustomId.Substring(ButtonComponents.PREFIX_ID.Length)).ConfigureAwait(false);
 				}
 			}
 		}

@@ -1,5 +1,5 @@
-﻿using System.Reflection;
-using Discord.Interactions;
+﻿using Discord.Interactions;
+using Discord.WebSocket;
 using Discord.Commands;
 using Discord;
 using Lavalink4NET;
@@ -9,7 +9,6 @@ using Lavalink4NET.Rest.Entities.Tracks;
 using Lavalink4NET.DiscordNet;
 using TLDBot.Utility;
 
-
 namespace TLDBot.Handlers
 {
 	public class MusicHandler
@@ -17,27 +16,15 @@ namespace TLDBot.Handlers
 		private PlayerResult<VoteLavalinkPlayer> _playerResult;
 		private readonly IAudioService _audioService;
 		private readonly SocketInteractionContext? _interactionContext = null;
+		private readonly SocketMessageComponent? _messageComponent = null;
 		private readonly SocketCommandContext? _commandContext = null;
 
-		public MusicHandler(IAudioService audioService, SocketInteractionContext? interactionContext = null, SocketCommandContext? commandContext = null)
+		public MusicHandler(IAudioService audioService, SocketInteractionContext? interactionContext = null, SocketMessageComponent? messageComponent = null, SocketCommandContext? commandContext = null)
 		{
 			_audioService = audioService;
 			_interactionContext = interactionContext;
+			_messageComponent = messageComponent;
 			_commandContext = commandContext;
-		}
-
-		/// <summary>
-		/// Get command music playing
-		/// </summary>
-		/// <param name="cmdName">Command name</param>
-		/// <returns></returns>
-		public async Task ExecuteCommandAsync(string cmdName)
-		{
-			MethodInfo? method = GetType().GetMethod(cmdName + "Async");
-			if (method != null) _ = method.Invoke(this, null) as Task;
-
-			Console.WriteLine("Func not found: " + cmdName + "Async");
-			await Task.CompletedTask;
 		}
 
 		/// <summary>
@@ -77,8 +64,7 @@ namespace TLDBot.Handlers
 
 			if (position is 0)
 			{
-				await FollowupAsync($"🔈 Playing: {track.Uri}",
-					components: Helper.CreateButtons([Helper.ACTION_PAUSE, Helper.ACTION_LOOP, Helper.ACTION_SKIP, Helper.ACTION_STOP])).ConfigureAwait(false);
+				await FollowupAsync($"🔈 Playing: {track.Uri}", components: Helper.CreateButtonsMusicPlaying(isPause: false)).ConfigureAwait(false);
 			}
 			else
 			{
@@ -188,7 +174,9 @@ namespace TLDBot.Handlers
 			}
 
 			await player.PauseAsync().ConfigureAwait(false);
-			await RespondAsync("Paused.").ConfigureAwait(false);
+
+			if (_messageComponent is not null) await _messageComponent.UpdateAsync(msg => msg.Components = Helper.CreateButtonsMusicPlaying(isPause: true)).ConfigureAwait(false);
+			else await RespondAsync("Paused.").ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -207,7 +195,9 @@ namespace TLDBot.Handlers
 			}
 
 			await player.ResumeAsync().ConfigureAwait(false);
-			await RespondAsync("Resumed.").ConfigureAwait(false);
+
+			if (_messageComponent is not null) await _messageComponent.UpdateAsync(msg => msg.Components = Helper.CreateButtonsMusicPlaying(isPause: false)).ConfigureAwait(false);
+			else await RespondAsync("Resumed.").ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -260,9 +250,9 @@ namespace TLDBot.Handlers
 				await _interactionContext.Interaction.FollowupAsync(message, components: components).ConfigureAwait(false);
 			}
 
-			if(_commandContext is not null)
+			if(_messageComponent is not null)
 			{
-				await _commandContext.Channel.SendMessageAsync(message).ConfigureAwait(false);
+				await _messageComponent.RespondAsync(message).ConfigureAwait(false);
 			}
 		}
 		
@@ -273,9 +263,9 @@ namespace TLDBot.Handlers
 				await _interactionContext.Interaction.RespondAsync(message).ConfigureAwait(false);
 			}
 
-			if(_commandContext is not null)
+			if(_messageComponent is not null)
 			{
-				await _commandContext.Channel.SendMessageAsync(message).ConfigureAwait(false);
+				await _messageComponent.RespondAsync(message).ConfigureAwait(false);
 			}
 		}
 		
@@ -284,6 +274,11 @@ namespace TLDBot.Handlers
 			if(_interactionContext is not null)
 			{
 				await _interactionContext.Interaction.DeferAsync().ConfigureAwait(false);
+			}
+
+			if(_messageComponent is not null)
+			{
+				await _messageComponent.DeferAsync().ConfigureAwait(false);
 			}
 		}
 	}

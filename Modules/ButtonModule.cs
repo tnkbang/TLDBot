@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Discord.Commands;
+using Discord.WebSocket;
 using Lavalink4NET;
 using TLDBot.Handlers;
 
@@ -9,12 +10,13 @@ namespace TLDBot.Modules
 	{
 		private readonly MusicHandler _musicHandler;
 
-		public ButtonModule(IAudioService audioService, SocketCommandContext context)
+		public ButtonModule(IAudioService audioService, SocketMessageComponent messageComponent, SocketCommandContext context)
 		{
 			ArgumentNullException.ThrowIfNull(audioService);
+			ArgumentNullException.ThrowIfNull(messageComponent);
 			ArgumentNullException.ThrowIfNull(context);
 
-			_musicHandler = new MusicHandler(audioService, commandContext: context);
+			_musicHandler = new MusicHandler(audioService, messageComponent: messageComponent, commandContext: context);
 		}
 
 		public async Task ExecuteCommandAsync(string cmdName)
@@ -22,7 +24,11 @@ namespace TLDBot.Modules
 			ArgumentNullException.ThrowIfNull(cmdName);
 
 			MethodInfo? method = GetType().GetMethod(cmdName + "Async");
-			if (method != null) _ = method.Invoke(this, null) as Task;
+			if (method is not null)
+			{
+				_ = method.Invoke(this, null) as Task;
+				return;
+			}
 
 			Console.WriteLine("Func not found: " + cmdName + "Async");
 			await Task.CompletedTask;

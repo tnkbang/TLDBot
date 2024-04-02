@@ -22,7 +22,7 @@ namespace TLDBot.Utility
 			ArgumentNullException.ThrowIfNull(type);
 
 			MethodInfo? method = GetType().GetMethod(type + btnName);
-			if (method != null) return method.Invoke(this, null) as ButtonBuilder;
+			if (method is not null) return method.Invoke(this, null) as ButtonBuilder;
 
 			Console.WriteLine("Func not found: " + type + btnName);
 			return new ButtonBuilder();

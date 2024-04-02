@@ -13,6 +13,9 @@ namespace TLDBot.Utility
 		public static readonly string ACTION_SKIP		= "Skip";
 		public static readonly string ACTION_STOP		= "Stop";
 
+		public static readonly string[] BTN_PAUSE = new string[] { ACTION_RESUME, ACTION_LOOP, ACTION_SKIP, ACTION_STOP };
+		public static readonly string[] BTN_RESUME = new string[] { ACTION_PAUSE, ACTION_LOOP, ACTION_SKIP, ACTION_STOP };
+
 		/// <summary>
 		/// Static discord socket client
 		/// </summary>
@@ -44,6 +47,16 @@ namespace TLDBot.Utility
 			}
 
 			return builder.Build();
+		}
+
+		/// <summary>
+		/// Create button for message playing
+		/// </summary>
+		/// <param name="isPause"></param>
+		/// <returns></returns>
+		public static MessageComponent CreateButtonsMusicPlaying(bool isPause)
+		{
+			return CreateButtons(isPause ? BTN_PAUSE : BTN_RESUME);
 		}
 	}
 }
