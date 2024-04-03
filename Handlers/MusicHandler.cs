@@ -250,7 +250,7 @@ namespace TLDBot.Handlers
 					_ => "Unknown error.",
 				};
 
-				await FollowupAsync(errorMessage).ConfigureAwait(false);
+				await RespondAsync(errorMessage).ConfigureAwait(false);
 				return null;
 			}
 
@@ -280,6 +280,9 @@ namespace TLDBot.Handlers
 			if(_messageComponent is not null)
 			{
 				await _messageComponent.RespondAsync(message).ConfigureAwait(false);
+
+				await Task.Delay(TimeSpan.FromSeconds(Helper.SECOND_WAIT)).ConfigureAwait(false);
+				await _messageComponent.DeleteOriginalResponseAsync().ConfigureAwait(false);
 			}
 		}
 		
@@ -288,11 +291,17 @@ namespace TLDBot.Handlers
 			if(_interactionContext is not null)
 			{
 				await _interactionContext.Interaction.RespondAsync(message).ConfigureAwait(false);
+
+				await Task.Delay(TimeSpan.FromSeconds(Helper.SECOND_WAIT)).ConfigureAwait(false);
+				await _interactionContext.Interaction.DeleteOriginalResponseAsync().ConfigureAwait(false);
 			}
 
 			if(_messageComponent is not null)
 			{
 				await _messageComponent.RespondAsync(message).ConfigureAwait(false);
+
+				await Task.Delay(TimeSpan.FromSeconds(Helper.SECOND_WAIT)).ConfigureAwait(false);
+				await _messageComponent.DeleteOriginalResponseAsync().ConfigureAwait(false);
 			}
 		}
 		

@@ -16,6 +16,8 @@ namespace TLDBot.Utility
 		public static readonly string[] BTN_PAUSE = new string[] { ACTION_RESUME, ACTION_LOOP, ACTION_SKIP, ACTION_STOP };
 		public static readonly string[] BTN_RESUME = new string[] { ACTION_PAUSE, ACTION_LOOP, ACTION_SKIP, ACTION_STOP };
 
+		public static readonly int SECOND_WAIT = 10;
+
 		/// <summary>
 		/// Static discord socket client
 		/// </summary>
