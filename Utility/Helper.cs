@@ -1,5 +1,7 @@
 ﻿using Discord.WebSocket;
+using Discord.Rest;
 using Discord;
+using Lavalink4NET.Events.Players;
 
 namespace TLDBot.Utility
 {
@@ -17,6 +19,8 @@ namespace TLDBot.Utility
 		public static readonly string[] BTN_RESUME = new string[] { ACTION_PAUSE, ACTION_LOOP, ACTION_SKIP, ACTION_STOP };
 
 		public static readonly int SECOND_WAIT = 10;
+
+		public static Dictionary<ulong, RestFollowupMessage> GuildPlayer = new Dictionary<ulong, RestFollowupMessage>();
 
 		/// <summary>
 		/// Static discord socket client
@@ -59,6 +63,24 @@ namespace TLDBot.Utility
 		public static MessageComponent CreateButtonsMusicPlaying(bool isPause)
 		{
 			return CreateButtons(isPause ? BTN_PAUSE : BTN_RESUME);
+		}
+
+		/// <summary>
+		/// Catch the track end event
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="eventArgs"></param>
+		/// <returns></returns>
+		public static async Task TrackEndedAsync(object sender, TrackEndedEventArgs eventArgs)
+		{
+			RestFollowupMessage? followupMessage;
+			GuildPlayer.TryGetValue(eventArgs.Player.GuildId, out followupMessage);
+
+			if(followupMessage is not null)
+			{
+				await followupMessage.DeleteAsync().ConfigureAwait(false);
+				GuildPlayer.Remove(eventArgs.Player.GuildId);
+			}
 		}
 	}
 }

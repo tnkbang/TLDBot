@@ -36,6 +36,8 @@ namespace TLDBot.Services
 			_Client.Ready += ClientReady;
 			_Client.Log += Log;
 
+			_Provider.GetService<IAudioService>()!.TrackEnded += Helper.TrackEndedAsync;
+
 			await _Client.LoginAsync(TokenType.Bot, _Config["DiscordToken"]).ConfigureAwait(false);
 			await _Client.StartAsync().ConfigureAwait(false);
 		}
@@ -46,7 +48,9 @@ namespace TLDBot.Services
 			_Client.MessageReceived -= MessageReceived;
 			_Client.Ready -= ClientReady;
 			_Client.Log -= Log;
-			
+
+			_Provider.GetService<IAudioService>()!.TrackEnded -= Helper.TrackEndedAsync;
+
 			Lavalink.Stop();
 			await _Client.StopAsync().ConfigureAwait(false);
 		}
@@ -82,14 +86,10 @@ namespace TLDBot.Services
 			if(interaction is SocketMessageComponent)
 			{
 				SocketMessageComponent messageComponent = (SocketMessageComponent)interaction;
-				IAudioService? audioService = _Provider.GetService<IAudioService>();
+				SocketCommandContext commandContext = new SocketCommandContext(_Client, messageComponent.Message);
 
-				if (audioService is not null)
-				{
-					SocketCommandContext commandContext = new SocketCommandContext(_Client, messageComponent.Message);
-					ButtonModule buttonModule = new ButtonModule(audioService, messageComponent, commandContext);
-					await buttonModule.ExecuteCommandAsync(messageComponent.Data.CustomId.Substring(ButtonComponents.PREFIX_ID.Length)).ConfigureAwait(false);
-				}
+				ButtonModule buttonModule = new ButtonModule(_Provider.GetService<IAudioService>()!, messageComponent, commandContext);
+				await buttonModule.ExecuteCommandAsync(messageComponent.Data.CustomId.Substring(ButtonComponents.PREFIX_ID.Length)).ConfigureAwait(false);
 			}
 		}
 

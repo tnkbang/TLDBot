@@ -1,6 +1,7 @@
 ﻿using Discord.Interactions;
 using Discord.WebSocket;
 using Discord.Commands;
+using Discord.Rest;
 using Discord;
 using Lavalink4NET;
 using Lavalink4NET.Players;
@@ -65,7 +66,7 @@ namespace TLDBot.Handlers
 
 			if (position is 0)
 			{
-				await FollowupAsync($"🔈 Playing: {track.Uri}", components: Helper.CreateButtonsMusicPlaying(isPause: false)).ConfigureAwait(false);
+				await FollowupAsync($"🔈 Playing: {track.Uri}", components: Helper.CreateButtonsMusicPlaying(isPause: false), isPlaying: true).ConfigureAwait(false);
 			}
 			else
 			{
@@ -279,11 +280,20 @@ namespace TLDBot.Handlers
 			}
 		}
 
-		private async Task FollowupAsync(string message, MessageComponent? components = null)
+		private async Task FollowupAsync(string message, MessageComponent? components = null, bool isPlaying = false)
 		{
 			if(_interactionContext is not null)
 			{
-				await _interactionContext.Interaction.FollowupAsync(message, components: components).ConfigureAwait(false);
+				RestFollowupMessage followupMessage = await _interactionContext.Interaction.FollowupAsync(message, components: components).ConfigureAwait(false);
+
+				if (isPlaying)
+				{
+					Helper.GuildPlayer.Add(_interactionContext.Guild.Id, followupMessage);
+					return;
+				}
+
+				await Task.Delay(TimeSpan.FromSeconds(Helper.SECOND_WAIT)).ConfigureAwait(false);
+				await followupMessage.DeleteAsync().ConfigureAwait(false);
 			}
 
 			if(_messageComponent is not null)
