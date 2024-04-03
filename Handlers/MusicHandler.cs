@@ -97,7 +97,7 @@ namespace TLDBot.Handlers
 		/// <returns>A task that represents the asynchronous operation</returns>
 		public async Task StopAsync()
 		{
-			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false);
+			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false).ConfigureAwait(false);
 			if (player is null) return;
 
 			if (player.CurrentItem is null)
@@ -136,7 +136,7 @@ namespace TLDBot.Handlers
 		/// <returns>A task that represents the asynchronous operation</returns>
 		public async Task SkipAsync()
 		{
-			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false);
+			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false).ConfigureAwait(false);
 			if (player is null) return;
 
 			if (player.CurrentItem is null)
@@ -165,7 +165,7 @@ namespace TLDBot.Handlers
 		/// <returns>A task that represents the asynchronous operation</returns>
 		public async Task LoopAsync()
 		{
-			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false);
+			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false).ConfigureAwait(false);
 			if (player is null) return;
 
 			switch (player.RepeatMode)
@@ -191,7 +191,7 @@ namespace TLDBot.Handlers
 		/// <returns>A task that represents the asynchronous operation</returns>
 		public async Task PauseAsync()
 		{
-			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false);
+			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false).ConfigureAwait(false);
 			if (player is null) return;
 
 			if (player.State is PlayerState.Paused)
@@ -212,7 +212,7 @@ namespace TLDBot.Handlers
 		/// <returns>A task that represents the asynchronous operation</returns>
 		public async Task ResumeAsync()
 		{
-			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false);
+			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false).ConfigureAwait(false);
 			if (player is null) return;
 
 			if (player.State is not PlayerState.Paused)
