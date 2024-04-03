@@ -66,12 +66,29 @@ namespace TLDBot.Utility
 		}
 
 		/// <summary>
-		/// Catch the track end event
+		/// Catch the track start event
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
 		/// <returns></returns>
-		public static async Task TrackEndedAsync(object sender, TrackEndedEventArgs eventArgs)
+		public static async Task TrackStartedAsync(object sender, TrackStartedEventArgs eventArgs)
+		{
+			RestFollowupMessage? followupMessage;
+			GuildPlayer.TryGetValue(eventArgs.Player.GuildId, out followupMessage);
+
+			if (followupMessage is not null)
+			{
+				await followupMessage.ModifyAsync(msg => msg.Content = "Playing: " + eventArgs.Player.CurrentTrack!.Uri).ConfigureAwait(false);
+			}
+		}
+
+		/// <summary>
+		/// Catch the player destroy event
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="eventArgs"></param>
+		/// <returns></returns>
+		public static async Task PlayerDestroyedAsync(object sender, PlayerDestroyedEventArgs eventArgs)
 		{
 			RestFollowupMessage? followupMessage;
 			GuildPlayer.TryGetValue(eventArgs.Player.GuildId, out followupMessage);
