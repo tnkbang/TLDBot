@@ -185,6 +185,15 @@ namespace TLDBot.Handlers
 			}
 		}
 
+		public async Task ShuffleAsync()
+		{
+			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false).ConfigureAwait(false);
+			if (player is null) return;
+
+			player.Shuffle = !player.Shuffle;
+
+			await RespondAsync((player.Shuffle ? "Shuffle" : "Un shuffle") + " the current queue.").ConfigureAwait(false);
+		}
 		/// <summary>
 		/// Pause song in playing
 		/// </summary>
