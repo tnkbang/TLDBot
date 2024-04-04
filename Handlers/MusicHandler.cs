@@ -303,14 +303,6 @@ namespace TLDBot.Handlers
 				await Task.Delay(TimeSpan.FromSeconds(Helper.SECOND_WAIT)).ConfigureAwait(false);
 				await followupMessage.DeleteAsync().ConfigureAwait(false);
 			}
-
-			if(_messageComponent is not null)
-			{
-				await _messageComponent.RespondAsync(message).ConfigureAwait(false);
-
-				await Task.Delay(TimeSpan.FromSeconds(Helper.SECOND_WAIT)).ConfigureAwait(false);
-				await _messageComponent.DeleteOriginalResponseAsync().ConfigureAwait(false);
-			}
 		}
 		
 		private async Task RespondAsync(string message, Embed? embed = null)
