@@ -58,7 +58,7 @@ namespace TLDBot.Handlers
 
 			if (track is null)
 			{
-				await FollowupAsync("😖 No results.").ConfigureAwait(false);
+				await FollowupAsync(player, "😖 No results.").ConfigureAwait(false);
 				return;
 			}
 
@@ -66,11 +66,11 @@ namespace TLDBot.Handlers
 
 			if (position is 0)
 			{
-				await FollowupAsync($"🔈 Playing: {track.Uri}", components: Helper.CreateButtonsMusicPlaying(isPause: false), isPlaying: true).ConfigureAwait(false);
+				await FollowupAsync(player, components: Helper.CreateButtonsMusicPlaying(isPause: false), embed: UtilEmbed.Playing(player, track, _interactionContext!.User), isPlaying: true).ConfigureAwait(false);
 			}
 			else
 			{
-				await FollowupAsync($"🔈 Added to queue: {track.Uri}").ConfigureAwait(false);
+				await FollowupAsync(player, $"🔈 Added to queue: {track.Uri}").ConfigureAwait(false);
 			}
 		}
 
@@ -280,15 +280,15 @@ namespace TLDBot.Handlers
 			}
 		}
 
-		private async Task FollowupAsync(string message, MessageComponent? components = null, bool isPlaying = false)
+		private async Task FollowupAsync(VoteLavalinkPlayer player, string? message = null, MessageComponent? components = null, Embed? embed = null, bool isPlaying = false)
 		{
 			if(_interactionContext is not null)
 			{
-				RestFollowupMessage followupMessage = await _interactionContext.Interaction.FollowupAsync(message, components: components).ConfigureAwait(false);
+				RestFollowupMessage followupMessage = await _interactionContext.Interaction.FollowupAsync(message, components: components, embed: embed).ConfigureAwait(false);
 
 				if (isPlaying)
 				{
-					Helper.GuildPlayer.Add(_interactionContext.Guild.Id, followupMessage);
+					Helper.GuildPlayer.Add(_interactionContext.Guild.Id, new GuildPlayerMessage(followupMessage, player, _interactionContext.User));
 					return;
 				}
 

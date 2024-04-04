@@ -1,5 +1,4 @@
 ﻿using Discord.WebSocket;
-using Discord.Rest;
 using Discord;
 using Lavalink4NET.Events.Players;
 
@@ -20,7 +19,7 @@ namespace TLDBot.Utility
 
 		public static readonly int SECOND_WAIT = 10;
 
-		public static Dictionary<ulong, RestFollowupMessage> GuildPlayer = new Dictionary<ulong, RestFollowupMessage>();
+		public static Dictionary<ulong, GuildPlayerMessage> GuildPlayer = new Dictionary<ulong, GuildPlayerMessage>();
 
 		/// <summary>
 		/// Static discord socket client
@@ -73,12 +72,12 @@ namespace TLDBot.Utility
 		/// <returns></returns>
 		public static async Task TrackStartedAsync(object sender, TrackStartedEventArgs eventArgs)
 		{
-			RestFollowupMessage? followupMessage;
-			GuildPlayer.TryGetValue(eventArgs.Player.GuildId, out followupMessage);
+			GuildPlayerMessage? playerMessage;
+			GuildPlayer.TryGetValue(eventArgs.Player.GuildId, out playerMessage);
 
-			if (followupMessage is not null)
+			if (playerMessage is not null)
 			{
-				await followupMessage.ModifyAsync(msg => msg.Content = "Playing: " + eventArgs.Player.CurrentTrack!.Uri).ConfigureAwait(false);
+				await playerMessage.restFollowup.ModifyAsync(msg => msg.Embed = UtilEmbed.Playing(playerMessage.votePlayer, eventArgs.Track, playerMessage.user)).ConfigureAwait(false);
 			}
 		}
 
@@ -90,12 +89,12 @@ namespace TLDBot.Utility
 		/// <returns></returns>
 		public static async Task PlayerDestroyedAsync(object sender, PlayerDestroyedEventArgs eventArgs)
 		{
-			RestFollowupMessage? followupMessage;
-			GuildPlayer.TryGetValue(eventArgs.Player.GuildId, out followupMessage);
+			GuildPlayerMessage? playerMessage;
+			GuildPlayer.TryGetValue(eventArgs.Player.GuildId, out playerMessage);
 
-			if(followupMessage is not null)
+			if(playerMessage is not null)
 			{
-				await followupMessage.DeleteAsync().ConfigureAwait(false);
+				await playerMessage.restFollowup.DeleteAsync().ConfigureAwait(false);
 				GuildPlayer.Remove(eventArgs.Player.GuildId);
 			}
 		}
