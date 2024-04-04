@@ -292,13 +292,21 @@ namespace TLDBot.Handlers
 		{
 			if(_interactionContext is not null)
 			{
-				RestFollowupMessage followupMessage = await _interactionContext.Interaction.FollowupAsync(message, components: components, embed: embed).ConfigureAwait(false);
-
+				RestFollowupMessage followupMessage;
 				if (isPlaying)
 				{
-					Helper.GuildPlayer.Add(_interactionContext.Guild.Id, new GuildPlayerMessage(followupMessage, _playerResult.Player!, _interactionContext.User));
-					return;
+					GuildPlayerMessage? playerMessage;
+					Helper.GuildPlayer.TryGetValue(_playerResult.Player!.GuildId, out playerMessage);
+
+					if (playerMessage is null)
+					{
+						followupMessage = await _interactionContext.Interaction.FollowupAsync(message, components: components, embed: embed).ConfigureAwait(false);
+						Helper.GuildPlayer.Add(_interactionContext.Guild.Id, new GuildPlayerMessage(followupMessage, _playerResult.Player!, _interactionContext.User));
+						return;
+					}
 				}
+
+				followupMessage = await _interactionContext.Interaction.FollowupAsync(message ?? "Playing track: **" + _playerResult.Player!.CurrentTrack!.Title + "**").ConfigureAwait(false);
 
 				await Task.Delay(TimeSpan.FromSeconds(Helper.SECOND_WAIT)).ConfigureAwait(false);
 				await followupMessage.DeleteAsync().ConfigureAwait(false);
