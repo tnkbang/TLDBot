@@ -1,6 +1,8 @@
 ﻿using Discord.WebSocket;
 using Discord;
 using Lavalink4NET.Events.Players;
+using Lavalink4NET.Tracks;
+using Lavalink4NET.Players;
 
 namespace TLDBot.Utility
 {
@@ -72,12 +74,17 @@ namespace TLDBot.Utility
 		/// <returns></returns>
 		public static async Task TrackStartedAsync(object sender, TrackStartedEventArgs eventArgs)
 		{
+			await UpdatePlayingAsync(eventArgs.Player, eventArgs.Track).ConfigureAwait(false);
+		}
+
+		public static async Task UpdatePlayingAsync(ILavalinkPlayer player, LavalinkTrack track)
+		{
 			GuildPlayerMessage? playerMessage;
-			GuildPlayer.TryGetValue(eventArgs.Player.GuildId, out playerMessage);
+			GuildPlayer.TryGetValue(player.GuildId, out playerMessage);
 
 			if (playerMessage is not null)
 			{
-				await playerMessage.restFollowup.ModifyAsync(msg => msg.Embed = UtilEmbed.Playing(playerMessage.votePlayer, eventArgs.Track, playerMessage.user)).ConfigureAwait(false);
+				await playerMessage.restFollowup.ModifyAsync(msg => msg.Embed = UtilEmbed.Playing(playerMessage.votePlayer, track, playerMessage.user)).ConfigureAwait(false);
 			}
 		}
 

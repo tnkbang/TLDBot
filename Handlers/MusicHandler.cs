@@ -29,6 +29,14 @@ namespace TLDBot.Handlers
 			_commandContext = commandContext;
 		}
 
+		public SocketUser _currentUser
+		{
+			get
+			{
+				return _commandContext is not null ? _commandContext.User : _interactionContext!.User;
+			}
+		}
+
 		/// <summary>
 		/// Disconnects from the current voice channel connected to asynchronously.
 		/// </summary>
@@ -173,15 +181,15 @@ namespace TLDBot.Handlers
 			{
 				case TrackRepeatMode.None:
 					player.RepeatMode = TrackRepeatMode.Track;
-					await RespondAsync("Loop the current track.").ConfigureAwait(false);
+					await RespondAsync("Loop the current track.", UtilEmbed.Playing(player, player.CurrentTrack!, _currentUser)).ConfigureAwait(false);
 					break;
 				case TrackRepeatMode.Track:
 					player.RepeatMode = TrackRepeatMode.Queue;
-					await RespondAsync("Loop the current queue.").ConfigureAwait(false);
+					await RespondAsync("Loop the current queue.", UtilEmbed.Playing(player, player.CurrentTrack!, _currentUser)).ConfigureAwait(false);
 					break;
 				case TrackRepeatMode.Queue:
 					player.RepeatMode = TrackRepeatMode.None;
-					await RespondAsync("Unloop the current queue.").ConfigureAwait(false);
+					await RespondAsync("Unloop the current queue.", UtilEmbed.Playing(player, player.CurrentTrack!, _currentUser)).ConfigureAwait(false);
 					break;
 			}
 		}
@@ -193,7 +201,7 @@ namespace TLDBot.Handlers
 
 			player.Shuffle = !player.Shuffle;
 
-			await RespondAsync((player.Shuffle ? "Shuffle" : "Un shuffle") + " the current queue.").ConfigureAwait(false);
+			await RespondAsync((player.Shuffle ? "Shuffle" : "Un shuffle") + " the current queue.", UtilEmbed.Playing(player, player.CurrentTrack!, _currentUser)).ConfigureAwait(false);
 		}
 		/// <summary>
 		/// Pause song in playing
@@ -305,9 +313,14 @@ namespace TLDBot.Handlers
 			}
 		}
 		
-		private async Task RespondAsync(string message)
+		private async Task RespondAsync(string message, Embed? embed = null)
 		{
-			if(_interactionContext is not null)
+			if (embed is not null)
+			{
+				await Helper.UpdatePlayingAsync(_playerResult.Player!, _playerResult.Player!.CurrentTrack!).ConfigureAwait(false);
+			}
+
+			if (_interactionContext is not null)
 			{
 				await _interactionContext.Interaction.RespondAsync(message).ConfigureAwait(false);
 
