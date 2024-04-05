@@ -14,10 +14,17 @@ namespace TLDBot.Utility
 		public static readonly string ACTION_RESUME		= "Resume";
 		public static readonly string ACTION_LOOP		= "Loop";
 		public static readonly string ACTION_SKIP		= "Skip";
+		public static readonly string ACTION_SHUFFLE	= "Shuffle";
+		public static readonly string ACTION_SEEK_P5	= "SeekPrev5S";
+		public static readonly string ACTION_SEEK_P15	= "SeekPrev15S";
+		public static readonly string ACTION_SEEK_N5	= "SeekNext5S";
+		public static readonly string ACTION_SEEK_N15	= "SeekNext15S";
 		public static readonly string ACTION_STOP		= "Stop";
+		public static readonly string ACTION_QUEUE		= "Queue";
 
-		public static readonly string[] BTN_PAUSE = new string[] { ACTION_RESUME, ACTION_LOOP, ACTION_SKIP, ACTION_STOP };
-		public static readonly string[] BTN_RESUME = new string[] { ACTION_PAUSE, ACTION_LOOP, ACTION_SKIP, ACTION_STOP };
+		public static readonly string[] BTN_PAUSE = new string[] { ACTION_RESUME, ACTION_LOOP, ACTION_SHUFFLE, ACTION_SKIP, ACTION_QUEUE };
+		public static readonly string[] BTN_RESUME = new string[] { ACTION_PAUSE, ACTION_LOOP, ACTION_SHUFFLE, ACTION_SKIP, ACTION_QUEUE };
+		public static readonly string[] BTN_SEEK = new string[] { ACTION_SEEK_P5, ACTION_SEEK_P15, ACTION_STOP, ACTION_SEEK_N5, ACTION_SEEK_N15};
 
 		public static readonly int SECOND_WAIT = 10;
 
@@ -43,17 +50,15 @@ namespace TLDBot.Utility
 		/// </summary>
 		/// <param name="lstAction">List button action type</param>
 		/// <returns></returns>
-		public static MessageComponent CreateButtons(string[] lstAction)
+		public static ComponentBuilder CreateButtons(ComponentBuilder builder, string[] lstAction,string type,  int row = 0)
 		{
-			ComponentBuilder builder = new ComponentBuilder();
-
 			foreach (string action in lstAction)
 			{
 				ButtonComponents btnC = new ButtonComponents();
-				builder.WithButton(btnC.ExecuteButtonBuilder(action, ButtonComponents.TYPE_MUSIC));
+				builder.WithButton(btnC.ExecuteButtonBuilder(action, type), row);
 			}
 
-			return builder.Build();
+			return builder;
 		}
 
 		/// <summary>
@@ -63,7 +68,11 @@ namespace TLDBot.Utility
 		/// <returns></returns>
 		public static MessageComponent CreateButtonsMusicPlaying(bool isPause)
 		{
-			return CreateButtons(isPause ? BTN_PAUSE : BTN_RESUME);
+			ComponentBuilder builder = new ComponentBuilder();
+			builder = CreateButtons(builder, isPause ? BTN_PAUSE : BTN_RESUME, ButtonComponents.TYPE_MUSIC);
+			builder = CreateButtons(builder, BTN_SEEK, ButtonComponents.TYPE_MUSIC, 1);
+
+			return builder.Build();
 		}
 
 		/// <summary>
