@@ -43,11 +43,13 @@ namespace TLDBot.Handlers
 		/// <returns>A task that represents the asynchronous operation</returns>
 		public async Task DisconnectAsync()
 		{
+			await DeferAsync().ConfigureAwait(false);
+
 			VoteLavalinkPlayer? player = await GetPlayerAsync().ConfigureAwait(false);
 			if (player is null) return;
 
 			await player.DisconnectAsync().ConfigureAwait(false);
-			await RespondAsync(message: "Disconnect.").ConfigureAwait(false);
+			await FollowupAsync(message: "Disconnect.").ConfigureAwait(false);
 		}
 
 		/// <summary>
