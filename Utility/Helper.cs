@@ -93,8 +93,8 @@ namespace TLDBot.Utility
 
 			if (playerMessage is not null)
 			{
-				await playerMessage.restFollowup.ModifyAsync(msg => {
-					msg.Embed = isUpdateEmbed ? UtilEmbed.Playing(playerMessage.votePlayer, track, playerMessage.user) : msg.Embed;
+				await playerMessage.Channel.ModifyMessageAsync(playerMessage.MessageId, msg => {
+					msg.Embed = isUpdateEmbed ? UtilEmbed.Playing(playerMessage.VotePlayer, track, playerMessage.User) : msg.Embed;
 					msg.Components = isUpdateComponent ? CreateButtonsMusicPlaying(isPause: player.State is PlayerState.Paused) : msg.Components;
 				}).ConfigureAwait(false);
 			}
@@ -113,7 +113,7 @@ namespace TLDBot.Utility
 
 			if(playerMessage is not null)
 			{
-				await playerMessage.restFollowup.DeleteAsync().ConfigureAwait(false);
+				await playerMessage.Channel.DeleteMessageAsync(playerMessage.MessageId).ConfigureAwait(false);
 				GuildPlayer.Remove(eventArgs.Player.GuildId);
 			}
 		}

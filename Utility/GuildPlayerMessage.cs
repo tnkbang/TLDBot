@@ -6,15 +6,17 @@ namespace TLDBot.Utility
 {
 	public class GuildPlayerMessage
 	{
-		public RestFollowupMessage restFollowup;
-		public VoteLavalinkPlayer votePlayer;
-		public SocketUser user;
+		public ISocketMessageChannel Channel;
+		public ulong MessageId;
+		public VoteLavalinkPlayer VotePlayer;
+		public SocketUser User;
 
-		public GuildPlayerMessage(RestFollowupMessage restFollowup, VoteLavalinkPlayer votePlayer, SocketUser user)
+		public GuildPlayerMessage(ISocketMessageChannel channel, ulong messageId, VoteLavalinkPlayer votePlayer, SocketUser user)
 		{
-			this.restFollowup = restFollowup;
-			this.votePlayer = votePlayer;
-			this.user = user;
+			this.Channel = channel;
+			this.MessageId = messageId;
+			this.VotePlayer = votePlayer;
+			this.User = user;
 		}
 	}
 }

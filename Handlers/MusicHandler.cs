@@ -297,7 +297,7 @@ namespace TLDBot.Handlers
 					if (playerMessage is null)
 					{
 						followupMessage = await _interactionContext.Interaction.FollowupAsync(message, components: components, embed: embed).ConfigureAwait(false);
-						Helper.GuildPlayer.Add(_interactionContext.Guild.Id, new GuildPlayerMessage(followupMessage, _playerResult.Player!, _interactionContext.User));
+						Helper.GuildPlayer.Add(_interactionContext.Guild.Id, new GuildPlayerMessage(_interactionContext.Channel, followupMessage.Id, _playerResult.Player!, _interactionContext.User));
 						return;
 					}
 				}
