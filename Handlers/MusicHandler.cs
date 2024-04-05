@@ -194,6 +194,10 @@ namespace TLDBot.Handlers
 			}
 		}
 
+		/// <summary>
+		/// Shuffle queue
+		/// </summary>
+		/// <returns></returns>
 		public async Task ShuffleAsync()
 		{
 			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false).ConfigureAwait(false);
@@ -203,6 +207,27 @@ namespace TLDBot.Handlers
 
 			await RespondAsync(title: "Shuffle", message: (player.Shuffle ? "Shuffle" : "Un shuffle") + " the current queue.", isUpdateEmbed: true).ConfigureAwait(false);
 		}
+
+		/// <summary>
+		/// Seek the current track
+		/// </summary>
+		/// <param name="time"></param>
+		/// <returns></returns>
+		public async Task SeekAsync(TimeSpan time)
+		{
+			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false).ConfigureAwait(false);
+			if (player is null) return;
+
+			if (player.CurrentItem is null)
+			{
+				await RespondAsync(message: "Nothing playing!").ConfigureAwait(false);
+				return;
+			}
+			
+			await player.SeekAsync(time, SeekOrigin.Current).ConfigureAwait(false);
+			await RespondAsync(title: "Seek", message: $"The track is play duration: {player.Position?.Position.ToString(@"hh\:mm\:ss")}").ConfigureAwait(false);
+		}
+
 		/// <summary>
 		/// Pause song in playing
 		/// </summary>

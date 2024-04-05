@@ -55,6 +55,9 @@ namespace TLDBot.Modules
 		[SlashCommand("shuffle", description: "Shuffle/Un shuffle the current queue", runMode: RunMode.Async)]
 		public async Task ShuffleAsync() => await _musicHandler!.ShuffleAsync().ConfigureAwait(false);
 
+		[SlashCommand("seek", description: "Seek the current track (second)", runMode: RunMode.Async)]
+		public async Task SeekAsync(int time) => await _musicHandler!.SeekAsync(new TimeSpan(00, 00, time)).ConfigureAwait(false);
+
 		[SlashCommand("pause", description: "Pauses the player.", runMode: RunMode.Async)]
 		public async Task PauseAsync() => await _musicHandler!.PauseAsync().ConfigureAwait(false);
 

@@ -46,6 +46,14 @@ namespace TLDBot.Modules
 
 		public async Task ShuffleAsync() => await _musicHandler.ShuffleAsync().ConfigureAwait(false);
 
+		public async Task SeekPrev5SAsync() => await _musicHandler.SeekAsync(new TimeSpan(00, 00, -5)).ConfigureAwait(false);
+
+		public async Task SeekPrev15SAsync() => await _musicHandler.SeekAsync(new TimeSpan(00, 00, -15)).ConfigureAwait(false);
+
+		public async Task SeekNext5SAsync() => await _musicHandler.SeekAsync(new TimeSpan(00, 00, 05)).ConfigureAwait(false);
+
+		public async Task SeekNext15SAsync() => await _musicHandler.SeekAsync(new TimeSpan(00, 00, 15)).ConfigureAwait(false);
+
 		public async Task PauseAsync() => await _musicHandler.PauseAsync().ConfigureAwait(false);
 
 		public async Task ResumeAsync() => await _musicHandler.ResumeAsync().ConfigureAwait(false);
