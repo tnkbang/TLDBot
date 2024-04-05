@@ -60,22 +60,22 @@ namespace TLDBot.Utility
 
 		public ButtonBuilder MusicSeekPrev5S()
 		{
-			return new ButtonBuilder().WithLabel("⟲5").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SEEK_P5);
+			return new ButtonBuilder().WithLabel("⟲ 5").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SEEK_P5);
 		}
 
 		public ButtonBuilder MusicSeekPrev15S()
 		{
-			return new ButtonBuilder().WithLabel("⟲15").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SEEK_P15);
+			return new ButtonBuilder().WithLabel("⟲ 15").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SEEK_P15);
 		}
 
 		public ButtonBuilder MusicSeekNext5S()
 		{
-			return new ButtonBuilder().WithLabel("5⟳").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SEEK_N5);
+			return new ButtonBuilder().WithLabel("5 ⟳").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SEEK_N5);
 		}
 
 		public ButtonBuilder MusicSeekNext15S()
 		{
-			return new ButtonBuilder().WithLabel("15⟳").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SEEK_N15);
+			return new ButtonBuilder().WithLabel("15 ⟳").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SEEK_N15);
 		}
 
 		public ButtonBuilder MusicStop()

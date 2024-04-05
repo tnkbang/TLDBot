@@ -24,7 +24,7 @@ namespace TLDBot.Utility
 
 		public static readonly string[] BTN_PAUSE = new string[] { ACTION_RESUME, ACTION_LOOP, ACTION_SHUFFLE, ACTION_SKIP, ACTION_QUEUE };
 		public static readonly string[] BTN_RESUME = new string[] { ACTION_PAUSE, ACTION_LOOP, ACTION_SHUFFLE, ACTION_SKIP, ACTION_QUEUE };
-		public static readonly string[] BTN_SEEK = new string[] { ACTION_SEEK_P5, ACTION_SEEK_P15, ACTION_STOP, ACTION_SEEK_N5, ACTION_SEEK_N15};
+		public static readonly string[] BTN_SEEK = new string[] { ACTION_SEEK_P15, ACTION_SEEK_P5, ACTION_STOP, ACTION_SEEK_N5, ACTION_SEEK_N15};
 
 		public static readonly int SECOND_WAIT = 10;
 
