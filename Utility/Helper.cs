@@ -86,14 +86,17 @@ namespace TLDBot.Utility
 			await UpdatePlayingAsync(eventArgs.Player, eventArgs.Track).ConfigureAwait(false);
 		}
 
-		public static async Task UpdatePlayingAsync(ILavalinkPlayer player, LavalinkTrack track)
+		public static async Task UpdatePlayingAsync(ILavalinkPlayer player, LavalinkTrack track, bool isUpdateEmbed = false, bool isUpdateComponent = false)
 		{
 			GuildPlayerMessage? playerMessage;
 			GuildPlayer.TryGetValue(player.GuildId, out playerMessage);
 
 			if (playerMessage is not null)
 			{
-				await playerMessage.restFollowup.ModifyAsync(msg => msg.Embed = UtilEmbed.Playing(playerMessage.votePlayer, track, playerMessage.user)).ConfigureAwait(false);
+				await playerMessage.restFollowup.ModifyAsync(msg => {
+					msg.Embed = isUpdateEmbed ? UtilEmbed.Playing(playerMessage.votePlayer, track, playerMessage.user) : msg.Embed;
+					msg.Components = isUpdateComponent ? CreateButtonsMusicPlaying(isPause: player.State is PlayerState.Paused) : msg.Components;
+				}).ConfigureAwait(false);
 			}
 		}
 
