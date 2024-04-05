@@ -32,5 +32,14 @@ namespace TLDBot.Utility
 
 			return embed.Build();
 		}
+
+		public static Embed Info(string? title = null, string? description = null)
+		{
+			EmbedBuilder embed = new EmbedBuilder();
+
+			embed.WithTitle(title).WithDescription(description).WithColor(Color.Green);
+
+			return embed.Build();
+		}
 	}
 }

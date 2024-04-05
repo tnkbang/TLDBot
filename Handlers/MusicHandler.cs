@@ -47,7 +47,7 @@ namespace TLDBot.Handlers
 			if (player is null) return;
 
 			await player.DisconnectAsync().ConfigureAwait(false);
-			await RespondAsync("Disconnect.").ConfigureAwait(false);
+			await RespondAsync(message: "Disconnect.").ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -66,7 +66,7 @@ namespace TLDBot.Handlers
 
 			if (track is null)
 			{
-				await FollowupAsync("😖 No results.").ConfigureAwait(false);
+				await FollowupAsync(title: "Search Playing", message: "No results.").ConfigureAwait(false);
 				return;
 			}
 
@@ -78,7 +78,7 @@ namespace TLDBot.Handlers
 			}
 			else
 			{
-				await FollowupAsync($"🔈 Added to queue: {track.Uri}").ConfigureAwait(false);
+				await FollowupAsync(title: "Playing", message: $"Added to queue: **{track.Title}**").ConfigureAwait(false);
 			}
 		}
 
@@ -93,11 +93,11 @@ namespace TLDBot.Handlers
 
 			if (player.CurrentItem is null)
 			{
-				await RespondAsync("Nothing playing!").ConfigureAwait(false);
+				await RespondAsync(message: "Nothing playing!").ConfigureAwait(false);
 				return;
 			}
 
-			await RespondAsync($"Position: {player.Position?.Position} / {player.CurrentTrack?.Duration}.").ConfigureAwait(false);
+			await RespondAsync(title: "Track position", message: $"Position: {player.Position?.Position.ToString(@"hh\:mm\:ss")} / {player.CurrentTrack?.Duration}.").ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -111,12 +111,12 @@ namespace TLDBot.Handlers
 
 			if (player.CurrentItem is null)
 			{
-				await RespondAsync("Nothing playing!").ConfigureAwait(false);
+				await RespondAsync(message: "Nothing playing!").ConfigureAwait(false);
 				return;
 			}
 
 			await player.StopAsync().ConfigureAwait(false);
-			await RespondAsync("Stopped playing.").ConfigureAwait(false);
+			await RespondAsync(message: "Stopped playing.").ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -128,7 +128,7 @@ namespace TLDBot.Handlers
 		{
 			if (volume is > 1000 or < 0)
 			{
-				await RespondAsync("Volume out of range: 0% - 1000%!").ConfigureAwait(false);
+				await RespondAsync(title: "Volume err", message: "Volume out of range: 0% - 1000%!").ConfigureAwait(false);
 				return;
 			}
 
@@ -136,7 +136,7 @@ namespace TLDBot.Handlers
 			if (player is null) return;
 
 			await player.SetVolumeAsync(volume / 100f).ConfigureAwait(false);
-			await RespondAsync($"Volume updated: {volume}%").ConfigureAwait(false);
+			await RespondAsync(title: "Volume", message: $"Volume updated: {volume}%").ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -150,7 +150,7 @@ namespace TLDBot.Handlers
 
 			if (player.CurrentItem is null)
 			{
-				await RespondAsync("Nothing playing!").ConfigureAwait(false);
+				await RespondAsync(message: "Nothing playing!").ConfigureAwait(false);
 				return;
 			}
 
@@ -160,11 +160,11 @@ namespace TLDBot.Handlers
 
 			if (track is not null)
 			{
-				await RespondAsync($"Skipped. Now playing: {track.Track!.Uri}").ConfigureAwait(false);
+				await RespondAsync(title: "Skipped", message: $"Now playing: **{track.Track!.Title}**").ConfigureAwait(false);
 			}
 			else
 			{
-				await RespondAsync("Skipped. Stopped playing because the queue is now empty.").ConfigureAwait(false);
+				await RespondAsync(title: "Skipped", message: "Stopped playing because the queue is now empty.").ConfigureAwait(false);
 			}
 		}
 
@@ -181,15 +181,15 @@ namespace TLDBot.Handlers
 			{
 				case TrackRepeatMode.None:
 					player.RepeatMode = TrackRepeatMode.Track;
-					await RespondAsync("Loop the current track.", UtilEmbed.Playing(player, player.CurrentTrack!, _currentUser)).ConfigureAwait(false);
+					await RespondAsync(title: "Loop", message: "Loop the current track.", UtilEmbed.Playing(player, player.CurrentTrack!, _currentUser)).ConfigureAwait(false);
 					break;
 				case TrackRepeatMode.Track:
 					player.RepeatMode = TrackRepeatMode.Queue;
-					await RespondAsync("Loop the current queue.", UtilEmbed.Playing(player, player.CurrentTrack!, _currentUser)).ConfigureAwait(false);
+					await RespondAsync(title: "Loop", message: "Loop the current queue.", UtilEmbed.Playing(player, player.CurrentTrack!, _currentUser)).ConfigureAwait(false);
 					break;
 				case TrackRepeatMode.Queue:
 					player.RepeatMode = TrackRepeatMode.None;
-					await RespondAsync("Unloop the current queue.", UtilEmbed.Playing(player, player.CurrentTrack!, _currentUser)).ConfigureAwait(false);
+					await RespondAsync(title: "Loop", message: "Unloop the current queue.", UtilEmbed.Playing(player, player.CurrentTrack!, _currentUser)).ConfigureAwait(false);
 					break;
 			}
 		}
@@ -201,7 +201,8 @@ namespace TLDBot.Handlers
 
 			player.Shuffle = !player.Shuffle;
 
-			await RespondAsync((player.Shuffle ? "Shuffle" : "Un shuffle") + " the current queue.", UtilEmbed.Playing(player, player.CurrentTrack!, _currentUser)).ConfigureAwait(false);
+			await RespondAsync(title: "Shuffle", message: (player.Shuffle ? "Shuffle" : "Un shuffle") + " the current queue.",
+								embed: UtilEmbed.Playing(player, player.CurrentTrack!, _currentUser)).ConfigureAwait(false);
 		}
 		/// <summary>
 		/// Pause song in playing
@@ -214,14 +215,14 @@ namespace TLDBot.Handlers
 
 			if (player.State is PlayerState.Paused)
 			{
-				await RespondAsync("Player is already paused.").ConfigureAwait(false);
+				await RespondAsync(message: "Player is already paused.").ConfigureAwait(false);
 				return;
 			}
 
 			await player.PauseAsync().ConfigureAwait(false);
 
 			if (_messageComponent is not null) await _messageComponent.UpdateAsync(msg => msg.Components = Helper.CreateButtonsMusicPlaying(isPause: true)).ConfigureAwait(false);
-			else await RespondAsync("Paused.").ConfigureAwait(false);
+			else await RespondAsync(message: "Paused.").ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -235,14 +236,14 @@ namespace TLDBot.Handlers
 
 			if (player.State is not PlayerState.Paused)
 			{
-				await RespondAsync("Player is not paused.").ConfigureAwait(false);
+				await RespondAsync(message: "Player is not paused.").ConfigureAwait(false);
 				return;
 			}
 
 			await player.ResumeAsync().ConfigureAwait(false);
 
 			if (_messageComponent is not null) await _messageComponent.UpdateAsync(msg => msg.Components = Helper.CreateButtonsMusicPlaying(isPause: false)).ConfigureAwait(false);
-			else await RespondAsync("Resumed.").ConfigureAwait(false);
+			else await RespondAsync(message: "Resumed.").ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -288,7 +289,7 @@ namespace TLDBot.Handlers
 			}
 		}
 
-		private async Task FollowupAsync(string? message = null, MessageComponent? components = null, Embed? embed = null, bool isPlaying = false)
+		private async Task FollowupAsync(string? title = null, string? message = null, MessageComponent? components = null, Embed? embed = null, bool isPlaying = false)
 		{
 			if(_interactionContext is not null)
 			{
@@ -306,14 +307,15 @@ namespace TLDBot.Handlers
 					}
 				}
 
-				followupMessage = await _interactionContext.Interaction.FollowupAsync(isPlaying ? "Playing track: **" + _playerResult.Player!.CurrentTrack!.Title + "**" : message).ConfigureAwait(false);
+				followupMessage = await _interactionContext.Interaction
+					.FollowupAsync(embed: UtilEmbed.Info(title, isPlaying ? "Playing track: **" + _playerResult.Player!.CurrentTrack!.Title + "**" : message)).ConfigureAwait(false);
 
 				await Task.Delay(TimeSpan.FromSeconds(Helper.SECOND_WAIT)).ConfigureAwait(false);
 				await followupMessage.DeleteAsync().ConfigureAwait(false);
 			}
 		}
 		
-		private async Task RespondAsync(string message, Embed? embed = null)
+		private async Task RespondAsync(string? title = null, string? message = null, Embed? embed = null)
 		{
 			if (embed is not null)
 			{
@@ -322,7 +324,7 @@ namespace TLDBot.Handlers
 
 			if (_interactionContext is not null)
 			{
-				await _interactionContext.Interaction.RespondAsync(message).ConfigureAwait(false);
+				await _interactionContext.Interaction.RespondAsync(embed: UtilEmbed.Info(title, message)).ConfigureAwait(false);
 
 				await Task.Delay(TimeSpan.FromSeconds(Helper.SECOND_WAIT)).ConfigureAwait(false);
 				await _interactionContext.Interaction.DeleteOriginalResponseAsync().ConfigureAwait(false);
@@ -330,7 +332,7 @@ namespace TLDBot.Handlers
 
 			if(_messageComponent is not null)
 			{
-				await _messageComponent.RespondAsync(message).ConfigureAwait(false);
+				await _messageComponent.RespondAsync(embed: UtilEmbed.Info(title, message)).ConfigureAwait(false);
 
 				await Task.Delay(TimeSpan.FromSeconds(Helper.SECOND_WAIT)).ConfigureAwait(false);
 				await _messageComponent.DeleteOriginalResponseAsync().ConfigureAwait(false);
