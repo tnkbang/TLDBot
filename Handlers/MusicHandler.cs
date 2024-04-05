@@ -289,7 +289,8 @@ namespace TLDBot.Handlers
 					_ => "Unknown error.",
 				};
 
-				await RespondAsync(errorMessage).ConfigureAwait(false);
+				if(_interactionContext is not null) await FollowupAsync(errorMessage).ConfigureAwait(false);
+				else await RespondAsync(errorMessage).ConfigureAwait(false);
 				return null;
 			}
 
