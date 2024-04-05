@@ -306,7 +306,7 @@ namespace TLDBot.Handlers
 					}
 				}
 
-				followupMessage = await _interactionContext.Interaction.FollowupAsync(message ?? "Playing track: **" + _playerResult.Player!.CurrentTrack!.Title + "**").ConfigureAwait(false);
+				followupMessage = await _interactionContext.Interaction.FollowupAsync(isPlaying ? "Playing track: **" + _playerResult.Player!.CurrentTrack!.Title + "**" : message).ConfigureAwait(false);
 
 				await Task.Delay(TimeSpan.FromSeconds(Helper.SECOND_WAIT)).ConfigureAwait(false);
 				await followupMessage.DeleteAsync().ConfigureAwait(false);
