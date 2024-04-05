@@ -83,7 +83,7 @@ namespace TLDBot.Utility
 		/// <returns></returns>
 		public static async Task TrackStartedAsync(object sender, TrackStartedEventArgs eventArgs)
 		{
-			await UpdatePlayingAsync(eventArgs.Player, eventArgs.Track).ConfigureAwait(false);
+			await UpdatePlayingAsync(eventArgs.Player, eventArgs.Track, isUpdateEmbed: true).ConfigureAwait(false);
 		}
 
 		public static async Task UpdatePlayingAsync(ILavalinkPlayer player, LavalinkTrack track, bool isUpdateEmbed = false, bool isUpdateComponent = false)
