@@ -36,7 +36,8 @@ namespace TLDBot.Modules
 		public async Task DisconnectAsync() => await _musicHandler!.DisconnectAsync().ConfigureAwait(false);
 
 		[SlashCommand("play", description: "Plays music", runMode: RunMode.Async)]
-		public async Task PlayAsync(string query) => await _musicHandler!.PlayAsync(query).ConfigureAwait(false);
+		public async Task PlayAsync([Summary(description: "Name or url track")] string query) 
+			=> await _musicHandler!.PlayAsync(query).ConfigureAwait(false);
 
 		[SlashCommand("position", description: "Shows the track position", runMode: RunMode.Async)]
 		public async Task PositionAsync() => await _musicHandler!.PositionAsync().ConfigureAwait(false);
@@ -45,7 +46,8 @@ namespace TLDBot.Modules
 		public async Task StopAsync() => await _musicHandler!.StopAsync().ConfigureAwait(false);
 
 		[SlashCommand("volume", description: "Sets the player volume (0 - 1000%)", runMode: RunMode.Async)]
-		public async Task VolumeAsync(int volume = 100) => await _musicHandler!.VolumeAsync(volume).ConfigureAwait(false);
+		public async Task VolumeAsync([Summary(description: "Suggested volume from 0 to 100")] int volume = 100) 
+			=> await _musicHandler!.VolumeAsync(volume).ConfigureAwait(false);
 
 		[SlashCommand("skip", description: "Skips the current track", runMode: RunMode.Async)]
 		public async Task SkipAsync() => await _musicHandler!.SkipAsync().ConfigureAwait(false);
@@ -57,7 +59,8 @@ namespace TLDBot.Modules
 		public async Task ShuffleAsync() => await _musicHandler!.ShuffleAsync().ConfigureAwait(false);
 
 		[SlashCommand("seek", description: "Seek the current track (hh:mm:ss)", runMode: RunMode.Async)]
-		public async Task SeekAsync(string time) => await _musicHandler!.SeekAsync(TimeSpan.ParseExact(time, @"hh\:mm\:ss", CultureInfo.InvariantCulture), true).ConfigureAwait(false);
+		public async Task SeekAsync([Summary(description: "Only receive hh:mm:ss (Ex: 00:01:02)")] string time) 
+			=> await _musicHandler!.SeekAsync(TimeSpan.ParseExact(time, @"hh\:mm\:ss", CultureInfo.InvariantCulture), true).ConfigureAwait(false);
 
 		[SlashCommand("pause", description: "Pauses the player.", runMode: RunMode.Async)]
 		public async Task PauseAsync() => await _musicHandler!.PauseAsync().ConfigureAwait(false);
