@@ -215,7 +215,7 @@ namespace TLDBot.Handlers
 		/// </summary>
 		/// <param name="time"></param>
 		/// <returns></returns>
-		public async Task SeekAsync(TimeSpan time)
+		public async Task SeekAsync(TimeSpan time, bool isBegin = false)
 		{
 			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false).ConfigureAwait(false);
 			if (player is null) return;
@@ -226,7 +226,7 @@ namespace TLDBot.Handlers
 				return;
 			}
 			
-			await player.SeekAsync(time, SeekOrigin.Current).ConfigureAwait(false);
+			await player.SeekAsync(time, isBegin ? SeekOrigin.Begin : SeekOrigin.Current).ConfigureAwait(false);
 			await RespondAsync(title: "Seek", message: $"The track is play duration: {player.Position?.Position.ToString(@"hh\:mm\:ss")}").ConfigureAwait(false);
 		}
 
