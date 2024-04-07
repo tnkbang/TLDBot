@@ -80,7 +80,7 @@ namespace TLDBot.Handlers
 			}
 			else
 			{
-				await FollowupAsync(title: "Playing", message: $"Added to queue: **{track.Title}**").ConfigureAwait(false);
+				await FollowupAsync(title: "Playing", message: $"Added to queue: **{track.Title}**", isUpdateEmbed: true).ConfigureAwait(false);
 			}
 		}
 
@@ -138,7 +138,7 @@ namespace TLDBot.Handlers
 			if (player is null) return;
 
 			await player.SetVolumeAsync(volume / 100f).ConfigureAwait(false);
-			await RespondAsync(title: "Volume", message: $"Volume updated: {volume}%").ConfigureAwait(false);
+			await RespondAsync(title: "Volume", message: $"Volume updated: {volume}%", isUpdateEmbed: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -246,7 +246,7 @@ namespace TLDBot.Handlers
 			}
 
 			await player.PauseAsync().ConfigureAwait(false);
-			await RespondAsync(message: "Paused.", isUpdateComponent: true).ConfigureAwait(false);
+			await RespondAsync(message: "Paused.", isUpdateEmbed: true, isUpdateComponent: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -265,7 +265,7 @@ namespace TLDBot.Handlers
 			}
 
 			await player.ResumeAsync().ConfigureAwait(false);
-			await RespondAsync(message: "Resumed.", isUpdateComponent: true).ConfigureAwait(false);
+			await RespondAsync(message: "Resumed.", isUpdateEmbed: true, isUpdateComponent: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -312,7 +312,7 @@ namespace TLDBot.Handlers
 			}
 		}
 
-		private async Task FollowupAsync(string? title = null, string? message = null, MessageComponent? components = null, Embed? embed = null, bool isPlaying = false)
+		private async Task FollowupAsync(string? title = null, string? message = null, MessageComponent? components = null, Embed? embed = null, bool isPlaying = false, bool isUpdateEmbed = false)
 		{
 			if(_interactionContext is not null)
 			{
@@ -328,6 +328,11 @@ namespace TLDBot.Handlers
 						Helper.GuildPlayer.Add(_interactionContext.Guild.Id, new GuildPlayerMessage(_interactionContext.Channel, followupMessage.Id, _playerResult.Player!, _interactionContext.User));
 						return;
 					}
+				}
+
+				if (isUpdateEmbed)
+				{
+					await Helper.UpdatePlayingAsync(_playerResult.Player!, _playerResult.Player!.CurrentTrack!, isUpdateEmbed).ConfigureAwait(false);
 				}
 
 				followupMessage = await _interactionContext.Interaction
