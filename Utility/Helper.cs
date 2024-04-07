@@ -15,16 +15,11 @@ namespace TLDBot.Utility
 		public static readonly string ACTION_LOOP		= "Loop";
 		public static readonly string ACTION_SKIP		= "Skip";
 		public static readonly string ACTION_SHUFFLE	= "Shuffle";
-		public static readonly string ACTION_SEEK_P5	= "SeekPrev5S";
-		public static readonly string ACTION_SEEK_P15	= "SeekPrev15S";
-		public static readonly string ACTION_SEEK_N5	= "SeekNext5S";
-		public static readonly string ACTION_SEEK_N15	= "SeekNext15S";
+		public static readonly string ACTION_SEEK_P10	= "SeekPrev10S";
+		public static readonly string ACTION_SEEK_N10	= "SeekNext10S";
 		public static readonly string ACTION_STOP		= "Stop";
 		public static readonly string ACTION_QUEUE		= "Queue";
-
-		public static readonly string[] BTN_PAUSE = new string[] { ACTION_RESUME, ACTION_LOOP, ACTION_SHUFFLE, ACTION_SKIP, ACTION_QUEUE };
-		public static readonly string[] BTN_RESUME = new string[] { ACTION_PAUSE, ACTION_LOOP, ACTION_SHUFFLE, ACTION_SKIP, ACTION_QUEUE };
-		public static readonly string[] BTN_SEEK = new string[] { ACTION_SEEK_P15, ACTION_SEEK_P5, ACTION_STOP, ACTION_SEEK_N5, ACTION_SEEK_N15};
+		public static readonly string ACTION_LYRICS		= "Lyrics";
 
 		public static readonly int SECOND_WAIT = 10;
 
@@ -69,8 +64,9 @@ namespace TLDBot.Utility
 		public static MessageComponent CreateButtonsMusicPlaying(bool isPause)
 		{
 			ComponentBuilder builder = new ComponentBuilder();
-			builder = CreateButtons(builder, isPause ? BTN_PAUSE : BTN_RESUME, ButtonComponents.TYPE_MUSIC);
-			builder = CreateButtons(builder, BTN_SEEK, ButtonComponents.TYPE_MUSIC, 1);
+			builder = CreateButtons(builder, [isPause ? ACTION_RESUME : ACTION_PAUSE, ACTION_LOOP, ACTION_SHUFFLE], ButtonComponents.TYPE_MUSIC);
+			builder = CreateButtons(builder, [ACTION_SEEK_P10, ACTION_STOP, ACTION_SEEK_N10], ButtonComponents.TYPE_MUSIC, 1);
+			builder = CreateButtons(builder, [ACTION_SKIP, ACTION_QUEUE, ACTION_LYRICS], ButtonComponents.TYPE_MUSIC, 2);
 
 			return builder.Build();
 		}

@@ -28,64 +28,54 @@ namespace TLDBot.Utility
 			return new ButtonBuilder();
 		}
 
-		public ButtonBuilder MusicPlay()
-		{
-			return new ButtonBuilder().WithLabel(Helper.ACTION_PLAY).WithStyle(ButtonStyle.Primary).WithCustomId(PREFIX_ID + Helper.ACTION_PLAY);
-		}
-
 		public ButtonBuilder MusicPause()
 		{
-			return new ButtonBuilder().WithLabel("❚❚").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_PAUSE);
+			return new ButtonBuilder().WithEmote(Emote.Parse("<:pause:1131135530348855297>")).WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_PAUSE);
 		}
 
 		public ButtonBuilder MusicResume()
 		{
-			return new ButtonBuilder().WithLabel("▶").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_RESUME);
+			return new ButtonBuilder().WithEmote(Emote.Parse("<:play:1131135527022768188>")).WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_RESUME);
 		}
 
 		public ButtonBuilder MusicLoop()
 		{
-			return new ButtonBuilder().WithLabel("⇄").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_LOOP);
+			return new ButtonBuilder().WithEmote(Emote.Parse("<:repeat:1131135523742826596>")).WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_LOOP);
 		}
 
 		public ButtonBuilder MusicSkip()
 		{
-			return new ButtonBuilder().WithLabel("⯮").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SKIP);
+			return new ButtonBuilder().WithEmote(Emote.Parse("<:next:1131135532542480394>")).WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SKIP);
 		}
 
 		public ButtonBuilder MusicShuffle()
 		{
-			return new ButtonBuilder().WithLabel("⤨").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SHUFFLE);
+			return new ButtonBuilder().WithEmote(Emote.Parse("<:shuffle:1131135518390894673>")).WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SHUFFLE);
 		}
 
-		public ButtonBuilder MusicSeekPrev5S()
+		public ButtonBuilder MusicSeekPrev10S()
 		{
-			return new ButtonBuilder().WithLabel("⟲ 5").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SEEK_P5);
+			return new ButtonBuilder().WithEmote(Emote.Parse("<:seekprev:1226454248557121547>")).WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SEEK_P10);
 		}
 
-		public ButtonBuilder MusicSeekPrev15S()
+		public ButtonBuilder MusicSeekNext10S()
 		{
-			return new ButtonBuilder().WithLabel("⟲ 15").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SEEK_P15);
-		}
-
-		public ButtonBuilder MusicSeekNext5S()
-		{
-			return new ButtonBuilder().WithLabel("5 ⟳").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SEEK_N5);
-		}
-
-		public ButtonBuilder MusicSeekNext15S()
-		{
-			return new ButtonBuilder().WithLabel("15 ⟳").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SEEK_N15);
+			return new ButtonBuilder().WithEmote(Emote.Parse("<:seeknext:1226454246543589386>")).WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_SEEK_N10);
 		}
 
 		public ButtonBuilder MusicStop()
 		{
-			return new ButtonBuilder().WithLabel("◼︎").WithStyle(ButtonStyle.Danger).WithCustomId(PREFIX_ID + Helper.ACTION_STOP);
+			return new ButtonBuilder().WithEmote(Emote.Parse("<:stop:1131135513525502014>")).WithStyle(ButtonStyle.Danger).WithCustomId(PREFIX_ID + Helper.ACTION_STOP);
 		}
 
 		public ButtonBuilder MusicQueue()
 		{
-			return new ButtonBuilder().WithLabel("☰").WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_QUEUE);
+			return new ButtonBuilder().WithEmote(Emote.Parse("<:queue:1226454244052439082>")).WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_QUEUE);
+		}
+
+		public ButtonBuilder MusicLyrics()
+		{
+			return new ButtonBuilder().WithEmote(Emote.Parse("<:lyrics:1226454241980186664>")).WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_LYRICS);
 		}
 	}
 }

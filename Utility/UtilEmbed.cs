@@ -22,10 +22,13 @@ namespace TLDBot.Utility
 
 			embed.WithAuthor(new EmbedAuthorBuilder { Name = track.Author })
 				.WithTitle(track.Title).WithUrl(track.Uri!.OriginalString)
-				.WithImageUrl(track.ArtworkUri!.OriginalString)
+				.WithThumbnailUrl(track.ArtworkUri?.OriginalString)
 				.AddField("Duration", track.Duration, inline: true)
 				.AddField("Loop", player.RepeatMode, inline: true)
 				.AddField("Shuffle", player.Shuffle, inline: true)
+				.AddField("Volume", (player.Volume * 100) + "%", inline: true)
+				.AddField("Queue", player.Queue.Count + 1, inline: true)
+				.AddField("Player Status", player.State, inline: true)
 				.WithColor(Color.Red)
 				.WithFooter(new EmbedFooterBuilder { Text = "Author by " + user.Username, IconUrl = user.GetAvatarUrl() })
 				.WithCurrentTimestamp();
