@@ -82,6 +82,22 @@ namespace TLDBot.Utility
 			await UpdatePlayingAsync(eventArgs.Player, eventArgs.Track, isUpdateEmbed: true).ConfigureAwait(false);
 		}
 
+		public static async Task TrackEndedAsync(object sender, TrackEndedEventArgs eventArgs)
+		{
+			GuildPlayerMessage? playerMessage;
+			GuildPlayer.TryGetValue(eventArgs.Player.GuildId, out playerMessage);
+
+			if (playerMessage is not null)
+			{
+				if (eventArgs.Player.State is not PlayerState.NotPlaying) return;
+
+				await playerMessage.Channel.ModifyMessageAsync(playerMessage.MessageId, msg => {
+					msg.Embed = UtilEmbed.Playing(playerMessage.VotePlayer, eventArgs.Track, playerMessage.User);
+					msg.Components = new ComponentBuilder().Build();
+				}).ConfigureAwait(false);
+			}
+		}
+
 		public static async Task UpdatePlayingAsync(ILavalinkPlayer player, LavalinkTrack track, bool isUpdateEmbed = false, bool isUpdateComponent = false)
 		{
 			GuildPlayerMessage? playerMessage;

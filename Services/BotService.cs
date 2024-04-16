@@ -37,6 +37,7 @@ namespace TLDBot.Services
 			_Client.Log += Log;
 
 			_Provider.GetService<IAudioService>()!.TrackStarted += Helper.TrackStartedAsync;
+			_Provider.GetService<IAudioService>()!.TrackEnded += Helper.TrackEndedAsync;
 			_Provider.GetService<IAudioService>()!.Players.PlayerDestroyed += Helper.PlayerDestroyedAsync;
 
 			await _Client.LoginAsync(TokenType.Bot, _Config["DiscordToken"]).ConfigureAwait(false);
@@ -51,6 +52,7 @@ namespace TLDBot.Services
 			_Client.Log -= Log;
 
 			_Provider.GetService<IAudioService>()!.TrackStarted -= Helper.TrackStartedAsync;
+			_Provider.GetService<IAudioService>()!.TrackEnded -= Helper.TrackEndedAsync;
 			_Provider.GetService<IAudioService>()!.Players.PlayerDestroyed -= Helper.PlayerDestroyedAsync;
 
 			Lavalink.Stop();

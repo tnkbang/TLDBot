@@ -76,7 +76,7 @@ namespace TLDBot.Handlers
 
 			if (position is 0)
 			{
-				await FollowupAsync(components: Helper.CreateButtonsMusicPlaying(isPause: false), embed: UtilEmbed.Playing(player, track, _interactionContext!.User), isPlaying: true).ConfigureAwait(false);
+				await FollowupAsync(components: Helper.CreateButtonsMusicPlaying(isPause: false), embed: UtilEmbed.Playing(player, track, _interactionContext!.User), isPlaying: true, isUpdateEmbed: true).ConfigureAwait(false);
 			}
 			else
 			{
@@ -332,7 +332,7 @@ namespace TLDBot.Handlers
 
 				if (isUpdateEmbed)
 				{
-					await Helper.UpdatePlayingAsync(_playerResult.Player!, _playerResult.Player!.CurrentTrack!, isUpdateEmbed).ConfigureAwait(false);
+					await Helper.UpdatePlayingAsync(_playerResult.Player!, _playerResult.Player!.CurrentTrack!, isUpdateEmbed: isUpdateEmbed, isUpdateComponent: true).ConfigureAwait(false);
 				}
 
 				followupMessage = await _interactionContext.Interaction
