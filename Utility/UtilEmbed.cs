@@ -41,7 +41,7 @@ namespace TLDBot.Utility
 		{
 			EmbedBuilder embed = new EmbedBuilder();
 
-			embed.WithTitle((player.Queue.Count + 1) + " track in Queue")
+			embed.WithTitle("Queue: " + (player.Queue.Count + 1) + " track")
 				.AddField("Track playing", player.CurrentTrack?.Title, inline: false)
 				.AddField("Track in queue", GenerateListQueue(player.Queue), inline: false)
 				.WithColor(Color.Red).WithCurrentTimestamp();
