@@ -21,7 +21,8 @@ namespace TLDBot.Utility
 		public static readonly string ACTION_QUEUE		= "Queue";
 		public static readonly string ACTION_LYRICS		= "Lyrics";
 
-		public static readonly int SECOND_WAIT = 10;
+		public static readonly int SECOND_WAIT	= 10;
+		public static readonly int QUEUE_WAIT	= 20;
 
 		public static Dictionary<ulong, GuildPlayerMessage> GuildPlayer = new Dictionary<ulong, GuildPlayerMessage>();
 

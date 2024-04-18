@@ -67,5 +67,8 @@ namespace TLDBot.Modules
 
 		[SlashCommand("resume", description: "Resumes the player.", runMode: RunMode.Async)]
 		public async Task ResumeAsync() => await _musicHandler!.ResumeAsync().ConfigureAwait(false);
+
+		[SlashCommand("queue", description: "Queue in the player.", runMode: RunMode.Async)]
+		public async Task QueueAsync() => await _musicHandler!.QueueAsync().ConfigureAwait(false);
 	}
 }

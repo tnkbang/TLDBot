@@ -53,5 +53,7 @@ namespace TLDBot.Modules
 		public async Task PauseAsync() => await _musicHandler.PauseAsync().ConfigureAwait(false);
 
 		public async Task ResumeAsync() => await _musicHandler.ResumeAsync().ConfigureAwait(false);
+
+		public async Task QueueAsync() => await _musicHandler.QueueAsync().ConfigureAwait(false);
 	}
 }

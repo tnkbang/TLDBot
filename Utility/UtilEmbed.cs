@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using Lavalink4NET.Players.Queued;
 using Lavalink4NET.Players.Vote;
 using Lavalink4NET.Tracks;
 
@@ -34,6 +35,37 @@ namespace TLDBot.Utility
 				.WithCurrentTimestamp();
 
 			return embed.Build();
+		}
+
+		public static Embed Queue(VoteLavalinkPlayer player)
+		{
+			EmbedBuilder embed = new EmbedBuilder();
+
+			embed.WithTitle((player.Queue.Count + 1) + " track in Queue")
+				.AddField("Track playing", player.CurrentTrack?.Title, inline: false)
+				.AddField("Track in queue", GenerateListQueue(player.Queue), inline: false)
+				.WithColor(Color.Red).WithCurrentTimestamp();
+
+			return embed.Build();
+		}
+
+		private static string GenerateListQueue(ITrackQueue queue)
+		{
+			if (queue is null || queue.Count is 0)
+			{
+				return "No track in queue.";
+			}
+
+			string rsl = "";
+			int count = 1;
+			foreach(var item in queue)
+			{
+				if (rsl is not "") rsl += Environment.NewLine;
+				rsl += count + ". " + item.Track?.Title;
+				count++;
+			}
+
+			return rsl;
 		}
 
 		public static Embed Info(string? title = null, string? description = null)

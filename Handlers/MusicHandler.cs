@@ -269,6 +269,18 @@ namespace TLDBot.Handlers
 		}
 
 		/// <summary>
+		/// Get queue in the player
+		/// </summary>
+		/// <returns></returns>
+		public async Task QueueAsync()
+		{
+			VoteLavalinkPlayer? player = await GetPlayerAsync().ConfigureAwait(false);
+			if (player is null) return;
+
+			await RespondAsync(Helper.QUEUE_WAIT, embed: UtilEmbed.Queue(player)).ConfigureAwait(false);
+		}
+
+		/// <summary>
 		/// Gets the guild player asynchronously.
 		/// </summary>
 		/// <param name="connectToVoiceChannel">A value indicating whether to connect to a voice channel</param>
@@ -350,23 +362,30 @@ namespace TLDBot.Handlers
 				await Helper.UpdatePlayingAsync(_playerResult.Player!, _playerResult.Player!.CurrentTrack!, isUpdateEmbed, isUpdateComponent).ConfigureAwait(false);
 			}
 
+			await RespondAsync(wait: Helper.SECOND_WAIT, embed: UtilEmbed.Info(title, message)).ConfigureAwait(false);
+		}
+
+		private async Task RespondAsync(int wait, Embed? embed = null, MessageComponent? components = null)
+		{
+			if (embed is null && components is null) return;
+
 			if (_interactionContext is not null)
 			{
-				await _interactionContext.Interaction.RespondAsync(embed: UtilEmbed.Info(title, message)).ConfigureAwait(false);
+				await _interactionContext.Interaction.RespondAsync(embed: embed, components: components).ConfigureAwait(false);
 
-				await Task.Delay(TimeSpan.FromSeconds(Helper.SECOND_WAIT)).ConfigureAwait(false);
+				await Task.Delay(TimeSpan.FromSeconds(wait)).ConfigureAwait(false);
 				await _interactionContext.Interaction.DeleteOriginalResponseAsync().ConfigureAwait(false);
 			}
 
-			if(_messageComponent is not null)
+			if (_messageComponent is not null)
 			{
-				await _messageComponent.RespondAsync(embed: UtilEmbed.Info(title, message)).ConfigureAwait(false);
+				await _messageComponent.RespondAsync(embed: embed, components: components).ConfigureAwait(false);
 
 				await Task.Delay(TimeSpan.FromSeconds(Helper.SECOND_WAIT)).ConfigureAwait(false);
 				await _messageComponent.DeleteOriginalResponseAsync().ConfigureAwait(false);
 			}
 		}
-		
+
 		private async Task DeferAsync()
 		{
 			if(_interactionContext is not null)
