@@ -20,6 +20,7 @@ namespace TLDBot.Utility
 		public static readonly string ACTION_STOP		= "Stop";
 		public static readonly string ACTION_QUEUE		= "Queue";
 		public static readonly string ACTION_LYRICS		= "Lyrics";
+		public static readonly string ACTION_POSITION	= "Position";
 
 		public static readonly int SECOND_WAIT	= 10;
 		public static readonly int QUEUE_WAIT	= 20;
@@ -67,7 +68,7 @@ namespace TLDBot.Utility
 			ComponentBuilder builder = new ComponentBuilder();
 			builder = CreateButtons(builder, [isPause ? ACTION_RESUME : ACTION_PAUSE, ACTION_LOOP, ACTION_SHUFFLE], ButtonComponents.TYPE_MUSIC);
 			builder = CreateButtons(builder, [ACTION_SEEK_P10, ACTION_STOP, ACTION_SEEK_N10], ButtonComponents.TYPE_MUSIC, 1);
-			builder = CreateButtons(builder, [ACTION_SKIP, ACTION_QUEUE, ACTION_LYRICS], ButtonComponents.TYPE_MUSIC, 2);
+			builder = CreateButtons(builder, [ACTION_SKIP, ACTION_QUEUE, ACTION_POSITION], ButtonComponents.TYPE_MUSIC, 2);
 
 			return builder.Build();
 		}

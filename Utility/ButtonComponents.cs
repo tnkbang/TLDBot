@@ -77,5 +77,10 @@ namespace TLDBot.Utility
 		{
 			return new ButtonBuilder().WithEmote(Emote.Parse("<:lyrics:1226454241980186664>")).WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_LYRICS);
 		}
+		
+		public ButtonBuilder MusicPosition()
+		{
+			return new ButtonBuilder().WithEmote(Emote.Parse("<:position:1233316227674275860>")).WithStyle(ButtonStyle.Secondary).WithCustomId(PREFIX_ID + Helper.ACTION_POSITION);
+		}
 	}
 }
