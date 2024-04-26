@@ -93,7 +93,7 @@ namespace TLDBot.Services
 				SocketCommandContext commandContext = new SocketCommandContext(_Client, messageComponent.Message);
 
 				ButtonModule buttonModule = new ButtonModule(_Provider.GetService<IAudioService>()!, messageComponent, commandContext);
-				await buttonModule.ExecuteCommandAsync(messageComponent.Data.CustomId.Substring(ButtonComponents.PREFIX_ID.Length)).ConfigureAwait(false);
+				await buttonModule.ExecuteCommandAsync(messageComponent.Data.CustomId).ConfigureAwait(false);
 			}
 		}
 
