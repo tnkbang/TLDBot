@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using Lavalink4NET.Players;
 using Lavalink4NET.Players.Queued;
 using Lavalink4NET.Players.Vote;
 using Lavalink4NET.Tracks;
@@ -28,7 +29,7 @@ namespace TLDBot.Utility
 				.AddField("Loop", player.RepeatMode, inline: true)
 				.AddField("Shuffle", player.Shuffle, inline: true)
 				.AddField("Volume", (player.Volume * 100) + "%", inline: true)
-				.AddField("Queue", player.Queue.Count + 1, inline: true)
+				.AddField("Queue", player.State is PlayerState.NotPlaying ? player.Queue.Count : player.Queue.Count + 1, inline: true)
 				.AddField("Player Status", player.State, inline: true)
 				.WithColor(Color.Red)
 				.WithFooter(new EmbedFooterBuilder { Text = "Author by " + user.Username, IconUrl = user.GetAvatarUrl() })
