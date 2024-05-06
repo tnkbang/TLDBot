@@ -29,14 +29,6 @@ namespace TLDBot.Handlers
 			_commandContext = commandContext;
 		}
 
-		public SocketUser _currentUser
-		{
-			get
-			{
-				return _commandContext is not null ? _commandContext.User : _interactionContext!.User;
-			}
-		}
-
 		/// <summary>
 		/// Disconnects from the current voice channel connected to asynchronously.
 		/// </summary>
@@ -274,7 +266,7 @@ namespace TLDBot.Handlers
 		/// <returns></returns>
 		public async Task QueueAsync()
 		{
-			VoteLavalinkPlayer? player = await GetPlayerAsync().ConfigureAwait(false);
+			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false).ConfigureAwait(false);
 			if (player is null) return;
 
 			await RespondAsync(Helper.QUEUE_WAIT, embed: UtilEmbed.Queue(player)).ConfigureAwait(false);
