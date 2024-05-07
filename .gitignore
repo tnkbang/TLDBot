@@ -407,3 +407,4 @@ Directory.Build.props
 
 # Order file not commit
 appsettings.json
+Configuration.json

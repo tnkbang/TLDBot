@@ -1,0 +1,16 @@
+﻿{
+	"description": {
+		"disconnect": "Disconnects from the current voice channel connected to",
+		"play": "Plays music with name or url.",
+		"position": "Shows the track position",
+		"stop": "Stops the current track",
+		"volume": "Sets the player volume (0 - 1000%)",
+		"skip": "Skips the current track",
+		"loop": "Loop/Unloop the current track/queue",
+		"shuffle": "Shuffle/Un shuffle the current queue",
+		"seek": "Seek the current track (hh:mm:ss)",
+		"pause": "Pauses the player.",
+		"resume": "Resumes the player.",
+		"queue": "Queue in the player."
+	}
+}

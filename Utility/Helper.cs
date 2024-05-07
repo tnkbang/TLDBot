@@ -3,6 +3,7 @@ using Discord;
 using Lavalink4NET.Events.Players;
 using Lavalink4NET.Tracks;
 using Lavalink4NET.Players;
+using Newtonsoft.Json;
 
 namespace TLDBot.Utility
 {
@@ -40,6 +41,24 @@ namespace TLDBot.Utility
 					LogLevel = LogSeverity.Info
 				});
 			}
+		}
+
+		public static dynamic CommandInfo
+		{
+			get
+			{
+				using (StreamReader r = new StreamReader("Json/CommandInfo.json"))
+				{
+					string json = r.ReadToEnd();
+					dynamic data = JsonConvert.DeserializeObject(json)!;
+					return data;
+				}
+			}
+		}
+
+		public static string GetDescription(string cmd)
+		{
+			return CommandInfo.description[cmd] ?? "Command not description.";
 		}
 
 		/// <summary>

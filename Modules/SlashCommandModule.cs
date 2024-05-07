@@ -32,7 +32,7 @@ namespace TLDBot.Modules
 			return Task.CompletedTask;
 		}
 
-		[SlashCommand("disconnect", "Disconnects from the current voice channel connected to", runMode: RunMode.Async)]
+		[SlashCommand("disconnect", description: "Disconnects from the current voice channel connected to", runMode: RunMode.Async)]
 		public async Task DisconnectAsync() => await _musicHandler!.DisconnectAsync().ConfigureAwait(false);
 
 		[SlashCommand("play", description: "Plays music", runMode: RunMode.Async)]
