@@ -8,7 +8,8 @@ namespace TLDBot.Modules
 {
 	public class ButtonModule
 	{
-		private readonly MusicHandler _musicHandler;
+		private readonly MusicHandler? _musicHandler = null;
+		private readonly HooHeyHowHandler? _heyHowHandler = null;
 
 		public ButtonModule(IAudioService audioService, SocketMessageComponent messageComponent, SocketCommandContext context)
 		{
@@ -17,6 +18,12 @@ namespace TLDBot.Modules
 			ArgumentNullException.ThrowIfNull(context);
 
 			_musicHandler = new MusicHandler(audioService, messageComponent: messageComponent, commandContext: context);
+			_heyHowHandler = new HooHeyHowHandler(messageComponent, context);
+		}
+
+		public ButtonModule() 
+		{
+			_heyHowHandler = new HooHeyHowHandler();
 		}
 
 		public async Task ExecuteCommandAsync(string cmdName)
@@ -34,26 +41,42 @@ namespace TLDBot.Modules
 			await Task.CompletedTask;
 		}
 
-		public async Task DisconnectAsync() => await _musicHandler.DisconnectAsync().ConfigureAwait(false);
+		#region Music
+		public async Task DisconnectAsync() => await _musicHandler!.DisconnectAsync().ConfigureAwait(false);
 
-		public async Task PositionAsync() => await _musicHandler.PositionAsync().ConfigureAwait(false);
+		public async Task PositionAsync() => await _musicHandler!.PositionAsync().ConfigureAwait(false);
 
-		public async Task StopAsync() => await _musicHandler.StopAsync().ConfigureAwait(false);
+		public async Task StopAsync() => await _musicHandler!.StopAsync().ConfigureAwait(false);
 
-		public async Task SkipAsync() => await _musicHandler.SkipAsync().ConfigureAwait(false);
+		public async Task SkipAsync() => await _musicHandler!.SkipAsync().ConfigureAwait(false);
 
-		public async Task LoopAsync() => await _musicHandler.LoopAsync().ConfigureAwait(false);
+		public async Task LoopAsync() => await _musicHandler!.LoopAsync().ConfigureAwait(false);
 
-		public async Task ShuffleAsync() => await _musicHandler.ShuffleAsync().ConfigureAwait(false);
+		public async Task ShuffleAsync() => await _musicHandler!.ShuffleAsync().ConfigureAwait(false);
 
-		public async Task SeekPrev10SAsync() => await _musicHandler.SeekAsync(new TimeSpan(00, 00, -10)).ConfigureAwait(false);
+		public async Task SeekPrev10SAsync() => await _musicHandler!.SeekAsync(new TimeSpan(00, 00, -10)).ConfigureAwait(false);
 
-		public async Task SeekNext10SAsync() => await _musicHandler.SeekAsync(new TimeSpan(00, 00, 10)).ConfigureAwait(false);
+		public async Task SeekNext10SAsync() => await _musicHandler!.SeekAsync(new TimeSpan(00, 00, 10)).ConfigureAwait(false);
 
-		public async Task PauseAsync() => await _musicHandler.PauseAsync().ConfigureAwait(false);
+		public async Task PauseAsync() => await _musicHandler!.PauseAsync().ConfigureAwait(false);
 
-		public async Task ResumeAsync() => await _musicHandler.ResumeAsync().ConfigureAwait(false);
+		public async Task ResumeAsync() => await _musicHandler!.ResumeAsync().ConfigureAwait(false);
 
-		public async Task QueueAsync() => await _musicHandler.QueueAsync().ConfigureAwait(false);
+		public async Task QueueAsync() => await _musicHandler!.QueueAsync().ConfigureAwait(false);
+		#endregion
+
+		#region Game HooHeyHow
+		public async Task DeerAsync() => await _heyHowHandler!.RespondAsync(0).ConfigureAwait(false);
+
+		public async Task CalabashAsync() => await _heyHowHandler!.RespondAsync(1).ConfigureAwait(false);
+
+		public async Task ChickenAsync() => await _heyHowHandler!.RespondAsync(2).ConfigureAwait(false);
+
+		public async Task FishAsync() => await _heyHowHandler!.RespondAsync(3).ConfigureAwait(false);
+
+		public async Task CrabAsync() => await _heyHowHandler!.RespondAsync(4).ConfigureAwait(false);
+
+		public async Task LobsterAsync() => await _heyHowHandler!.RespondAsync(5).ConfigureAwait(false);
+		#endregion
 	}
 }

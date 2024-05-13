@@ -6,6 +6,7 @@ using TLDBot.Utility;
 using TLDBot.Modules;
 using Lavalink4NET;
 using Discord.Commands;
+using TLDBot.Handlers;
 
 namespace TLDBot.Services
 {
@@ -74,6 +75,12 @@ namespace TLDBot.Services
 			if (message.Content.Contains($"<@{_Client.CurrentUser.Id}>"))
 			{
 				await message.Channel.SendMessageAsync("Please using slash commands. Prefix commands is development....");
+			}
+
+			if(message.Content.Contains(".test"))
+			{
+				HooHeyHowHandler hooHeyHowHandler = new HooHeyHowHandler();
+				await message.Channel.SendMessageAsync(embed: hooHeyHowHandler.Start(), components: hooHeyHowHandler.Buttons());
 			}
 		}
 

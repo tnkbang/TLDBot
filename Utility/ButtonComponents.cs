@@ -1,5 +1,6 @@
 ﻿using Discord;
 using System.Reflection;
+using TLDBot.Handlers;
 
 namespace TLDBot.Utility
 {
@@ -8,6 +9,7 @@ namespace TLDBot.Utility
 		public ButtonComponents() { }
 
 		public static readonly string TYPE_MUSIC = "Music";
+		public static readonly string TYPE_GAME = "Game";
 
 		/// <summary>
 		/// Get button action style
@@ -27,59 +29,93 @@ namespace TLDBot.Utility
 			return new ButtonBuilder();
 		}
 
+		#region Music
 		public ButtonBuilder MusicPause()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse("<:pause:1131135530348855297>")).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_PAUSE);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Pause)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_PAUSE);
 		}
 
 		public ButtonBuilder MusicResume()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse("<:play:1131135527022768188>")).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_RESUME);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Play)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_RESUME);
 		}
 
 		public ButtonBuilder MusicLoop()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse("<:repeat:1131135523742826596>")).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_LOOP);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Loop)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_LOOP);
 		}
 
 		public ButtonBuilder MusicSkip()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse("<:next:1131135532542480394>")).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_SKIP);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Next)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_SKIP);
 		}
 
 		public ButtonBuilder MusicShuffle()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse("<:shuffle:1131135518390894673>")).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_SHUFFLE);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Shuffle)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_SHUFFLE);
 		}
 
 		public ButtonBuilder MusicSeekPrev10S()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse("<:seekprev:1226454248557121547>")).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_SEEK_P10);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.SeekPrev)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_SEEK_P10);
 		}
 
 		public ButtonBuilder MusicSeekNext10S()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse("<:seeknext:1226454246543589386>")).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_SEEK_N10);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.SeekNext)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_SEEK_N10);
 		}
 
 		public ButtonBuilder MusicStop()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse("<:stop:1131135513525502014>")).WithStyle(ButtonStyle.Danger).WithCustomId(Helper.ACTION_STOP);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Stop)).WithStyle(ButtonStyle.Danger).WithCustomId(Helper.ACTION_STOP);
 		}
 
 		public ButtonBuilder MusicQueue()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse("<:queue:1226454244052439082>")).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_QUEUE);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Queue)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_QUEUE);
 		}
 
 		public ButtonBuilder MusicLyrics()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse("<:lyrics:1226454241980186664>")).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_LYRICS);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Lyrics)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_LYRICS);
 		}
 		
 		public ButtonBuilder MusicPosition()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse("<:position:1233316227674275860>")).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_POSITION);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Position)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_POSITION);
 		}
+		#endregion
+
+		#region Game HooHeyHow
+		public ButtonBuilder GameDeer()
+		{
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Deer)).WithStyle(ButtonStyle.Secondary).WithCustomId(HooHeyHowHandler.DEER);
+		}
+
+		public ButtonBuilder GameCalabash()
+		{
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Calabash)).WithStyle(ButtonStyle.Secondary).WithCustomId(HooHeyHowHandler.CALABASH);
+		}
+
+		public ButtonBuilder GameChicken()
+		{
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Chicken)).WithStyle(ButtonStyle.Secondary).WithCustomId(HooHeyHowHandler.CHICKEN);
+		}
+
+		public ButtonBuilder GameFish()
+		{
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Fish)).WithStyle(ButtonStyle.Secondary).WithCustomId(HooHeyHowHandler.FISH);
+		}
+
+		public ButtonBuilder GameCrab()
+		{
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Crab)).WithStyle(ButtonStyle.Secondary).WithCustomId(HooHeyHowHandler.CRAB);
+		}
+
+		public ButtonBuilder GameLobster()
+		{
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Lobster)).WithStyle(ButtonStyle.Secondary).WithCustomId(HooHeyHowHandler.LOBSTER);
+		}
+		#endregion
 	}
 }
