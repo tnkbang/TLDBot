@@ -56,6 +56,19 @@ namespace TLDBot.Utility
 			}
 		}
 
+		public static dynamic HooHeyHow
+		{
+			get
+			{
+				using (StreamReader r = new StreamReader("Json/HooHeyHow.json"))
+				{
+					string json = r.ReadToEnd();
+					dynamic data = JsonConvert.DeserializeObject(json)!;
+					return data;
+				}
+			}
+		}
+
 		public static string GetDescription(string cmd)
 		{
 			return CommandInfo.description[cmd] ?? "Command not description.";

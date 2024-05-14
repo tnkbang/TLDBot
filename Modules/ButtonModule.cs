@@ -18,7 +18,7 @@ namespace TLDBot.Modules
 			ArgumentNullException.ThrowIfNull(context);
 
 			_musicHandler = new MusicHandler(audioService, messageComponent: messageComponent, commandContext: context);
-			_heyHowHandler = new HooHeyHowHandler(messageComponent, context);
+			_heyHowHandler = new HooHeyHowHandler(messageComponent);
 		}
 
 		public ButtonModule() 
@@ -66,17 +66,17 @@ namespace TLDBot.Modules
 		#endregion
 
 		#region Game HooHeyHow
-		public async Task DeerAsync() => await _heyHowHandler!.RespondAsync(0).ConfigureAwait(false);
+		public async Task DeerAsync() => await _heyHowHandler!.RespondAsync(HooHeyHowHandler.DEER).ConfigureAwait(false);
 
-		public async Task CalabashAsync() => await _heyHowHandler!.RespondAsync(1).ConfigureAwait(false);
+		public async Task CalabashAsync() => await _heyHowHandler!.RespondAsync(HooHeyHowHandler.CALABASH).ConfigureAwait(false);
 
-		public async Task ChickenAsync() => await _heyHowHandler!.RespondAsync(2).ConfigureAwait(false);
+		public async Task ChickenAsync() => await _heyHowHandler!.RespondAsync(HooHeyHowHandler.CHICKEN).ConfigureAwait(false);
 
-		public async Task FishAsync() => await _heyHowHandler!.RespondAsync(3).ConfigureAwait(false);
+		public async Task FishAsync() => await _heyHowHandler!.RespondAsync(HooHeyHowHandler.FISH).ConfigureAwait(false);
 
-		public async Task CrabAsync() => await _heyHowHandler!.RespondAsync(4).ConfigureAwait(false);
+		public async Task CrabAsync() => await _heyHowHandler!.RespondAsync(HooHeyHowHandler.CRAB).ConfigureAwait(false);
 
-		public async Task LobsterAsync() => await _heyHowHandler!.RespondAsync(5).ConfigureAwait(false);
+		public async Task LobsterAsync() => await _heyHowHandler!.RespondAsync(HooHeyHowHandler.LOBSTER).ConfigureAwait(false);
 		#endregion
 	}
 }

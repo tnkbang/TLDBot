@@ -11,6 +11,7 @@ namespace TLDBot.Utility
 	{
 		public UtilEmbed() { }
 
+		#region Music
 		/// <summary>
 		/// Create embed message playing
 		/// </summary>
@@ -77,5 +78,48 @@ namespace TLDBot.Utility
 
 			return embed.Build();
 		}
+		#endregion
+
+		#region Game HooHeyHow
+		public static Embed H3Start(SocketUser user, string description)
+		{
+			EmbedBuilder embed = new EmbedBuilder();
+			embed.WithAuthor(H3Author());
+			embed.WithDescription(description);
+			embed.WithFooter(H3Footer(user));
+			embed.WithColor(Color.LightOrange).WithCurrentTimestamp();
+
+			return embed.Build();
+		}
+
+		private static EmbedAuthorBuilder H3Author()
+		{
+			EmbedAuthorBuilder author = new EmbedAuthorBuilder();
+			author.WithIconUrl((string)Helper.HooHeyHow.StartIcon);
+			author.WithName((string)Helper.HooHeyHow.StartTitle);
+			return author;
+		}
+
+		private static EmbedFooterBuilder H3Footer(SocketUser user)
+		{
+			EmbedFooterBuilder footer = new EmbedFooterBuilder();
+			footer.WithText(user.GlobalName);
+			footer.WithIconUrl(user.GetAvatarUrl());
+			return footer;
+		}
+
+		public static Embed H3Process(string title, string thumbnail, string description, string strResult, Color color, SocketUser user)
+		{
+			EmbedBuilder embed = new EmbedBuilder();
+			embed.WithTitle(title);
+			embed.WithThumbnailUrl(thumbnail);
+			embed.WithDescription(description);
+			embed.AddField((string)(Helper.HooHeyHow.Result), strResult);
+			embed.WithFooter(H3Footer(user));
+			embed.WithColor(color).WithCurrentTimestamp();
+
+			return embed.Build();
+		}
+		#endregion
 	}
 }

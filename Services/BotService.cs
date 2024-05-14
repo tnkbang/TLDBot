@@ -77,10 +77,9 @@ namespace TLDBot.Services
 				await message.Channel.SendMessageAsync("Please using slash commands. Prefix commands is development....");
 			}
 
-			if(message.Content.Contains(".test"))
+			if(message.Content.Contains(".baucua") || message.Content.Contains(".bc") || message.Content.Contains(".hooheyhow"))
 			{
-				HooHeyHowHandler hooHeyHowHandler = new HooHeyHowHandler();
-				await message.Channel.SendMessageAsync(embed: hooHeyHowHandler.Start(), components: hooHeyHowHandler.Buttons());
+				await message.Channel.SendMessageAsync(embed: UtilEmbed.H3Start(message.Author, HooHeyHowHandler.StartDes), components: HooHeyHowHandler.Component);
 			}
 		}
 

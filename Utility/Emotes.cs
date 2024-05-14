@@ -1,4 +1,6 @@
-﻿namespace TLDBot.Utility
+﻿using System.Reflection;
+
+namespace TLDBot.Utility
 {
 	public class Emotes
 	{
@@ -23,5 +25,11 @@
 		public static readonly string Fish			= "<:fish:1237917798295146596>";
 		public static readonly string Crab			= "<:crab:1237917791827525722>";
 		public static readonly string Lobster		= "<:lobster:1237917801293942834>";
+
+		public static string GetByName(string name)
+		{
+			FieldInfo? field = typeof(Emotes).GetField(name);
+			return field?.GetValue(null)?.ToString() ?? throw new ArgumentException("Not found emote.");
+		}
 	}
 }
