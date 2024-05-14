@@ -160,12 +160,28 @@ namespace TLDBot.Handlers
 		public async Task RespondAsync(string choice)
 		{
 			if (_messageComponent is null) return;
+			if (await IsUserStart() is false) return;
 
-			await _messageComponent!.UpdateAsync(msg =>
+			await _messageComponent.UpdateAsync(msg =>
 			{
 				msg.Embed = GetEmbedProcess(choice, _messageComponent.User);
 				msg.Components = new ComponentBuilder().Build();
 			});
+		}
+
+		/// <summary>
+		/// Check user create this message game
+		/// </summary>
+		/// <returns></returns>
+		public async Task<bool> IsUserStart()
+		{
+			if(_messageComponent is null) return false;
+
+			string userStart = _messageComponent.Message.Embeds.First().Footer!.Value.Text;
+			if (_messageComponent.User.GlobalName.Equals(userStart) is true) return true;
+
+			await _messageComponent.RespondAsync(text: "You aren't author this game.", ephemeral: true).ConfigureAwait(false);
+			return false;
 		}
 	}
 }
