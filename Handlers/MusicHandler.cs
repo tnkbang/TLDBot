@@ -15,6 +15,25 @@ namespace TLDBot.Handlers
 {
 	public class MusicHandler
 	{
+		//Action
+		public static readonly string PLAY		= "Play";
+		public static readonly string PAUSE		= "Pause";
+		public static readonly string RESUME	= "Resume";
+		public static readonly string LOOP		= "Loop";
+		public static readonly string SKIP		= "Skip";
+		public static readonly string SHUFFLE	= "Shuffle";
+		public static readonly string SEEK_P10	= "SeekPrev10S";
+		public static readonly string SEEK_N10	= "SeekNext10S";
+		public static readonly string STOP		= "Stop";
+		public static readonly string QUEUE		= "Queue";
+		public static readonly string LYRICS	= "Lyrics";
+		public static readonly string POSITION	= "Position";
+
+		public static readonly int SECOND_WAIT	= 10;
+		public static readonly int QUEUE_WAIT	= 20;
+
+		public static Dictionary<ulong, GuildPlayerMessage> GuildPlayer = new Dictionary<ulong, GuildPlayerMessage>();
+
 		private PlayerResult<VoteLavalinkPlayer> _playerResult;
 		private readonly IAudioService _audioService;
 		private readonly SocketInteractionContext? _interactionContext = null;
@@ -27,6 +46,22 @@ namespace TLDBot.Handlers
 			_interactionContext = interactionContext;
 			_messageComponent = messageComponent;
 			_commandContext = commandContext;
+		}
+
+		/// <summary>
+		/// Button is playing message
+		/// </summary>
+		/// <param name="isPause"></param>
+		/// <returns></returns>
+		public static MessageComponent GetComponent(bool isPause)
+		{
+
+			ComponentBuilder builder = new ComponentBuilder();
+			builder = Helper.CreateButtons(builder, [isPause ? RESUME : PAUSE, LOOP, SHUFFLE], ButtonComponents.TYPE_MUSIC);
+			builder = Helper.CreateButtons(builder, [SEEK_P10, STOP, SEEK_N10], ButtonComponents.TYPE_MUSIC, 1);
+			builder = Helper.CreateButtons(builder, [SKIP, QUEUE, POSITION], ButtonComponents.TYPE_MUSIC, 2);
+
+			return builder.Build();
 		}
 
 		/// <summary>
@@ -68,7 +103,7 @@ namespace TLDBot.Handlers
 
 			if (position is 0)
 			{
-				await FollowupAsync(components: Helper.CreateButtonsMusicPlaying(isPause: false), embed: UtilEmbed.Playing(player, track, _interactionContext!.User), isPlaying: true, isUpdateEmbed: true).ConfigureAwait(false);
+				await FollowupAsync(components: GetComponent(isPause: false), embed: UtilEmbed.Playing(player, track, _interactionContext!.User), isPlaying: true, isUpdateEmbed: true).ConfigureAwait(false);
 			}
 			else
 			{
@@ -269,7 +304,7 @@ namespace TLDBot.Handlers
 			VoteLavalinkPlayer? player = await GetPlayerAsync(connectToVoiceChannel: false).ConfigureAwait(false);
 			if (player is null) return;
 
-			await RespondAsync(Helper.QUEUE_WAIT, embed: UtilEmbed.Queue(player)).ConfigureAwait(false);
+			await RespondAsync(QUEUE_WAIT, embed: UtilEmbed.Queue(player)).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -324,12 +359,12 @@ namespace TLDBot.Handlers
 				if (isPlaying)
 				{
 					GuildPlayerMessage? playerMessage;
-					Helper.GuildPlayer.TryGetValue(_playerResult.Player!.GuildId, out playerMessage);
+					GuildPlayer.TryGetValue(_playerResult.Player!.GuildId, out playerMessage);
 
 					if (playerMessage is null)
 					{
 						followupMessage = await _interactionContext.Interaction.FollowupAsync(message, components: components, embed: embed).ConfigureAwait(false);
-						Helper.GuildPlayer.Add(_interactionContext.Guild.Id, new GuildPlayerMessage(_interactionContext.Channel, followupMessage.Id, _playerResult.Player!, _interactionContext.User));
+						GuildPlayer.Add(_interactionContext.Guild.Id, new GuildPlayerMessage(_interactionContext.Channel, followupMessage.Id, _playerResult.Player!, _interactionContext.User));
 						return;
 					}
 				}
@@ -342,7 +377,7 @@ namespace TLDBot.Handlers
 				followupMessage = await _interactionContext.Interaction
 					.FollowupAsync(embed: UtilEmbed.Info(title, isPlaying ? "Playing track: **" + _playerResult.Player!.CurrentTrack!.Title + "**" : message)).ConfigureAwait(false);
 
-				await Task.Delay(TimeSpan.FromSeconds(Helper.SECOND_WAIT)).ConfigureAwait(false);
+				await Task.Delay(TimeSpan.FromSeconds(SECOND_WAIT)).ConfigureAwait(false);
 				await followupMessage.DeleteAsync().ConfigureAwait(false);
 			}
 		}
@@ -354,7 +389,7 @@ namespace TLDBot.Handlers
 				await Helper.UpdatePlayingAsync(_playerResult.Player!, _playerResult.Player!.CurrentTrack!, isUpdateEmbed, isUpdateComponent).ConfigureAwait(false);
 			}
 
-			await RespondAsync(wait: Helper.SECOND_WAIT, embed: UtilEmbed.Info(title, message)).ConfigureAwait(false);
+			await RespondAsync(wait: SECOND_WAIT, embed: UtilEmbed.Info(title, message)).ConfigureAwait(false);
 		}
 
 		private async Task RespondAsync(int wait, Embed? embed = null, MessageComponent? components = null)
@@ -373,7 +408,7 @@ namespace TLDBot.Handlers
 			{
 				await _messageComponent.RespondAsync(embed: embed, components: components).ConfigureAwait(false);
 
-				await Task.Delay(TimeSpan.FromSeconds(Helper.SECOND_WAIT)).ConfigureAwait(false);
+				await Task.Delay(TimeSpan.FromSeconds(SECOND_WAIT)).ConfigureAwait(false);
 				await _messageComponent.DeleteOriginalResponseAsync().ConfigureAwait(false);
 			}
 		}

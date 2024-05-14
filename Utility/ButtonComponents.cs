@@ -32,57 +32,57 @@ namespace TLDBot.Utility
 		#region Music
 		public ButtonBuilder MusicPause()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Pause)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_PAUSE);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Pause)).WithStyle(ButtonStyle.Secondary).WithCustomId(MusicHandler.PAUSE);
 		}
 
 		public ButtonBuilder MusicResume()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Play)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_RESUME);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Play)).WithStyle(ButtonStyle.Secondary).WithCustomId(MusicHandler.RESUME);
 		}
 
 		public ButtonBuilder MusicLoop()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Loop)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_LOOP);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Loop)).WithStyle(ButtonStyle.Secondary).WithCustomId(MusicHandler.LOOP);
 		}
 
 		public ButtonBuilder MusicSkip()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Next)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_SKIP);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Next)).WithStyle(ButtonStyle.Secondary).WithCustomId(MusicHandler.SKIP);
 		}
 
 		public ButtonBuilder MusicShuffle()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Shuffle)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_SHUFFLE);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Shuffle)).WithStyle(ButtonStyle.Secondary).WithCustomId(MusicHandler.SHUFFLE);
 		}
 
 		public ButtonBuilder MusicSeekPrev10S()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.SeekPrev)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_SEEK_P10);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.SeekPrev)).WithStyle(ButtonStyle.Secondary).WithCustomId(MusicHandler.SEEK_P10);
 		}
 
 		public ButtonBuilder MusicSeekNext10S()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.SeekNext)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_SEEK_N10);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.SeekNext)).WithStyle(ButtonStyle.Secondary).WithCustomId(MusicHandler.SEEK_N10);
 		}
 
 		public ButtonBuilder MusicStop()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Stop)).WithStyle(ButtonStyle.Danger).WithCustomId(Helper.ACTION_STOP);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Stop)).WithStyle(ButtonStyle.Danger).WithCustomId(MusicHandler.STOP);
 		}
 
 		public ButtonBuilder MusicQueue()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Queue)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_QUEUE);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Queue)).WithStyle(ButtonStyle.Secondary).WithCustomId(MusicHandler.QUEUE);
 		}
 
 		public ButtonBuilder MusicLyrics()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Lyrics)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_LYRICS);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Lyrics)).WithStyle(ButtonStyle.Secondary).WithCustomId(MusicHandler.LYRICS);
 		}
 		
 		public ButtonBuilder MusicPosition()
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Position)).WithStyle(ButtonStyle.Secondary).WithCustomId(Helper.ACTION_POSITION);
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Position)).WithStyle(ButtonStyle.Secondary).WithCustomId(MusicHandler.POSITION);
 		}
 		#endregion
 
