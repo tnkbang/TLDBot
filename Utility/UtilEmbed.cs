@@ -23,18 +23,18 @@ namespace TLDBot.Utility
 		{
 			EmbedBuilder embed = new EmbedBuilder();
 
-			embed.WithAuthor(new EmbedAuthorBuilder { Name = track.Author })
-				.WithTitle(track.Title).WithUrl(track.Uri!.OriginalString)
-				.WithThumbnailUrl(track.ArtworkUri?.OriginalString)
-				.AddField("Duration", track.Duration, inline: true)
-				.AddField("Loop", player.RepeatMode, inline: true)
-				.AddField("Shuffle", player.Shuffle, inline: true)
-				.AddField("Volume", (player.Volume * 100) + "%", inline: true)
-				.AddField("Queue", player.State is PlayerState.NotPlaying ? player.Queue.Count : player.Queue.Count + 1, inline: true)
-				.AddField("Player Status", player.State, inline: true)
-				.WithColor(Color.Red)
-				.WithFooter(new EmbedFooterBuilder { Text = "Author by " + user.Username, IconUrl = user.GetAvatarUrl() })
-				.WithCurrentTimestamp();
+			embed.WithAuthor(new EmbedAuthorBuilder { Name = track.Author });
+			embed.WithTitle(track.Title).WithUrl(track.Uri!.OriginalString);
+			embed.WithThumbnailUrl(track.ArtworkUri?.OriginalString);
+			embed.AddField("Duration", track.Duration, inline: true);
+			embed.AddField("Loop", player.RepeatMode, inline: true);
+			embed.AddField("Shuffle", player.Shuffle, inline: true);
+			embed.AddField("Volume", (player.Volume * 100) + "%", inline: true);
+			embed.AddField("Queue", player.State is PlayerState.NotPlaying ? player.Queue.Count : player.Queue.Count + 1, inline: true);
+			embed.AddField("Player Status", player.State, inline: true);
+			embed.WithColor(Color.Red);
+			embed.WithFooter(new EmbedFooterBuilder { Text = "Author by " + user.Username, IconUrl = user.GetAvatarUrl() });
+			embed.WithCurrentTimestamp();
 
 			return embed.Build();
 		}
@@ -43,10 +43,10 @@ namespace TLDBot.Utility
 		{
 			EmbedBuilder embed = new EmbedBuilder();
 
-			embed.WithTitle("Queue: " + (player.Queue.Count + 1) + " track")
-				.AddField("Track playing", player.CurrentTrack?.Title, inline: false)
-				.AddField("Track in queue", GenerateListQueue(player.Queue), inline: false)
-				.WithColor(Color.Red).WithCurrentTimestamp();
+			embed.WithTitle("Queue: " + (player.Queue.Count + 1) + " track");
+			embed.AddField("Track playing", player.CurrentTrack?.Title, inline: false);
+			embed.AddField("Track in queue", GenerateListQueue(player.Queue), inline: false);
+			embed.WithColor(Color.Red).WithCurrentTimestamp();
 
 			return embed.Build();
 		}
