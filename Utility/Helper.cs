@@ -39,14 +39,14 @@ namespace TLDBot.Utility
 			}
 		}
 
-		public static dynamic HooHeyHow
+		public static HooHeyHow HooHeyHow
 		{
 			get
 			{
 				using (StreamReader r = new StreamReader("Json/HooHeyHow.json"))
 				{
 					string json = r.ReadToEnd();
-					dynamic data = JsonConvert.DeserializeObject(json)!;
+					HooHeyHow data = JsonConvert.DeserializeObject<HooHeyHow>(json)!;
 					return data;
 				}
 			}
