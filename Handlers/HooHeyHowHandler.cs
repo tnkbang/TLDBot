@@ -20,6 +20,8 @@ namespace TLDBot.Handlers
 
 		private static readonly string[] Item = new string[] { DEER, CALABASH, CHICKEN, FISH, CRAB, LOBSTER };
 
+		private static Dictionary<ulong, dynamic[]> UserState = new Dictionary<ulong, dynamic[]>();
+
 		//Meme thumb embed when user win
 		private static readonly string[] MemeLoser = new string[]
 		{
@@ -91,9 +93,17 @@ namespace TLDBot.Handlers
 		/// Random value choice
 		/// </summary>
 		/// <returns></returns>
-		private string GenerateChoice()
+		private string GenerateChoice(bool isChange = false)
 		{
-			return Item[new Random().Next(Item.Length)];
+			if (isChange is false) return Item[new Random().Next(Item.Length)];
+
+			string choice;
+			do
+			{
+				choice = Item[new Random().Next(Item.Length)];
+			} while (choice.Equals(_userChoice));
+
+			return choice;
 		}
 
 		/// <summary>
@@ -101,7 +111,45 @@ namespace TLDBot.Handlers
 		/// </summary>
 		private void SetValueChoice()
 		{
+			dynamic[]? state;
+			UserState.TryGetValue(_messageComponent!.User.Id, out state);
+
+			//User first using
+			if (state is null)
+			{
+				_baseChoice = [GenerateChoice(), GenerateChoice(), GenerateChoice()];
+
+				//Add user state, default is 1
+				UserState[_messageComponent!.User.Id] = [_isCorrect, 1];
+				return;
+			}
+
+			//If user wins or loses too many times (3 times)
+			if (state[1] is 3)
+			{
+				if (state[0] is true)
+				{
+					_baseChoice = [GenerateChoice(true), GenerateChoice(true), GenerateChoice(true)];
+					
+					UserState[_messageComponent!.User.Id] = [false, 1];
+					return;
+				}
+
+				//If user lose 3 round then user will win
+				_baseChoice = [GenerateChoice(), GenerateChoice(), GenerateChoice()];
+				if (_baseChoice.Contains(_userChoice) is false)
+				{
+					_baseChoice[new Random().Next(0, 2)] = _userChoice!;
+				}
+
+				UserState[_messageComponent!.User.Id] = [true, 1];
+				return;
+			}
+
 			_baseChoice = [GenerateChoice(), GenerateChoice(), GenerateChoice()];
+
+			int count = (_isCorrect == state[0]) ? (state[1] + 1) : 1;
+			UserState[_messageComponent!.User.Id] = [_isCorrect, count];
 		}
 
 		/// <summary>
@@ -110,7 +158,7 @@ namespace TLDBot.Handlers
 		/// <returns></returns>
 		private string GetChoiceResult()
 		{
-			if(_userChoice is null) return "Error";
+			if (_userChoice is null) return "Error";
 			string rsl = "";
 
 			//Joke if user choice is Calabash
@@ -174,7 +222,7 @@ namespace TLDBot.Handlers
 		/// <returns></returns>
 		public async Task<bool> IsUserStart()
 		{
-			if(_messageComponent is null) return false;
+			if (_messageComponent is null) return false;
 
 			string userStart = _messageComponent.Message.Embeds.First().Footer!.Value.Text;
 			if (_messageComponent.User.GlobalName.Equals(userStart) is true) return true;
