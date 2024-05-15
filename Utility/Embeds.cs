@@ -7,9 +7,9 @@ using Lavalink4NET.Tracks;
 
 namespace TLDBot.Utility
 {
-	public class UtilEmbed
+	public class Embeds
 	{
-		public UtilEmbed() { }
+		public Embeds() { }
 
 		#region Music
 		/// <summary>

@@ -4,9 +4,9 @@ using TLDBot.Handlers;
 
 namespace TLDBot.Utility
 {
-	public class ButtonComponents
+	public class Buttons
 	{
-		public ButtonComponents() { }
+		public Buttons() { }
 
 		public static readonly string TYPE_MUSIC = "Music";
 		public static readonly string TYPE_GAME = "Game";

@@ -79,7 +79,7 @@ namespace TLDBot.Services
 
 			if(message.Content.Contains(".baucua") || message.Content.Contains(".bc") || message.Content.Contains(".hooheyhow"))
 			{
-				await message.Channel.SendMessageAsync(embed: UtilEmbed.H3Start(message.Author, HooHeyHowHandler.StartDes), components: HooHeyHowHandler.Component);
+				await message.Channel.SendMessageAsync(embed: Embeds.H3Start(message.Author, HooHeyHowHandler.StartDes), components: HooHeyHowHandler.Component);
 			}
 		}
 

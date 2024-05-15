@@ -1,8 +1,7 @@
-﻿using Discord.Rest;
-using Discord.WebSocket;
+﻿using Discord.WebSocket;
 using Lavalink4NET.Players.Vote;
 
-namespace TLDBot.Utility
+namespace TLDBot.Structs
 {
 	public class GuildPlayerMessage
 	{

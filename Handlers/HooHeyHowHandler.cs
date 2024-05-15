@@ -1,5 +1,4 @@
 ﻿using Discord;
-using Discord.Commands;
 using Discord.WebSocket;
 using TLDBot.Utility;
 
@@ -49,8 +48,8 @@ namespace TLDBot.Handlers
 			get
 			{
 				ComponentBuilder builder = new ComponentBuilder();
-				builder = Helper.CreateButtons(builder, [DEER, CALABASH, CHICKEN], ButtonComponents.TYPE_GAME);
-				builder = Helper.CreateButtons(builder, [FISH, CRAB, LOBSTER], ButtonComponents.TYPE_GAME, 1);
+				builder = Helper.CreateButtons(builder, [DEER, CALABASH, CHICKEN], Buttons.TYPE_GAME);
+				builder = Helper.CreateButtons(builder, [FISH, CRAB, LOBSTER], Buttons.TYPE_GAME, 1);
 				return builder.Build();
 			}
 		}
@@ -149,7 +148,7 @@ namespace TLDBot.Handlers
 			string strResult = GetChoiceResult();
 			Color color = _isCorrect ? Color.Red : Color.DarkGrey;
 
-			return UtilEmbed.H3Process(title, thumbnail, description, strResult, color, user);
+			return Embeds.H3Process(title, thumbnail, description, strResult, color, user);
 		}
 
 		/// <summary>

@@ -5,6 +5,7 @@ using Lavalink4NET.Tracks;
 using Lavalink4NET.Players;
 using Newtonsoft.Json;
 using TLDBot.Handlers;
+using TLDBot.Structs;
 
 namespace TLDBot.Utility
 {
@@ -65,7 +66,7 @@ namespace TLDBot.Utility
 		{
 			foreach (string action in lstAction)
 			{
-				ButtonComponents btnC = new ButtonComponents();
+				Buttons btnC = new Buttons();
 				builder.WithButton(btnC.ExecuteButtonBuilder(action, type), row);
 			}
 
@@ -93,7 +94,7 @@ namespace TLDBot.Utility
 				if (eventArgs.Player.State is not PlayerState.NotPlaying) return;
 
 				await playerMessage.Channel.ModifyMessageAsync(playerMessage.MessageId, msg => {
-					msg.Embed = UtilEmbed.Playing(playerMessage.VotePlayer, eventArgs.Track, playerMessage.User);
+					msg.Embed = Embeds.Playing(playerMessage.VotePlayer, eventArgs.Track, playerMessage.User);
 					msg.Components = new ComponentBuilder().Build();
 				}).ConfigureAwait(false);
 			}
@@ -107,7 +108,7 @@ namespace TLDBot.Utility
 			if (playerMessage is not null)
 			{
 				await playerMessage.Channel.ModifyMessageAsync(playerMessage.MessageId, msg => {
-					msg.Embed = isUpdateEmbed ? UtilEmbed.Playing(playerMessage.VotePlayer, track, playerMessage.User) : msg.Embed;
+					msg.Embed = isUpdateEmbed ? Embeds.Playing(playerMessage.VotePlayer, track, playerMessage.User) : msg.Embed;
 					msg.Components = isUpdateComponent ? MusicHandler.GetComponent(isPause: player.State is PlayerState.Paused) : msg.Components;
 				}).ConfigureAwait(false);
 			}
