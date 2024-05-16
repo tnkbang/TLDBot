@@ -114,11 +114,11 @@ namespace TLDBot.Handlers
 			dynamic[]? state;
 			UserState.TryGetValue(_messageComponent!.User.Id, out state);
 
+			_baseChoice = [GenerateChoice(), GenerateChoice(), GenerateChoice()];
+
 			//User first using
 			if (state is null)
 			{
-				_baseChoice = [GenerateChoice(), GenerateChoice(), GenerateChoice()];
-
 				//Add user state, default is 1
 				UserState[_messageComponent!.User.Id] = [_isCorrect, 1];
 				return;
@@ -130,23 +130,13 @@ namespace TLDBot.Handlers
 				if (state[0] is true)
 				{
 					_baseChoice = [GenerateChoice(true), GenerateChoice(true), GenerateChoice(true)];
-					
-					UserState[_messageComponent!.User.Id] = [false, 1];
-					return;
 				}
-
-				//If user lose 3 round then user will win
-				_baseChoice = [GenerateChoice(), GenerateChoice(), GenerateChoice()];
-				if (_baseChoice.Contains(_userChoice) is false)
+				else if (_baseChoice.Contains(_userChoice) is false)
 				{
+					//If user lose 3 round then user will win
 					_baseChoice[new Random().Next(0, 2)] = _userChoice!;
 				}
-
-				UserState[_messageComponent!.User.Id] = [true, 1];
-				return;
 			}
-
-			_baseChoice = [GenerateChoice(), GenerateChoice(), GenerateChoice()];
 
 			int count = (_isCorrect == state[0]) ? (state[1] + 1) : 1;
 			UserState[_messageComponent!.User.Id] = [_isCorrect, count];
