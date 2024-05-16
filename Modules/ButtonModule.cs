@@ -21,11 +21,6 @@ namespace TLDBot.Modules
 			_heyHowHandler = new HooHeyHowHandler(messageComponent);
 		}
 
-		public ButtonModule() 
-		{
-			_heyHowHandler = new HooHeyHowHandler();
-		}
-
 		public async Task ExecuteCommandAsync(string cmdName)
 		{
 			ArgumentNullException.ThrowIfNull(cmdName);

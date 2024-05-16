@@ -70,17 +70,12 @@ namespace TLDBot.Services
 		{
 			var message = messageParam as SocketUserMessage;
 			if (message is null) return;
-			if(message.Interaction is not null) return;
+			if(message.Interaction is not null) return; //Not reply with message interaction
+			if (message.Author.IsBot) return; //Not reply with message has bot author
+			if (message.Content.Contains("@here") || message.Content.Contains("@everyone") || message.Type == MessageType.Reply) return; //Not reply with @here, @everyone and message reply
 
-			if (message.Content.Contains($"<@{_Client.CurrentUser.Id}>"))
-			{
-				await message.Channel.SendMessageAsync("Please using slash commands. Prefix commands is development....");
-			}
-
-			if(message.Content.Contains(".baucua") || message.Content.Contains(".bc") || message.Content.Contains(".hooheyhow"))
-			{
-				await message.Channel.SendMessageAsync(embed: Embeds.H3Start(message.Author, HooHeyHowHandler.StartDes), components: HooHeyHowHandler.Component);
-			}
+			MessageCommandModule messageCommand = new MessageCommandModule(_Client, message, _Config);
+			await messageCommand.ExecuteCommandAsync().ConfigureAwait(false);
 		}
 
 		private async Task InteractionCreated(SocketInteraction interaction)
