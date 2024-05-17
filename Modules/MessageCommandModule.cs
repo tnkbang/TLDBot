@@ -11,6 +11,7 @@ namespace TLDBot.Modules
 		private readonly SocketUserMessage _userMessage;
 		private readonly DiscordSocketClient _client;
 		private readonly IConfiguration _config;
+		private readonly AIChatHandler chatHandler;
 
 		private string _prefix
 		{
@@ -24,6 +25,7 @@ namespace TLDBot.Modules
 			_client = client;
 			_userMessage = userMessage;
 			_config = config;
+			chatHandler = new AIChatHandler();
 		}
 
 		private Queue<string> MessageToQueue()
@@ -52,6 +54,7 @@ namespace TLDBot.Modules
 
 			if (cmdName == "") return;
 			_input = String.Join(" ", queueMsg);
+			await _userMessage.Channel.TriggerTypingAsync().ConfigureAwait(false);
 
 			MethodInfo? method = GetType().GetMethod(cmdName.ToLower() + "Async");
 			if (method is not null)
@@ -60,7 +63,7 @@ namespace TLDBot.Modules
 				return;
 			}
 
-			await Task.CompletedTask;
+			await _userMessage.Channel.SendMessageAsync(text: await chatHandler.GenerateContent(cmdName + " " + _input)).ConfigureAwait(false);
 		}
 
 		public async Task bcAsync() => await _userMessage.Channel.SendMessageAsync(embed: Embeds.H3Start(_userMessage.Author, HooHeyHowHandler.StartDes),

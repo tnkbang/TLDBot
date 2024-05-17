@@ -5,6 +5,14 @@
             "Microsoft.AspNetCore": "Warning"
         }
     },
+    "Gemini": {
+        "Credentials": {
+            "ApiKey": "" // replace value with key from AI Studio
+        },
+        "ProjectId": "",
+        "Region": "us-central1",
+        "Model": "gemini-1.0-pro" // default value
+    },
     "Prefix": ".",
     "DiscordToken": ""
 }

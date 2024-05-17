@@ -1,6 +1,7 @@
 using Discord.Interactions;
 using Discord.WebSocket;
 using Lavalink4NET.Extensions;
+using Mscc.GenerativeAI.Web;
 using TLDBot.Services;
 using TLDBot.Utility;
 
@@ -16,6 +17,9 @@ Lavalink.Start();
 //Bot hosted
 builder.Configuration.AddJsonFile("Json/Configuration.json", optional: true, reloadOnChange: true);
 builder.Services.AddHostedService<BotService>();
+
+//Gemini
+builder.Services.AddGenerativeAI(builder.Configuration.GetSection("Gemini"));
 
 // Lavalink
 builder.Services.AddLavalink();
