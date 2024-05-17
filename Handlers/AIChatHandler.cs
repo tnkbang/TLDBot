@@ -17,8 +17,12 @@ namespace TLDBot.Handlers
 
 		public async Task<string> GenerateContent(string prompt)
 		{
-			GenerateContentResponse response = await Model!.GenerateContent(prompt).ConfigureAwait(false);
-			return response.Text!.ToString() ?? "Bad request";
+			try
+			{
+				GenerateContentResponse response = await Model!.GenerateContent(prompt).ConfigureAwait(false);
+				return response.Text!.ToString() ?? "Bad request";
+			}
+			catch { return "Your API key error!"; }
 		}
 	}
 }

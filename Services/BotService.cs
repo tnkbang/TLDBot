@@ -103,6 +103,7 @@ namespace TLDBot.Services
 			await _Service.AddModulesAsync(Assembly.GetExecutingAssembly(), _Provider).ConfigureAwait(false);
 			await _Service.RegisterCommandsGloballyAsync(true).ConfigureAwait(false);
 
+			if (string.IsNullOrEmpty(_Config["Gemini:Credentials:ApiKey"]) is true) return;
 			AIChatHandler.GenerateGoogleAI(_Config["Gemini:Credentials:ApiKey"]!);
 		}
 	}
