@@ -41,10 +41,15 @@ namespace TLDBot.Handlers
 		private readonly SocketMessageComponent? _messageComponent = null;
 		private readonly SocketCommandContext? _commandContext = null;
 
-		public MusicHandler(IAudioService audioService, SocketInteractionContext? interactionContext = null, SocketMessageComponent? messageComponent = null, SocketCommandContext? commandContext = null)
+		public MusicHandler(IAudioService audioService, SocketInteractionContext interactionContext)
 		{
 			_audioService = audioService;
 			_interactionContext = interactionContext;
+		}
+
+		public MusicHandler(IAudioService audioService, SocketMessageComponent messageComponent, SocketCommandContext commandContext)
+		{
+			_audioService = audioService;
 			_messageComponent = messageComponent;
 			_commandContext = commandContext;
 		}

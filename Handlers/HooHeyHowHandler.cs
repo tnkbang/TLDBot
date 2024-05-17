@@ -84,7 +84,7 @@ namespace TLDBot.Handlers
 			}
 		}
 
-		public HooHeyHowHandler(SocketMessageComponent? messageComponent = null)
+		public HooHeyHowHandler(SocketMessageComponent messageComponent)
 		{
 			_messageComponent = messageComponent;
 		}
