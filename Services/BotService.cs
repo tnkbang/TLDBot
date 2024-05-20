@@ -74,7 +74,7 @@ namespace TLDBot.Services
 			if (message.Author.IsBot) return; //Not reply with message has bot author
 			if (message.Content.Contains("@here") || message.Content.Contains("@everyone") || message.Type == MessageType.Reply) return; //Not reply with @here, @everyone and message reply
 
-			MessageCommandModule messageCommand = new MessageCommandModule(_Client, message, _Config);
+			MessageCommandModule messageCommand = new MessageCommandModule(_Client, _Provider.GetService<IAudioService>()!, message, _Config);
 			await messageCommand.ExecuteCommandAsync().ConfigureAwait(false);
 		}
 

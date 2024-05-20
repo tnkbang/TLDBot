@@ -9,8 +9,8 @@ namespace TLDBot.Handlers.Button
 {
 	public class ButtonMusicHandler : MusicHandler
 	{
-		private readonly SocketMessageComponent? _messageComponent = null;
-		private readonly SocketCommandContext? _commandContext = null;
+		private readonly SocketMessageComponent _messageComponent;
+		private readonly SocketCommandContext _commandContext;
 
 		public ButtonMusicHandler(IAudioService audioService, SocketMessageComponent messageComponent, SocketCommandContext commandContext) : base(audioService)
 		{
