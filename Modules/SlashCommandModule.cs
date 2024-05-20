@@ -1,14 +1,14 @@
 ﻿using Discord.Interactions;
 using Lavalink4NET;
 using System.Globalization;
-using TLDBot.Handlers;
+using TLDBot.Handlers.Slash;
 
 namespace TLDBot.Modules
 {
 	public sealed class SlashCommandModule : InteractionModuleBase<SocketInteractionContext>
 	{
 		private readonly IAudioService _audioService;
-		private MusicHandler? _musicHandler;
+		private SlashMusicHandler? _musicHandler;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SlashCommandModule"/> class.
@@ -28,7 +28,7 @@ namespace TLDBot.Modules
 		{
 			base.BeforeExecuteAsync(command);
 
-			_musicHandler = new MusicHandler(_audioService, interactionContext: Context);
+			_musicHandler = new SlashMusicHandler(_audioService, interactionContext: Context);
 			return Task.CompletedTask;
 		}
 

@@ -3,12 +3,13 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Lavalink4NET;
 using TLDBot.Handlers;
+using TLDBot.Handlers.Button;
 
 namespace TLDBot.Modules
 {
 	public class ButtonModule
 	{
-		private readonly MusicHandler? _musicHandler = null;
+		private readonly ButtonMusicHandler? _musicHandler = null;
 		private readonly HooHeyHowHandler? _heyHowHandler = null;
 
 		public ButtonModule(IAudioService audioService, SocketMessageComponent messageComponent, SocketCommandContext context)
@@ -17,7 +18,7 @@ namespace TLDBot.Modules
 			ArgumentNullException.ThrowIfNull(messageComponent);
 			ArgumentNullException.ThrowIfNull(context);
 
-			_musicHandler = new MusicHandler(audioService, messageComponent: messageComponent, commandContext: context);
+			_musicHandler = new ButtonMusicHandler(audioService, messageComponent: messageComponent, commandContext: context);
 			_heyHowHandler = new HooHeyHowHandler(messageComponent);
 		}
 
