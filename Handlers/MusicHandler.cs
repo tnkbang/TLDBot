@@ -63,7 +63,7 @@ namespace TLDBot.Handlers
 		{
 			await DeferAsync().ConfigureAwait(false);
 
-			VoteLavalinkPlayer? player = await GetPlayerAsync().ConfigureAwait(false);
+			VoteLavalinkPlayer? player = await GetPlayerAsync(true).ConfigureAwait(false);
 			if (player is null) return;
 
 			await player.DisconnectAsync().ConfigureAwait(false);
