@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using TLDBot.Handlers;
 using TLDBot.Handlers.Message;
-using TLDBot.Utility;
 
 namespace TLDBot.Modules
 {
@@ -18,6 +17,7 @@ namespace TLDBot.Modules
 
 		private readonly AIChatHandler chatHandler;
 		private readonly MessageMusicHandler musicHandler;
+		private readonly MessageH3Handler hooheyhowHandler;
 
 		private string _prefix
 		{
@@ -39,6 +39,7 @@ namespace TLDBot.Modules
 
 			chatHandler = new AIChatHandler();
 			musicHandler = new MessageMusicHandler(audioService, _userMessage, new SocketCommandContext(_client, _userMessage));
+			hooheyhowHandler = new MessageH3Handler(_userMessage);
 		}
 
 		private Queue<string> MessageToQueue()
@@ -107,14 +108,11 @@ namespace TLDBot.Modules
 		#endregion
 
 		#region HooHeyHow
-		public async Task bcAsync() => await _userMessage.Channel.SendMessageAsync(embed: Embeds.H3Start(_userMessage.Author, HooHeyHowHandler.StartDes),
-			components: HooHeyHowHandler.Component).ConfigureAwait(false);
+		public async Task bcAsync() => await hooheyhowHandler.RespondAsync(_input).ConfigureAwait(false);
 
-		public async Task baucuaAsync() => await _userMessage.Channel.SendMessageAsync(embed: Embeds.H3Start(_userMessage.Author, HooHeyHowHandler.StartDes),
-			components: HooHeyHowHandler.Component).ConfigureAwait(false);
+		public async Task baucuaAsync() => await hooheyhowHandler.RespondAsync(_input).ConfigureAwait(false);
 
-		public async Task hooheyhowAsync() => await _userMessage.Channel.SendMessageAsync(embed: Embeds.H3Start(_userMessage.Author, HooHeyHowHandler.StartDes),
-			components: HooHeyHowHandler.Component).ConfigureAwait(false);
+		public async Task hooheyhowAsync() => await hooheyhowHandler.RespondAsync(_input).ConfigureAwait(false);
 		#endregion
 	}
 }

@@ -9,6 +9,7 @@ namespace TLDBot.Modules
 	{
 		private readonly IAudioService _audioService;
 		private SlashMusicHandler? _musicHandler;
+		private SlashH3Handler? _hooheyhowHandler;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SlashCommandModule"/> class.
@@ -29,9 +30,12 @@ namespace TLDBot.Modules
 			base.BeforeExecuteAsync(command);
 
 			_musicHandler = new SlashMusicHandler(_audioService, interactionContext: Context);
+			_hooheyhowHandler = new SlashH3Handler(Context);
+
 			return Task.CompletedTask;
 		}
 
+		#region Music
 		[SlashCommand("disconnect", description: "Disconnects from the current voice channel connected to", runMode: RunMode.Async)]
 		public async Task DisconnectAsync() => await _musicHandler!.DisconnectAsync().ConfigureAwait(false);
 
@@ -70,5 +74,16 @@ namespace TLDBot.Modules
 
 		[SlashCommand("queue", description: "Queue in the player.", runMode: RunMode.Async)]
 		public async Task QueueAsync() => await _musicHandler!.QueueAsync().ConfigureAwait(false);
+		#endregion
+
+		#region Game HooHeyHow
+		[SlashCommand("hooheyhow", description: "The hoo hey how game", runMode: RunMode.Async)]
+		public async Task HooHeyHowAsync([Summary(description: "Choose 1 of 6 mascots")] string choice = "")
+			=> await _hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
+
+		[SlashCommand("baucua", description: "The hoo hey how game", runMode: RunMode.Async)]
+		public async Task BaucuaAsync([Summary(description: "Choose 1 of 6 mascots")] string choice = "")
+			=> await _hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
+		#endregion
 	}
 }

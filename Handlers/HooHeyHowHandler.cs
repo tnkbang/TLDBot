@@ -20,6 +20,12 @@ namespace TLDBot.Handlers
 
 		private static readonly string[] Item = new string[] { DEER, CALABASH, CHICKEN, FISH, CRAB, LOBSTER };
 
+		protected static Dictionary<string, string> strKey = new Dictionary<string, string>
+		{
+			{"nai", "Deer" }, {"bầu", "Calabash"}, {"gà", "Chicken"}, {"cá", "Fish"}, {"cua", "Crab"}, {"tôm", "Lobster"},
+			{"deer", "Deer" }, {"calabash", "Calabash"}, {"chicken", "Chicken"}, {"fish", "Fish"}, {"crab", "Crab"}, {"lobster", "Lobster"}
+		};
+
 		private static Dictionary<ulong, dynamic[]> UserState = new Dictionary<ulong, dynamic[]>();
 
 		//Meme thumb embed when user win
@@ -56,7 +62,7 @@ namespace TLDBot.Handlers
 			}
 		}
 
-		private readonly SocketMessageComponent? _messageComponent = null;
+		private readonly SocketUser User;
 
 		private string[]? _baseChoice = null;
 		private string? _userChoice = null;
@@ -84,9 +90,9 @@ namespace TLDBot.Handlers
 			}
 		}
 
-		public HooHeyHowHandler(SocketMessageComponent messageComponent)
+		public HooHeyHowHandler(SocketUser user)
 		{
-			_messageComponent = messageComponent;
+			User = user;
 		}
 
 		/// <summary>
@@ -112,7 +118,7 @@ namespace TLDBot.Handlers
 		private void SetValueChoice()
 		{
 			dynamic[]? state;
-			UserState.TryGetValue(_messageComponent!.User.Id, out state);
+			UserState.TryGetValue(User.Id, out state);
 
 			_baseChoice = [GenerateChoice(), GenerateChoice(), GenerateChoice()];
 
@@ -120,7 +126,7 @@ namespace TLDBot.Handlers
 			if (state is null)
 			{
 				//Add user state, default is 1
-				UserState[_messageComponent!.User.Id] = [_isCorrect, 1];
+				UserState[User.Id] = [_isCorrect, 1];
 				return;
 			}
 
@@ -139,7 +145,7 @@ namespace TLDBot.Handlers
 			}
 
 			int count = (_isCorrect == state[0]) ? (state[1] + 1) : 1;
-			UserState[_messageComponent!.User.Id] = [_isCorrect, count];
+			UserState[User.Id] = [_isCorrect, count];
 		}
 
 		/// <summary>
@@ -174,7 +180,7 @@ namespace TLDBot.Handlers
 		/// <param name="choice"></param>
 		/// <param name="user"></param>
 		/// <returns></returns>
-		private Embed GetEmbedProcess(string choice, SocketUser user)
+		protected Embed GetEmbedProcess(string choice, SocketUser user)
 		{
 			_userChoice = choice;
 			SetValueChoice();
@@ -194,31 +200,9 @@ namespace TLDBot.Handlers
 		/// </summary>
 		/// <param name="choice"></param>
 		/// <returns></returns>
-		public async Task RespondAsync(string choice)
+		public virtual async Task RespondAsync(string choice)
 		{
-			if (_messageComponent is null) return;
-			if (await IsUserStart() is false) return;
-
-			await _messageComponent.UpdateAsync(msg =>
-			{
-				msg.Embed = GetEmbedProcess(choice, _messageComponent.User);
-				msg.Components = new ComponentBuilder().Build();
-			});
-		}
-
-		/// <summary>
-		/// Check user create this message game
-		/// </summary>
-		/// <returns></returns>
-		public async Task<bool> IsUserStart()
-		{
-			if (_messageComponent is null) return false;
-
-			string userStart = _messageComponent.Message.Embeds.First().Footer!.Value.Text;
-			if (_messageComponent.User.GlobalName.Equals(userStart) is true) return true;
-
-			await _messageComponent.RespondAsync(text: "You aren't author this game.", ephemeral: true).ConfigureAwait(false);
-			return false;
+			await Task.CompletedTask;
 		}
 	}
 }

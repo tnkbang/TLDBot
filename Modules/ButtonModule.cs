@@ -10,7 +10,7 @@ namespace TLDBot.Modules
 	public class ButtonModule
 	{
 		private readonly ButtonMusicHandler _musicHandler;
-		private readonly HooHeyHowHandler _heyHowHandler;
+		private readonly ButtonH3Handler _heyHowHandler;
 
 		public ButtonModule(IAudioService audioService, SocketMessageComponent messageComponent, SocketCommandContext context)
 		{
@@ -19,7 +19,7 @@ namespace TLDBot.Modules
 			ArgumentNullException.ThrowIfNull(context);
 
 			_musicHandler = new ButtonMusicHandler(audioService, messageComponent: messageComponent, commandContext: context);
-			_heyHowHandler = new HooHeyHowHandler(messageComponent);
+			_heyHowHandler = new ButtonH3Handler(messageComponent);
 		}
 
 		public async Task ExecuteCommandAsync(string cmdName)
