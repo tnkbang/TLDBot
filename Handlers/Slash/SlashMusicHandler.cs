@@ -29,30 +29,28 @@ namespace TLDBot.Handlers.Slash
 			_playerResult = await _audioService.Players.RetrieveAsync(_interactionContext, playerFactory: PlayerFactory.Vote, retrieveOptions).ConfigureAwait(false);
 		}
 
+		private async Task<bool> SetGuildPlayer(string? message = null, MessageComponent? components = null, Embed? embed = null)
+		{
+			GuildPlayerMessage? playerMessage;
+			GuildPlayer.TryGetValue(_playerResult.Player!.GuildId, out playerMessage);
+			if (playerMessage is not null) return false;
+			
+			RestFollowupMessage followupMessage = await _interactionContext.Interaction.FollowupAsync(message, components: components, embed: embed).ConfigureAwait(false);
+			GuildPlayer.Add(_interactionContext.Guild.Id, new GuildPlayerMessage(_interactionContext.Channel, followupMessage.Id, _playerResult.Player, _interactionContext.User));
+			return true;
+		}
+
 		protected override async Task FollowupAsync(string? title = null, string? message = null, MessageComponent? components = null, Embed? embed = null, bool isPlaying = false, bool isUpdateEmbed = false)
 		{
 			if (_interactionContext is null) return;
-			RestFollowupMessage followupMessage;
-
-			if (isPlaying)
-			{
-				GuildPlayerMessage? playerMessage;
-				GuildPlayer.TryGetValue(_playerResult.Player!.GuildId, out playerMessage);
-
-				if (playerMessage is null)
-				{
-					followupMessage = await _interactionContext.Interaction.FollowupAsync(message, components: components, embed: embed).ConfigureAwait(false);
-					GuildPlayer.Add(_interactionContext.Guild.Id, new GuildPlayerMessage(_interactionContext.Channel, followupMessage.Id, _playerResult.Player, _interactionContext.User));
-					return;
-				}
-			}
+			if (isPlaying && await SetGuildPlayer(message, components, embed)) return;
 
 			if (isUpdateEmbed)
 			{
 				await Helper.UpdatePlayingAsync(_playerResult.Player!, _playerResult.Player!.CurrentTrack!, isUpdateEmbed: isUpdateEmbed, isUpdateComponent: true).ConfigureAwait(false);
 			}
 
-			followupMessage = await _interactionContext.Interaction
+			RestFollowupMessage followupMessage = await _interactionContext.Interaction
 				.FollowupAsync(embed: Embeds.Info(title, isPlaying ? "Playing track: **" + _playerResult.Player!.CurrentTrack!.Title + "**" : message)).ConfigureAwait(false);
 
 			await Task.Delay(TimeSpan.FromSeconds(SECOND_WAIT)).ConfigureAwait(false);

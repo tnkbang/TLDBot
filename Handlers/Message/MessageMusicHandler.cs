@@ -26,31 +26,29 @@ namespace TLDBot.Handlers.Message
 			return base.PlayAsync(query, _userMessage.Author);
 		}
 
+		private async Task<bool> SetGuildPlayer(string? message = null, MessageComponent? components = null, Embed? embed = null)
+		{
+			GuildPlayerMessage? playerMessage;
+			GuildPlayer.TryGetValue(_playerResult.Player!.GuildId, out playerMessage);
+			if (playerMessage is not null) return false;
+
+			RestUserMessage replyMessage = await _commandContext.Channel.SendMessageAsync(message, components: components, embed: embed).ConfigureAwait(false);
+			GuildPlayer.Add(_commandContext.Guild.Id, new GuildPlayerMessage(_commandContext.Channel, replyMessage.Id, _playerResult.Player, _commandContext.User));
+			return true;
+		}
+
 		protected override async Task FollowupAsync(string? title = null, string? message = null, MessageComponent? components = null, Embed? embed = null, bool isPlaying = false, bool isUpdateEmbed = false)
 		{
 			if (_commandContext is null) return;
-			RestUserMessage replyMessage;
 			await _commandContext.Message.DeleteAsync().ConfigureAwait(false);
-
-			if (isPlaying)
-			{
-				GuildPlayerMessage? playerMessage;
-				GuildPlayer.TryGetValue(_playerResult.Player!.GuildId, out playerMessage);
-
-				if (playerMessage is null)
-				{
-					replyMessage = await _commandContext.Channel.SendMessageAsync(message, components: components, embed: embed).ConfigureAwait(false);
-					GuildPlayer.Add(_commandContext.Guild.Id, new GuildPlayerMessage(_commandContext.Channel, replyMessage.Id, _playerResult.Player, _commandContext.User));
-					return;
-				}
-			}
+			if (isPlaying && await SetGuildPlayer(message, components, embed)) return;
 
 			if (isUpdateEmbed)
 			{
 				await Helper.UpdatePlayingAsync(_playerResult.Player!, _playerResult.Player!.CurrentTrack!, isUpdateEmbed: isUpdateEmbed, isUpdateComponent: true).ConfigureAwait(false);
 			}
 
-			replyMessage = await _commandContext.Channel
+			RestUserMessage replyMessage = await _commandContext.Channel
 				.SendMessageAsync(embed: Embeds.Info(title, isPlaying ? "Playing track: **" + _playerResult.Player!.CurrentTrack!.Title + "**" : message)).ConfigureAwait(false);
 
 			await Task.Delay(TimeSpan.FromSeconds(SECOND_WAIT)).ConfigureAwait(false);
