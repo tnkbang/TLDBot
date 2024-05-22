@@ -1,3 +1,4 @@
+using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Lavalink4NET.Extensions;
@@ -10,6 +11,7 @@ var builder = new HostApplicationBuilder(args);
 // Discord
 builder.Services.AddSingleton<DiscordSocketClient>(Helper.Client);
 builder.Services.AddSingleton<InteractionService>();
+builder.Services.AddSingleton<CommandService>();
 
 //Run Lavalink.jar
 Lavalink.Start();

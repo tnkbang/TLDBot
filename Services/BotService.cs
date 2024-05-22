@@ -13,19 +13,22 @@ namespace TLDBot.Services
 	internal sealed class BotService : IHostedService
 	{
 		private readonly DiscordSocketClient _Client;
-		private readonly InteractionService _Service;
+		private readonly InteractionService _interactionService;
+		private readonly CommandService _commandService;
 		private readonly IServiceProvider _Provider;
 		private readonly IConfiguration _Config;
 
-		public BotService(DiscordSocketClient Client, InteractionService Service, IServiceProvider Provider, IConfiguration Config)
+		public BotService(DiscordSocketClient Client, InteractionService Interaction, CommandService Command, IServiceProvider Provider, IConfiguration Config)
 		{
 			ArgumentNullException.ThrowIfNull(Client);
-			ArgumentNullException.ThrowIfNull(Service);
+			ArgumentNullException.ThrowIfNull(Interaction);
+			ArgumentNullException.ThrowIfNull(Command);
 			ArgumentNullException.ThrowIfNull(Provider);
 			ArgumentNullException.ThrowIfNull(Config);
 
 			_Client = Client;
-			_Service = Service;
+			_interactionService = Interaction;
+			_commandService = Command;
 			_Provider = Provider;
 			_Config = Config;
 		}
@@ -68,14 +71,22 @@ namespace TLDBot.Services
 
 		private async Task MessageReceived(SocketMessage messageParam)
 		{
-			var message = messageParam as SocketUserMessage;
+			SocketUserMessage? message = messageParam as SocketUserMessage;
 			if (message is null) return;
-			if(message.Interaction is not null) return; //Not reply with message interaction
-			if (message.Author.IsBot) return; //Not reply with message has bot author
-			if (message.Content.Contains("@here") || message.Content.Contains("@everyone") || message.Type == MessageType.Reply) return; //Not reply with @here, @everyone and message reply
 
-			MessageCommandModule messageCommand = new MessageCommandModule(_Client, _Provider.GetService<IAudioService>()!, message, _Config);
-			await messageCommand.ExecuteCommandAsync().ConfigureAwait(false);
+			int argPos = 0;
+			if (!(message.HasStringPrefix(_Config["Prefix"], ref argPos) || 
+				message.HasMentionPrefix(_Client.CurrentUser, ref argPos)) || message.Author.IsBot) return;
+
+			SocketCommandContext context = new SocketCommandContext(_Client, message);
+			SearchResult command = _commandService.Search(context, argPos);
+			if(command.Text is null)
+			{
+				await _commandService.ExecuteAsync(context, "chat " + context.Message.Content.Substring(argPos), _Provider).ConfigureAwait(false);
+				return;
+			}
+
+			await _commandService.ExecuteAsync(context, argPos, _Provider).ConfigureAwait(false);
 		}
 
 		private async Task InteractionCreated(SocketInteraction interaction)
@@ -84,7 +95,7 @@ namespace TLDBot.Services
 			if(interaction is SocketSlashCommand)
 			{
 				SocketInteractionContext interactionContext = new SocketInteractionContext(_Client, interaction);
-				await _Service!.ExecuteCommandAsync(interactionContext, _Provider).ConfigureAwait(false);
+				await _interactionService.ExecuteCommandAsync(interactionContext, _Provider).ConfigureAwait(false);
 			}
 
 			//Get button click
@@ -100,8 +111,11 @@ namespace TLDBot.Services
 
 		private async Task ClientReady()
 		{
-			await _Service.AddModulesAsync(Assembly.GetExecutingAssembly(), _Provider).ConfigureAwait(false);
-			await _Service.RegisterCommandsGloballyAsync(true).ConfigureAwait(false);
+			await _interactionService.AddModulesAsync(Assembly.GetExecutingAssembly(), _Provider).ConfigureAwait(false);
+			//await _interactionService.RegisterCommandsGloballyAsync(true).ConfigureAwait(false);
+			await _interactionService.RegisterCommandsToGuildAsync(1082505225098756127, true).ConfigureAwait(false);
+
+			await _commandService.AddModulesAsync(Assembly.GetEntryAssembly(), _Provider).ConfigureAwait(false);
 
 			if (string.IsNullOrEmpty(_Config["Gemini:Credentials:ApiKey"]) is true) return;
 			AIChatHandler.GenerateGoogleAI(_Config["Gemini:Credentials:ApiKey"]!);

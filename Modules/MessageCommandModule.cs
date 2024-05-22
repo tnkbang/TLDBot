@@ -1,118 +1,91 @@
 ﻿using Discord.Commands;
-using Discord.WebSocket;
 using Lavalink4NET;
 using System.Globalization;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using TLDBot.Handlers;
 using TLDBot.Handlers.Message;
 
 namespace TLDBot.Modules
 {
-	public class MessageCommandModule
+	public class MessageCommandModule : ModuleBase<SocketCommandContext>
 	{
-		private readonly SocketUserMessage _userMessage;
-		private readonly DiscordSocketClient _client;
-		private readonly IConfiguration _config;
+		private readonly IAudioService _audioService;
 
-		private readonly AIChatHandler chatHandler;
-		private readonly MessageMusicHandler musicHandler;
-		private readonly MessageH3Handler hooheyhowHandler;
+		private AIChatHandler? chatHandler;
+		private MessageMusicHandler? musicHandler;
+		private MessageH3Handler? hooheyhowHandler;
 
-		private string _prefix
+		public MessageCommandModule(IAudioService audioService)
 		{
-			get { return _config["Prefix"] ?? ""; }
+			ArgumentNullException.ThrowIfNull(audioService);
+
+			_audioService = audioService;
 		}
 
-		private string _input = string.Empty;
-
-		public MessageCommandModule(DiscordSocketClient client, IAudioService audioService, SocketUserMessage userMessage, IConfiguration config)
+		protected override async Task BeforeExecuteAsync(CommandInfo command)
 		{
-			ArgumentNullException.ThrowIfNull(client);
-			ArgumentNullException.ThrowIfNull(audioService);
-			ArgumentNullException.ThrowIfNull(userMessage);
-			ArgumentNullException.ThrowIfNull(config);
-
-			_client = client;
-			_userMessage = userMessage;
-			_config = config;
+			await Context.Channel.TriggerTypingAsync();
+			await base.BeforeExecuteAsync(command);
 
 			chatHandler = new AIChatHandler();
-			musicHandler = new MessageMusicHandler(audioService, _userMessage, new SocketCommandContext(_client, _userMessage));
-			hooheyhowHandler = new MessageH3Handler(_userMessage);
+			musicHandler = new MessageMusicHandler(_audioService, Context.Message, Context);
+			hooheyhowHandler = new MessageH3Handler(Context.Message);
+
+			await Task.CompletedTask;
 		}
 
-		private Queue<string> MessageToQueue()
-		{
-			string input = Regex.Replace(_userMessage.Content, @"\s+", " ").Trim();
-			Queue<string> queue = new Queue<string>();
-
-			foreach (string word in input.Split(" "))
-			{
-				queue.Enqueue(word);
-			}
-			return queue;
-		}
-
-		public async Task ExecuteCommandAsync()
-		{
-			Queue<string> queueMsg = MessageToQueue();
-			string startMsg = queueMsg.Dequeue();
-
-			string cmdName;
-			if (!startMsg.StartsWith(_prefix) && !startMsg.Contains(_client.CurrentUser.Id.ToString())) return; //Not handle if message not call bot
-
-			//Get command name from message
-			if (startMsg.StartsWith(_prefix)) cmdName = startMsg.Substring(_prefix.Length);
-			else cmdName = queueMsg.Dequeue() ?? "";
-
-			if (cmdName == "") return;
-			_input = String.Join(" ", queueMsg);
-			await _userMessage.Channel.TriggerTypingAsync().ConfigureAwait(false);
-
-			MethodInfo? method = GetType().GetMethod(cmdName.ToLower() + "Async");
-			if (method is not null)
-			{
-				_ = method.Invoke(this, null) as Task;
-				return;
-			}
-
-			await _userMessage.Channel.SendMessageAsync(text: await chatHandler.GenerateContent(cmdName + " " + _input)).ConfigureAwait(false);
-		}
+		#region AI Chat
+		[Command(text: "chat", Summary = "AI chat bot", RunMode = RunMode.Async)]
+		public async Task ChatAsync([Remainder] string input) => await chatHandler!.GenerateContent(input).ConfigureAwait(false);
+		#endregion
 
 		#region Music
-		public async Task disconnectAsync() => await musicHandler.DisconnectAsync().ConfigureAwait(false);
+		[Command(text: "disconnect", Summary = "Disconnects from the current voice channel connected to", RunMode = RunMode.Async)]
+		public async Task DisconnectAsync() => await musicHandler!.DisconnectAsync().ConfigureAwait(false);
 
-		public async Task playAsync() => await musicHandler.PlayAsync(_input).ConfigureAwait(false);
+		[Command(text: "play", Summary = "Plays music", RunMode = RunMode.Async)]
+		public async Task PlayAsync([Remainder] string query) => await musicHandler!.PlayAsync(query).ConfigureAwait(false);
 
-		public async Task positionAsync() => await musicHandler.PositionAsync().ConfigureAwait(false);
+		[Command(text: "position", Summary = "Shows the track position", RunMode = RunMode.Async)]
+		public async Task PositionAsync() => await musicHandler!.PositionAsync().ConfigureAwait(false);
 
-		public async Task stopAsync() => await musicHandler.StopAsync().ConfigureAwait(false);
+		[Command(text: "stop", Summary = "Stops the current track", RunMode = RunMode.Async)]
+		public async Task StopAsync() => await musicHandler!.StopAsync().ConfigureAwait(false);
 
-		public async Task volumeAsync() => await musicHandler.VolumeAsync(int.Parse(_input)).ConfigureAwait(false);
+		[Command(text: "volume", Summary = "Sets the player volume (0 - 1000%)", RunMode = RunMode.Async)]
+		public async Task VolumeAsync(int volume) => await musicHandler!.VolumeAsync(volume).ConfigureAwait(false);
 
-		public async Task skipAsync() => await musicHandler.SkipAsync().ConfigureAwait(false);
+		[Command(text: "skip", Summary = "Skips the current track", RunMode = RunMode.Async)]
+		public async Task SkipAsync() => await musicHandler!.SkipAsync().ConfigureAwait(false);
 
-		public async Task loopAsync() => await musicHandler.LoopAsync().ConfigureAwait(false);
+		[Command(text: "loop", Summary = "Loop/Unloop the current track/queue", RunMode = RunMode.Async)]
+		public async Task LoopAsync() => await musicHandler!.LoopAsync().ConfigureAwait(false);
 
-		public async Task shuffleAsync() => await musicHandler.ShuffleAsync().ConfigureAwait(false);
+		[Command(text: "shuffle", Summary = "Shuffle/Un shuffle the current queue", RunMode = RunMode.Async)]
+		public async Task ShuffleAsync() => await musicHandler!.ShuffleAsync().ConfigureAwait(false);
 
-		public async Task seekAsync()
-			=> await musicHandler.SeekAsync(TimeSpan.ParseExact(_input, @"hh\:mm\:ss", CultureInfo.InvariantCulture), true).ConfigureAwait(false);
+		[Command(text: "seek", Summary = "Seek the current track (hh:mm:ss)", RunMode = RunMode.Async)]
+		public async Task SeekAsync([Remainder] string time)
+			=> await musicHandler!.SeekAsync(TimeSpan.ParseExact(time, @"hh\:mm\:ss", CultureInfo.InvariantCulture), true).ConfigureAwait(false);
 
-		public async Task pauseAsync() => await musicHandler.PauseAsync().ConfigureAwait(false);
+		[Command(text: "pause", Summary = "Pauses the player.", RunMode = RunMode.Async)]
+		public async Task PauseAsync() => await musicHandler!.PauseAsync().ConfigureAwait(false);
 
-		public async Task resumeAsync() => await musicHandler.ResumeAsync().ConfigureAwait(false);
+		[Command(text: "resume", Summary = "Resumes the player.", RunMode = RunMode.Async)]
+		public async Task ResumeAsync() => await musicHandler!.ResumeAsync().ConfigureAwait(false);
 
-		public async Task queueAsync() => await musicHandler.QueueAsync().ConfigureAwait(false);
+		[Command(text: "queue", Summary = "Queue in the player.", RunMode = RunMode.Async)]
+		public async Task QueueAsync() => await musicHandler!.QueueAsync().ConfigureAwait(false);
 		#endregion
 
 		#region HooHeyHow
-		public async Task bcAsync() => await hooheyhowHandler.RespondAsync(_input).ConfigureAwait(false);
+		[Command(text: "bc", Summary = "The hoo hey how game", RunMode = RunMode.Async)]
+		public async Task BcAsync([Remainder] string choice) => await hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
 
-		public async Task baucuaAsync() => await hooheyhowHandler.RespondAsync(_input).ConfigureAwait(false);
+		[Command(text: "baucua", Summary = "The hoo hey how game", RunMode = RunMode.Async)]
+		public async Task BaucuaAsync([Remainder] string choice) => await hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
 
-		public async Task hooheyhowAsync() => await hooheyhowHandler.RespondAsync(_input).ConfigureAwait(false);
+		[Command(text: "hooheyhow", Summary = "The hoo hey how game", RunMode = RunMode.Async)]
+		public async Task HooheyhowAsync([Remainder] string choice) => await hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
 		#endregion
 	}
 }
