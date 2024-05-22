@@ -6,7 +6,7 @@ using TLDBot.Handlers.Message;
 
 namespace TLDBot.Modules
 {
-	public class MessageCommandModule : ModuleBase<SocketCommandContext>
+	public sealed class MessageCommandModule : ModuleBase<SocketCommandContext>
 	{
 		private readonly IAudioService _audioService;
 
@@ -35,7 +35,7 @@ namespace TLDBot.Modules
 
 		#region AI Chat
 		[Command(text: "chat", Summary = "AI chat bot", RunMode = RunMode.Async)]
-		public async Task ChatAsync([Remainder] string input) => await chatHandler!.GenerateContent(input).ConfigureAwait(false);
+		public async Task ChatAsync([Remainder] string input = "Xin chào") => await chatHandler!.GenerateContent(input).ConfigureAwait(false);
 		#endregion
 
 		#region Music
@@ -43,7 +43,7 @@ namespace TLDBot.Modules
 		public async Task DisconnectAsync() => await musicHandler!.DisconnectAsync().ConfigureAwait(false);
 
 		[Command(text: "play", Summary = "Plays music", RunMode = RunMode.Async)]
-		public async Task PlayAsync([Remainder] string query) => await musicHandler!.PlayAsync(query).ConfigureAwait(false);
+		public async Task PlayAsync([Remainder] string query = "") => await musicHandler!.PlayAsync(query).ConfigureAwait(false);
 
 		[Command(text: "position", Summary = "Shows the track position", RunMode = RunMode.Async)]
 		public async Task PositionAsync() => await musicHandler!.PositionAsync().ConfigureAwait(false);
@@ -52,7 +52,7 @@ namespace TLDBot.Modules
 		public async Task StopAsync() => await musicHandler!.StopAsync().ConfigureAwait(false);
 
 		[Command(text: "volume", Summary = "Sets the player volume (0 - 1000%)", RunMode = RunMode.Async)]
-		public async Task VolumeAsync(int volume) => await musicHandler!.VolumeAsync(volume).ConfigureAwait(false);
+		public async Task VolumeAsync([Remainder] int volume = 100) => await musicHandler!.VolumeAsync(volume).ConfigureAwait(false);
 
 		[Command(text: "skip", Summary = "Skips the current track", RunMode = RunMode.Async)]
 		public async Task SkipAsync() => await musicHandler!.SkipAsync().ConfigureAwait(false);
@@ -79,13 +79,13 @@ namespace TLDBot.Modules
 
 		#region HooHeyHow
 		[Command(text: "bc", Summary = "The hoo hey how game", RunMode = RunMode.Async)]
-		public async Task BcAsync([Remainder] string choice) => await hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
+		public async Task BcAsync([Remainder] string choice = "") => await hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
 
 		[Command(text: "baucua", Summary = "The hoo hey how game", RunMode = RunMode.Async)]
-		public async Task BaucuaAsync([Remainder] string choice) => await hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
+		public async Task BaucuaAsync([Remainder] string choice = "") => await hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
 
 		[Command(text: "hooheyhow", Summary = "The hoo hey how game", RunMode = RunMode.Async)]
-		public async Task HooheyhowAsync([Remainder] string choice) => await hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
+		public async Task HooheyhowAsync([Remainder] string choice = "") => await hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
 		#endregion
 	}
 }

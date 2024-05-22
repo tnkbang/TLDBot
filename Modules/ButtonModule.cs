@@ -7,7 +7,7 @@ using TLDBot.Handlers.Button;
 
 namespace TLDBot.Modules
 {
-	public class ButtonModule
+	public sealed class ButtonModule
 	{
 		private readonly ButtonMusicHandler _musicHandler;
 		private readonly ButtonH3Handler _heyHowHandler;
