@@ -35,7 +35,8 @@ namespace TLDBot.Modules
 
 		#region AI Chat
 		[Command(text: "chat", Summary = "AI chat bot", RunMode = RunMode.Async)]
-		public async Task ChatAsync([Remainder] string input = "Xin chào") => await chatHandler!.GenerateContent(input).ConfigureAwait(false);
+		public async Task ChatAsync([Remainder] string prompt = "Xin chào") 
+			=> await Context.Channel.SendMessageAsync(text: await chatHandler!.GenerateContent(prompt)).ConfigureAwait(false);
 		#endregion
 
 		#region Music
