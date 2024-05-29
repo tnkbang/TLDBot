@@ -11,6 +11,7 @@ namespace TLDBot.Modules
 	{
 		private readonly ButtonMusicHandler _musicHandler;
 		private readonly ButtonH3Handler _heyHowHandler;
+		private readonly ButtonT3Handler _t3Handler;
 
 		public ButtonModule(IAudioService audioService, SocketMessageComponent messageComponent, SocketCommandContext context)
 		{
@@ -20,6 +21,7 @@ namespace TLDBot.Modules
 
 			_musicHandler = new ButtonMusicHandler(audioService, messageComponent: messageComponent, commandContext: context);
 			_heyHowHandler = new ButtonH3Handler(messageComponent);
+			_t3Handler = new ButtonT3Handler(messageComponent);
 		}
 
 		public async Task ExecuteCommandAsync(string cmdName)
@@ -30,6 +32,15 @@ namespace TLDBot.Modules
 			if (method is not null)
 			{
 				_ = method.Invoke(this, null) as Task;
+				return;
+			}
+
+			//Call Tic Tac Toe game
+			if (cmdName.StartsWith("T3"))
+			{
+				int row = int.Parse(cmdName.Substring(2, 1));
+				int col = int.Parse(cmdName.Substring(3, 1));
+				await CaroAsync(row, col).ConfigureAwait(false);
 				return;
 			}
 
@@ -73,6 +84,10 @@ namespace TLDBot.Modules
 		public async Task CrabAsync() => await _heyHowHandler.RespondAsync(HooHeyHowHandler.CRAB).ConfigureAwait(false);
 
 		public async Task LobsterAsync() => await _heyHowHandler.RespondAsync(HooHeyHowHandler.LOBSTER).ConfigureAwait(false);
+		#endregion
+
+		#region Game TicTacToe
+		public async Task CaroAsync(int row, int col) => await _t3Handler.RespondAsync(row, col).ConfigureAwait(false);
 		#endregion
 	}
 }

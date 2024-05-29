@@ -26,6 +26,11 @@ namespace TLDBot.Utility
 		public static readonly string Crab			= "<:crab:1237917791827525722>";
 		public static readonly string Lobster		= "<:lobster:1237917801293942834>";
 
+		//Game TicTacToe
+		public static readonly string CaroX			= "<:CaroX:1244945889693536286>";
+		public static readonly string CaroO			= "<:CaroO:1244945887495585793>";
+		public static readonly string CaroBlank		= ":black_small_square:";
+
 		public static string GetByName(string name)
 		{
 			FieldInfo? field = typeof(Emotes).GetField(name);

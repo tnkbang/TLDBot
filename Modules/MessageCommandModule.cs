@@ -13,6 +13,7 @@ namespace TLDBot.Modules
 		private AIChatHandler? chatHandler;
 		private MessageMusicHandler? musicHandler;
 		private MessageH3Handler? hooheyhowHandler;
+		private MessageT3Handler? tictactoeHandler;
 
 		public MessageCommandModule(IAudioService audioService)
 		{
@@ -29,6 +30,7 @@ namespace TLDBot.Modules
 			chatHandler = new AIChatHandler();
 			musicHandler = new MessageMusicHandler(_audioService, Context.Message, Context);
 			hooheyhowHandler = new MessageH3Handler(Context.Message);
+			tictactoeHandler = new MessageT3Handler(Context.Message);
 
 			await Task.CompletedTask;
 		}
@@ -87,6 +89,17 @@ namespace TLDBot.Modules
 
 		[Command(text: "hooheyhow", Summary = "The hoo hey how game", RunMode = RunMode.Async)]
 		public async Task HooheyhowAsync([Remainder] string choice = "") => await hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
+		#endregion
+
+		#region TicTacToe
+		[Command(text: "ttt", Summary = "The tic tac toe game", RunMode = RunMode.Async)]
+		public async Task tttAsync() => await tictactoeHandler!.RespondAsync().ConfigureAwait(false);
+
+		[Command(text: "caro", Summary = "The tic tac toe game", RunMode = RunMode.Async)]
+		public async Task CaroAsync() => await tictactoeHandler!.RespondAsync().ConfigureAwait(false);
+
+		[Command(text: "tictactoe", Summary = "The tic tac toe game", RunMode = RunMode.Async)]
+		public async Task TicTacToeAsync() => await tictactoeHandler!.RespondAsync().ConfigureAwait(false);
 		#endregion
 	}
 }

@@ -121,5 +121,25 @@ namespace TLDBot.Utility
 			return embed.Build();
 		}
 		#endregion
+
+		#region Game TicTacToe
+		private static EmbedAuthorBuilder T3Author()
+		{
+			EmbedAuthorBuilder author = new EmbedAuthorBuilder();
+			author.WithIconUrl(Helper.HooHeyHow.StartIcon);
+			author.WithName("Tic Tac Toe");
+			return author;
+		}
+		public static Embed T3Start(SocketUser user, string description)
+		{
+			EmbedBuilder embed = new EmbedBuilder();
+			embed.WithAuthor(T3Author());
+			embed.WithDescription(description);
+			embed.WithFooter(H3Footer(user));
+			embed.WithColor(Color.LightOrange).WithCurrentTimestamp();
+
+			return embed.Build();
+		}
+		#endregion
 	}
 }

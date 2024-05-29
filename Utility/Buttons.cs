@@ -117,5 +117,12 @@ namespace TLDBot.Utility
 			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.Lobster)).WithStyle(ButtonStyle.Secondary).WithCustomId(HooHeyHowHandler.LOBSTER);
 		}
 		#endregion
+
+		#region Game TicTacToe
+		public ButtonBuilder GameCaro(int row, int col)
+		{
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.CaroX)).WithStyle(ButtonStyle.Secondary).WithCustomId($"T3{row}{col}");
+		}
+		#endregion
 	}
 }
