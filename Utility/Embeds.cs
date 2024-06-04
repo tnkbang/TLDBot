@@ -130,12 +130,33 @@ namespace TLDBot.Utility
 			author.WithName("Tic Tac Toe");
 			return author;
 		}
+
+		private static EmbedFooterBuilder T3Footer(SocketUser user)
+		{
+			EmbedFooterBuilder footer = new EmbedFooterBuilder();
+			footer.WithText(user.GlobalName);
+			footer.WithIconUrl(user.GetAvatarUrl());
+			return footer;
+		}
+
 		public static Embed T3Start(SocketUser user, string description)
 		{
 			EmbedBuilder embed = new EmbedBuilder();
 			embed.WithAuthor(T3Author());
 			embed.WithDescription(description);
-			embed.WithFooter(H3Footer(user));
+			embed.WithFooter(T3Footer(user));
+			embed.WithColor(Color.LightOrange).WithCurrentTimestamp();
+
+			return embed.Build();
+		}
+
+		public static Embed T3StartDuet(SocketUser user, string description, string duetState)
+		{
+			EmbedBuilder embed = new EmbedBuilder();
+			embed.WithAuthor(T3Author());
+			embed.AddField(Helper.TicTacToe.Description.TitleField, duetState);
+			embed.WithDescription(description);
+			embed.WithFooter(T3Footer(user));
 			embed.WithColor(Color.LightOrange).WithCurrentTimestamp();
 
 			return embed.Build();

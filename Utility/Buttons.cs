@@ -119,9 +119,19 @@ namespace TLDBot.Utility
 		#endregion
 
 		#region Game TicTacToe
-		public ButtonBuilder GameCaro(int row, int col)
+		public ButtonBuilder GameCaro(int row, int col, string emote)
 		{
-			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.CaroX)).WithStyle(ButtonStyle.Secondary).WithCustomId($"T3{row}{col}");
+			return new ButtonBuilder().WithEmote(Emote.Parse(emote)).WithStyle(ButtonStyle.Secondary).WithCustomId($"T3{row}{col}");
+		}
+
+		public ButtonBuilder GameCaroX()
+		{
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.CaroX)).WithStyle(ButtonStyle.Secondary).WithCustomId("CaroX");
+		}
+
+		public ButtonBuilder GameCaroO()
+		{
+			return new ButtonBuilder().WithEmote(Emote.Parse(Emotes.CaroO)).WithStyle(ButtonStyle.Secondary).WithCustomId("CaroO");
 		}
 		#endregion
 	}

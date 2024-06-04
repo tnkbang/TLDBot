@@ -81,25 +81,15 @@ namespace TLDBot.Modules
 		#endregion
 
 		#region HooHeyHow
-		[Command(text: "bc", Summary = "The hoo hey how game", RunMode = RunMode.Async)]
-		public async Task BcAsync([Remainder] string choice = "") => await hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
-
-		[Command(text: "baucua", Summary = "The hoo hey how game", RunMode = RunMode.Async)]
-		public async Task BaucuaAsync([Remainder] string choice = "") => await hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
-
 		[Command(text: "hooheyhow", Summary = "The hoo hey how game", RunMode = RunMode.Async)]
+		[Alias("bc", "baucua")]
 		public async Task HooheyhowAsync([Remainder] string choice = "") => await hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
 		#endregion
 
 		#region TicTacToe
-		[Command(text: "ttt", Summary = "The tic tac toe game", RunMode = RunMode.Async)]
-		public async Task tttAsync() => await tictactoeHandler!.RespondAsync().ConfigureAwait(false);
-
-		[Command(text: "caro", Summary = "The tic tac toe game", RunMode = RunMode.Async)]
-		public async Task CaroAsync() => await tictactoeHandler!.RespondAsync().ConfigureAwait(false);
-
 		[Command(text: "tictactoe", Summary = "The tic tac toe game", RunMode = RunMode.Async)]
-		public async Task TicTacToeAsync() => await tictactoeHandler!.RespondAsync().ConfigureAwait(false);
+		[Alias("ttt", "caro")]
+		public async Task TicTacToeAsync(string? input = null) => await tictactoeHandler!.RespondAsync().ConfigureAwait(false);
 		#endregion
 	}
 }

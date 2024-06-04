@@ -1,0 +1,23 @@
+{
+	"Description": {
+		"Title": "Vui lòng chọn:",
+		"TitleField": "Trạng thái:",
+		"Body": {
+			"FistMove": ": Bạn sẽ đi lượt đầu",
+			"SecondMoveDuet": ": Đối phương sẽ đi lượt đầu",
+			"SecondMoveBot": ": Máy sẽ đánh lượt đầu tiên"
+		},
+		"State": {
+			"NotSelect": "chưa chọn",
+			"Selected": "đã chọn ",
+			"Win": " đã chiến thắng!",
+			"WinBot": "Bạn đã thắng!",
+			"Lose": "Bạn đã thua!",
+			"Draws": "Trận đấu hòa!"
+		},
+		"Permission": {
+			"NotAllow": "Bạn không phải là người bắt đầu game này.",
+			"NotTurn": "Hiện không phải lượt chơi của bạn."
+		}
+	}
+}

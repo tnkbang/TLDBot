@@ -52,6 +52,19 @@ namespace TLDBot.Utility
 			}
 		}
 
+		public static TicTacToe TicTacToe
+		{
+			get
+			{
+				using (StreamReader r = new StreamReader("Json/TicTacToe.json"))
+				{
+					string json = r.ReadToEnd();
+					TicTacToe data = JsonConvert.DeserializeObject<TicTacToe>(json)!;
+					return data;
+				}
+			}
+		}
+
 		public static string GetDescription(string cmd)
 		{
 			return CommandInfo.description[cmd] ?? "Command not description.";

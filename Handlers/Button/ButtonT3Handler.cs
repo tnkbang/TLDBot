@@ -16,7 +16,8 @@ namespace TLDBot.Handlers.Button
 		public async Task RespondAsync(int row, int col)
 		{
 			if (_messageComponent is null) return;
-			if (await IsUserStart() is false) return;
+			if (await IsPermission() is false) return;
+			if (await IsYouTurn() is false) return;
 
 			string state = GetStatePlay(row, col);
 			bool isOver = IsGameOver();
@@ -24,20 +25,57 @@ namespace TLDBot.Handlers.Button
 			await _messageComponent.UpdateAsync(msg =>
 			{
 				msg.Content = state;
-				msg.Embed = Embeds.T3Start(_messageComponent.User, Description);
+				msg.Embed = Embeds.T3Start(_messageComponent.User, BodyBoardPorcess);
 				msg.Components = isOver ? new ComponentBuilder().Build() : Component;
 			});
-			InitializeBoard(isOver);
+			if (isOver) ResetBase();
 		}
 
-		private async Task<bool> IsUserStart()
+		public async Task SetChoice(char name)
+		{
+			if (await IsPermission() is false) return;
+
+			SetChooseXO(name);
+			if (_player.IsDuet && GetStringDuetChoice(_player.UserDuet!.Id).Equals(Description.State.NotSelect))
+			{
+				string duet = _messageComponent.User.Mention + ": " + GetStringDuetChoice(_messageComponent.User.Id) + Environment.NewLine;
+				duet += _player.UserDuet.Mention + ": " + GetStringDuetChoice(_player.UserDuet.Id) + Environment.NewLine;
+
+				await _messageComponent.UpdateAsync(msg =>
+				{
+					msg.Embed = Embeds.T3StartDuet(_messageComponent.User, DescriptionDuet, duet);
+					msg.Components = ComponentChooseXO;
+				}).ConfigureAwait(false);
+				return;
+			}
+
+			await _messageComponent.UpdateAsync(msg =>
+			{
+				msg.Embed = Embeds.T3Start(_messageComponent.User, BodyBoardPorcess);
+				msg.Components = ComponentFirst;
+			}).ConfigureAwait(false);
+		}
+
+		private async Task<bool> IsPermission()
 		{
 			if (_messageComponent is null) return false;
+			if (_player is null) return false;
 
-			string userStart = _messageComponent.Message.Embeds.First().Footer!.Value.Text;
-			if (_messageComponent.User.GlobalName.Equals(userStart) is true) return true;
+			if (_messageComponent.Message.Id.Equals(_player.MessageId)) return true;
 
-			await _messageComponent.RespondAsync(text: "You aren't author this game.", ephemeral: true).ConfigureAwait(false);
+			await _messageComponent.RespondAsync(text: Description.Permission.NotAllow, ephemeral: true).ConfigureAwait(false);
+			return false;
+		}
+
+		private async Task<bool> IsYouTurn()
+		{
+			if (_messageComponent is null) return false;
+			if (_messageComponent.Message.Components.Count == 0) return false;
+
+			ButtonComponent btn = (ButtonComponent)_messageComponent.Message.Components.First().Components.First();
+			if (btn.Emote.Name.Contains(_player.SelectChar)) return true;
+
+			await _messageComponent.RespondAsync(text: Description.Permission.NotTurn, ephemeral: true).ConfigureAwait(false);
 			return false;
 		}
 	}

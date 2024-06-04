@@ -88,6 +88,10 @@ namespace TLDBot.Modules
 
 		#region Game TicTacToe
 		public async Task CaroAsync(int row, int col) => await _t3Handler.RespondAsync(row, col).ConfigureAwait(false);
+
+		public async Task CaroXAsync() => await _t3Handler.SetChoice(TicTacToeHandler.PLAYER_X).ConfigureAwait(false);
+
+		public async Task CaroOAsync() => await _t3Handler.SetChoice(TicTacToeHandler.PLAYER_O).ConfigureAwait(false);
 		#endregion
 	}
 }
