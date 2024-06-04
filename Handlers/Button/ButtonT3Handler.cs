@@ -52,7 +52,7 @@ namespace TLDBot.Handlers.Button
 			await _messageComponent.UpdateAsync(msg =>
 			{
 				msg.Embed = Embeds.T3Start(_messageComponent.User, BodyBoardPorcess);
-				msg.Components = ComponentFirst;
+				msg.Components = Component;
 			}).ConfigureAwait(false);
 		}
 

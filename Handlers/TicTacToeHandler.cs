@@ -75,26 +75,6 @@ namespace TLDBot.Handlers
 		}
 
 		/// <summary>
-		/// Component when start process game
-		/// </summary>
-		public MessageComponent ComponentFirst
-		{
-			get
-			{
-				ComponentBuilder builder = new ComponentBuilder();
-				for (int i = 0; i < BOARD_SIZE; i++)
-				{
-					for (int j = 0; j < BOARD_SIZE; j++)
-					{
-						Buttons btnC = new Buttons();
-						builder.WithButton(btnC.GameCaro(i, j, CharToEmoij(PLAYER_X)).WithDisabled(!_board[i, j].Equals(EMPTY)), i);
-					}
-				}
-				return builder.Build();
-			}
-		}
-
-		/// <summary>
 		/// Component when user choose char X or O
 		/// </summary>
 		public MessageComponent ComponentChooseXO

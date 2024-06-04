@@ -1,4 +1,5 @@
-﻿using Discord.Rest;
+﻿using Discord;
+using Discord.Rest;
 using Discord.WebSocket;
 using TLDBot.Utility;
 
@@ -17,12 +18,12 @@ namespace TLDBot.Handlers.Message
 		{
 			if (user.IsBot)
 			{
-				await _userMessage.Channel.SendMessageAsync(Description.Permission.NotMentionBot).ConfigureAwait(false);
+				await _userMessage.ReplyAsync(Description.Permission.NotMentionBot).ConfigureAwait(false);
 				return false;
 			}
 			if (user.Id.Equals(_userMessage.Author.Id))
 			{
-				await _userMessage.Channel.SendMessageAsync(Description.Permission.NotMention).ConfigureAwait(false);
+				await _userMessage.ReplyAsync(Description.Permission.NotMention).ConfigureAwait(false);
 				return false;
 			}
 
