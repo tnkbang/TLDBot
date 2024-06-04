@@ -39,6 +39,8 @@ namespace TLDBot.Structs
 		{
 			public string NotAllow = string.Empty;
 			public string NotTurn = string.Empty;
+			public string NotMention = string.Empty;
+			public string NotMentionBot = string.Empty;
 		}
 
 		public class Player

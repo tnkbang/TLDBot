@@ -11,19 +11,22 @@ namespace TLDBot.Handlers.Message
 		public MessageT3Handler(SocketUserMessage userMessage) : base(userMessage.Author)
 		{
 			_userMessage = userMessage;
-			SetMode(GetUserMention());
 		}
 
-		private SocketUser? GetUserMention()
+		private async Task<bool> IsMentionCorrect(SocketUser user)
 		{
-			foreach(SocketUser itm in _userMessage.MentionedUsers)
+			if (user.IsBot)
 			{
-				if (itm.IsBot) continue;
-				if (itm.Id == _userMessage.Author.Id) continue;
-
-				return itm;
+				await _userMessage.Channel.SendMessageAsync(Description.Permission.NotMentionBot).ConfigureAwait(false);
+				return false;
 			}
-			return null;
+			if (user.Id.Equals(_userMessage.Author.Id))
+			{
+				await _userMessage.Channel.SendMessageAsync(Description.Permission.NotMention).ConfigureAwait(false);
+				return false;
+			}
+
+			return true;
 		}
 
 		private async Task<RestUserMessage> RespondDuetAsync(SocketUser user)
@@ -37,12 +40,14 @@ namespace TLDBot.Handlers.Message
 		public override async Task RespondAsync()
 		{
 			if (_userMessage is null) return;
+			SocketUser? user = _userMessage.MentionedUsers.FirstOrDefault();
+			SetMode(user);
 
 			RestUserMessage message;
-			SocketUser? duet = GetUserMention();
-			if(duet is not null)
+			if(user is not null)
 			{
-				message = await RespondDuetAsync(duet).ConfigureAwait(false);
+				if (await IsMentionCorrect(user) is false) return;
+				message = await RespondDuetAsync(user).ConfigureAwait(false);
 			}
 			else
 			{

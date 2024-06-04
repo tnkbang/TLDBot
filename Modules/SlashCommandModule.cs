@@ -1,4 +1,5 @@
 ﻿using Discord.Interactions;
+using Discord.WebSocket;
 using Lavalink4NET;
 using System.Globalization;
 using TLDBot.Handlers.Slash;
@@ -10,6 +11,7 @@ namespace TLDBot.Modules
 		private readonly IAudioService _audioService;
 		private SlashMusicHandler? _musicHandler;
 		private SlashH3Handler? _hooheyhowHandler;
+		private SlashT3Handler? _tictactoeHandler;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SlashCommandModule"/> class.
@@ -31,6 +33,7 @@ namespace TLDBot.Modules
 
 			_musicHandler = new SlashMusicHandler(_audioService, interactionContext: Context);
 			_hooheyhowHandler = new SlashH3Handler(Context);
+			_tictactoeHandler = new SlashT3Handler(Context);
 
 			return Task.CompletedTask;
 		}
@@ -84,6 +87,16 @@ namespace TLDBot.Modules
 		[SlashCommand("baucua", description: "The hoo hey how game", runMode: RunMode.Async)]
 		public async Task BaucuaAsync([Summary(description: "Choose 1 of 6 mascots")] string choice = "")
 			=> await _hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
+		#endregion
+
+		#region Game TicTacToe
+		[SlashCommand("tictactoe", description: "The tic tac toe game", runMode: RunMode.Async)]
+		public async Task TicTacToeAsync([Summary(description: "Mention only user")] SocketUser? user = null)
+			=> await _tictactoeHandler!.RespondAsync(user).ConfigureAwait(false);
+
+		[SlashCommand("caro", description: "The tic tac toe game", runMode: RunMode.Async)]
+		public async Task CaRoAsync([Summary(description: "Mention only user")] SocketUser? user = null)
+			=> await _tictactoeHandler!.RespondAsync(user).ConfigureAwait(false);
 		#endregion
 	}
 }

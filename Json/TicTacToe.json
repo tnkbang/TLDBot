@@ -17,7 +17,9 @@
 		},
 		"Permission": {
 			"NotAllow": "Bạn không phải là người bắt đầu game này.",
-			"NotTurn": "Hiện không phải lượt chơi của bạn."
+			"NotTurn": "Hiện không phải lượt chơi của bạn.",
+			"NotMention": "Bạn đang đề cập đến chính mình!",
+			"NotMentionBot": "Bạn không thể gạ bot solo :v"
 		}
 	}
 }
