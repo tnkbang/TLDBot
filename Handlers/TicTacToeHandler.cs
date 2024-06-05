@@ -227,27 +227,70 @@ namespace TLDBot.Handlers
 		/// <summary>
 		/// Check user win
 		/// </summary>
-		private bool CheckForWinner(char player)
+		private bool CheckForWinner(char player, int count = 3)
 		{
-			// Check rows, columns, and diagonals for a winner
-			for (int i = 0; i < BOARD_SIZE; i++)
+			for (int row = 0; row < _board.GetLength(0); row++)
 			{
-				if (_board[i, 0].Equals(player) && _board[i, 1].Equals(player) && _board[i, 2].Equals(player))
+				for (int col = 0; col < _board.GetLength(1); col++)
 				{
-					return true;
+					// Check horizontally
+					int countCorrect = 0;
+					for (int i = 0; i < count; i++)
+					{
+						if (col + i < _board.GetLength(1) && _board[row, col + i] == player)
+						{
+							countCorrect++;
+							continue;
+						}
+						break;
+					}
+					if (countCorrect == count) return true;
+
+					// Check vertically
+					countCorrect = 0;
+					for (int i = 0; i < count; i++)
+					{
+						if (row + i < _board.GetLength(0) && _board[row + i, col] == player)
+						{
+							countCorrect++;
+							continue;
+						}
+						break;
+					}
+					if (countCorrect == count) return true;
+
+					// Check diagonal left to right
+					if (row + count <= _board.GetLength(0) && col + count <= _board.GetLength(1))
+					{
+						countCorrect = 0;
+						for (int i = 0; i < count; i++)
+						{
+							if (_board[row + i, col + i] == player)
+							{
+								countCorrect++;
+								continue;
+							}
+							break;
+						}
+						if (countCorrect == count) return true;
+					}
+
+					// Check diagonal right to left
+					if (row + 1 >= count && col <= _board.GetLength(1) - count)
+					{
+						countCorrect = 0;
+						for (int i = 0; i < count; i++)
+						{
+							if (_board[row - i, col + i] == player)
+							{
+								countCorrect++;
+								continue;
+							}
+							break;
+						}
+						if (countCorrect == count) return true;
+					}
 				}
-				if (_board[0, i].Equals(player) && _board[1, i].Equals(player) && _board[2, i].Equals(player))
-				{
-					return true;
-				}
-			}
-			if (_board[0, 0].Equals(player) && _board[1, 1].Equals(player) && _board[2, 2].Equals(player))
-			{
-				return true;
-			}
-			if (_board[0, 2].Equals(player) && _board[1, 1].Equals(player) && _board[2, 0].Equals(player))
-			{
-				return true;
 			}
 			return false;
 		}
