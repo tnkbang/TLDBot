@@ -20,7 +20,7 @@ namespace TLDBot.Handlers.Button
 			if (await IsYouTurn() is false) return;
 
 			string state = GetStatePlay(row, col);
-			bool isOver = IsGameOver();
+			bool isOver = _player.IsOver;
 
 			await _messageComponent.UpdateAsync(msg =>
 			{
@@ -67,13 +67,26 @@ namespace TLDBot.Handlers.Button
 			return false;
 		}
 
+		private string GetEnableButtonName(IReadOnlyCollection<ActionRowComponent> component)
+		{
+			foreach(ActionRowComponent row in component)
+			{
+				foreach(IMessageComponent itm in row.Components)
+				{
+					ButtonComponent button = (ButtonComponent)itm;
+					if (button.IsDisabled is false) return button.Emote.Name;
+				}
+			}
+			return string.Empty;
+		}
+
 		private async Task<bool> IsYouTurn()
 		{
 			if (_messageComponent is null) return false;
 			if (_messageComponent.Message.Components.Count == 0) return false;
 
-			ButtonComponent btn = (ButtonComponent)_messageComponent.Message.Components.First().Components.First();
-			if (btn.Emote.Name.Contains(_player.SelectChar)) return true;
+			string btnName = GetEnableButtonName(_messageComponent.Message.Components);
+			if (btnName.Contains(_player.SelectChar)) return true;
 
 			await _messageComponent.RespondAsync(text: Description.Permission.NotTurn, ephemeral: true).ConfigureAwait(false);
 			return false;

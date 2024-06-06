@@ -7,14 +7,31 @@ namespace TLDBot.Handlers
 {
 	public class TicTacToeHandler
 	{
-		private static readonly int BOARD_SIZE = 3;
-		public static readonly char EMPTY  = '\0';
-		public static readonly char PLAYER_X = 'X';
-		public static readonly char PLAYER_O = 'O';
+		public static readonly int BOARD_SIZE	= 5;
+		public static readonly char EMPTY		= '\0';
+		public static readonly char PLAYER_X	= 'X';
+		public static readonly char PLAYER_O	= 'O';
 
 		protected Player _player = new Player(BOARD_SIZE);
 		protected static Dictionary<ulong, Player> T3Player = new Dictionary<ulong, Player>();
 		protected static Info Description = Helper.TicTacToe.Description;
+
+		/// <summary>
+		/// Line horizontally board description
+		/// </summary>
+		private string Line
+		{
+			get
+			{
+				switch (BOARD_SIZE)
+				{
+					case 3: return "--------------------------";
+					case 4: return "-----------------------------------";
+					case 5: return "--------------------------------------------";
+					default: return "---------";
+				}
+			}
+		}
 
 		/// <summary>
 		/// Board game in process (read from T3Player)
@@ -34,6 +51,21 @@ namespace TLDBot.Handlers
 			}
 		}
 
+		private bool _isFirstTime
+		{
+			get
+			{
+				if (_player.IsDuet)
+				{
+					Player? player;
+					T3Player.TryGetValue(_player.UserDuet!.Id, out player);
+
+					if (player is not null) player.IsFirstTime = _player.IsFirstTime;
+				}
+				return _player.IsFirstTime;
+			}
+		} 
+
 		/// <summary>
 		/// Player is bot if sigle or rival if duet
 		/// </summary>
@@ -50,6 +82,8 @@ namespace TLDBot.Handlers
 			get
 			{
 				if (!_player.IsDuet) return _player.SelectChar;
+				if (_isFirstTime) return PLAYER_X;
+
 				return _player.SelectChar.Equals(PLAYER_X) ? PLAYER_O : PLAYER_X;
 			}
 		}
@@ -67,7 +101,16 @@ namespace TLDBot.Handlers
 					for (int j = 0; j < BOARD_SIZE; j++)
 					{
 						Buttons btnC = new Buttons();
-						builder.WithButton(btnC.GameCaro(i, j, CharToEmoij(ComponentChar)).WithDisabled(!_board[i, j].Equals(EMPTY)), i);
+						if (_board[i, j].Equals(EMPTY))
+						{
+							builder.WithButton(btnC.GameCaro(i, j, CharToEmoij(ComponentChar)).WithDisabled(false), i);
+						}
+						else
+						{
+							builder.WithButton(btnC.GameCaro(i, j, CharToEmoij(_board[i, j])).WithDisabled(true), i);
+						}
+
+						//builder.WithButton(btnC.GameCaro(i, j, CharToEmoij(ComponentChar)).WithDisabled(!_board[i, j].Equals(EMPTY)), i);
 					}
 				}
 				return builder.Build();
@@ -96,7 +139,7 @@ namespace TLDBot.Handlers
 		{
 			get
 			{
-				string str = "--------------------------" + Environment.NewLine;
+				string str = Line + Environment.NewLine;
 				for (int i = 0; i < BOARD_SIZE; i++)
 				{
 					str += "|　";
@@ -104,7 +147,7 @@ namespace TLDBot.Handlers
 					{
 						str += CharToEmoij(_board[i, j]) + "　|　";
 					}
-					str += Environment.NewLine + "--------------------------" + Environment.NewLine;
+					str += Environment.NewLine + Line + Environment.NewLine;
 				}
 				return str;
 			}
@@ -161,6 +204,7 @@ namespace TLDBot.Handlers
 				}
 			}
 			_player.SelectChar = EMPTY;
+			_player.BoardSize = BOARD_SIZE;
 		}
 
 		/// <summary>
@@ -169,7 +213,6 @@ namespace TLDBot.Handlers
 		public void ResetBase()
 		{
 			InitializeBoard();
-			_player.MessageId = 0;
 
 			if(_player.IsDuet && _player.UserDuet is not null)
 			{
@@ -179,13 +222,16 @@ namespace TLDBot.Handlers
 				{
 					player.MessageId = 0;
 					player.SelectChar = EMPTY;
-					player.Board = new char[BOARD_SIZE, BOARD_SIZE];
+					player.BoardSize = BOARD_SIZE;
 					player.UserDuet = null;
 				}
 			}
 
+			_player.MessageId = 0;
 			_player.UserDuet = null;
+			_player.BoardSize = BOARD_SIZE;
 			_player.IsDuet = false;
+			_player.IsFirstTime = true;
 		}
 
 		/// <summary>
@@ -197,110 +243,14 @@ namespace TLDBot.Handlers
 		}
 
 		/// <summary>
-		/// Check game over
-		/// </summary>
-		public bool IsGameOver()
-		{
-			// Check if there is a winner or if the board is full
-			return CheckForWinner(PLAYER_X) || CheckForWinner(PLAYER_O) || IsBoardFull();
-		}
-
-		/// <summary>
-		/// Check board is full (not cell empty)
-		/// </summary>
-		private bool IsBoardFull()
-		{
-			for (int i = 0; i < BOARD_SIZE; i++)
-			{
-				for (int j = 0; j < BOARD_SIZE; j++)
-				{
-					if (_board[i, j].Equals(EMPTY))
-					{
-						return false;
-					}
-				}
-			}
-
-			return true;
-		}
-
-		/// <summary>
-		/// Check user win
-		/// </summary>
-		private bool CheckForWinner(char player, int count = 3)
-		{
-			for (int row = 0; row < _board.GetLength(0); row++)
-			{
-				for (int col = 0; col < _board.GetLength(1); col++)
-				{
-					// Check horizontally
-					int countCorrect = 0;
-					for (int i = 0; i < count; i++)
-					{
-						if (col + i < _board.GetLength(1) && _board[row, col + i] == player)
-						{
-							countCorrect++;
-							continue;
-						}
-						break;
-					}
-					if (countCorrect == count) return true;
-
-					// Check vertically
-					countCorrect = 0;
-					for (int i = 0; i < count; i++)
-					{
-						if (row + i < _board.GetLength(0) && _board[row + i, col] == player)
-						{
-							countCorrect++;
-							continue;
-						}
-						break;
-					}
-					if (countCorrect == count) return true;
-
-					// Check diagonal left to right
-					if (row + count <= _board.GetLength(0) && col + count <= _board.GetLength(1))
-					{
-						countCorrect = 0;
-						for (int i = 0; i < count; i++)
-						{
-							if (_board[row + i, col + i] == player)
-							{
-								countCorrect++;
-								continue;
-							}
-							break;
-						}
-						if (countCorrect == count) return true;
-					}
-
-					// Check diagonal right to left
-					if (row + 1 >= count && col <= _board.GetLength(1) - count)
-					{
-						countCorrect = 0;
-						for (int i = 0; i < count; i++)
-						{
-							if (_board[row - i, col + i] == player)
-							{
-								countCorrect++;
-								continue;
-							}
-							break;
-						}
-						if (countCorrect == count) return true;
-					}
-				}
-			}
-			return false;
-		}
-
-		/// <summary>
 		/// Make user move char in board
 		/// </summary>
 		private void MakeMove(int row, int col, char player)
 		{
+			if (_isFirstTime) _player.IsFirstTime = false;
+
 			_board[row, col] = player;
+			_player.CheckTurns();
 		}
 
 		/// <summary>
@@ -400,10 +350,10 @@ namespace TLDBot.Handlers
 		/// </summary>
 		private void PlayBoard(int row, int col)
 		{
-			if (!IsGameOver())
+			if (!_player.IsOver)
 			{
 				MakeMove(row, col, _player.SelectChar);
-				if (!IsGameOver() && !_player.IsDuet) ComputerMove();
+				if (!_player.IsOver && !_player.IsDuet) ComputerMove();
 			}
 		}
 
@@ -416,17 +366,17 @@ namespace TLDBot.Handlers
 
 			if (_player.IsDuet)
 			{
-				if (CheckForWinner(_player.SelectChar)) return User.Mention + Description.State.Win;
-				if (CheckForWinner(_rivalPlayer)) return _player.UserDuet!.Mention + Description.State.Win;
-				if (IsBoardFull()) return Description.State.Draws;
+				if (_player.IsWin) return User.Mention + Description.State.Win;
+				if (_player.IsLose) return _player.UserDuet!.Mention + Description.State.Win;
+				if (_player.IsFull) return Description.State.Draws;
 
-				return "";
+				return string.Empty;
 			}
-			if (CheckForWinner(_player.SelectChar)) return Description.State.WinBot;
-			if (CheckForWinner(_rivalPlayer)) return Description.State.Lose;
-			if (IsBoardFull()) return Description.State.Draws;
+			if (_player.IsWin) return Description.State.WinBot;
+			if (_player.IsLose) return Description.State.Lose;
+			if (_player.IsFull) return Description.State.Draws;
 
-			return "";
+			return string.Empty;
 		}
 
 		#region Machine move handle
@@ -435,7 +385,7 @@ namespace TLDBot.Handlers
 		/// </summary>
 		private void ComputerFirst()
 		{
-			MakeMove(new Random().Next(0, 2), new Random().Next(0, 2), _rivalPlayer);
+			MakeMove(new Random().Next(0, _player.BoardSize), new Random().Next(0, _player.BoardSize), _rivalPlayer);
 		}
 
 		/// <summary>
@@ -443,15 +393,15 @@ namespace TLDBot.Handlers
 		/// </summary>
 		private int Minimax(bool isMaximizing, int depth)
 		{
-			if (CheckForWinner(_rivalPlayer))
+			if (_player.IsLose)
 			{
 				return 1;
 			}
-			if (CheckForWinner(_player.SelectChar))
+			if (_player.IsWin)
 			{
 				return -1;
 			}
-			if (IsBoardFull())
+			if (_player.IsFull)
 			{
 				return 0;
 			}
