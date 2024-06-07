@@ -143,6 +143,8 @@ namespace TLDBot.Utility
 		{
 			EmbedBuilder embed = new EmbedBuilder();
 			embed.WithAuthor(T3Author());
+			embed.WithThumbnailUrl(Helper.TicTacToe.Description.ThumbnailUrl);
+			embed.WithTitle(Helper.TicTacToe.Description.Title);
 			embed.WithDescription(description);
 			embed.WithFooter(T3Footer(user));
 			embed.WithColor(Color.LightOrange).WithCurrentTimestamp();
@@ -154,8 +156,10 @@ namespace TLDBot.Utility
 		{
 			EmbedBuilder embed = new EmbedBuilder();
 			embed.WithAuthor(T3Author());
-			embed.AddField(Helper.TicTacToe.Description.TitleField, duetState);
+			embed.WithThumbnailUrl(Helper.TicTacToe.Description.ThumbnailUrl);
+			embed.WithTitle(Helper.TicTacToe.Description.Title);
 			embed.WithDescription(description);
+			embed.AddField(Helper.TicTacToe.Description.TitleField, duetState);
 			embed.WithFooter(T3Footer(user));
 			embed.WithColor(Color.LightOrange).WithCurrentTimestamp();
 

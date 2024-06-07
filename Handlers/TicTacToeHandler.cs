@@ -155,8 +155,7 @@ namespace TLDBot.Handlers
 		{
 			get
 			{
-				string str = Description.Title + Environment.NewLine;
-				str += Emotes.CaroX + Description.Body.FistMove + Environment.NewLine;
+				string str = Emotes.CaroX + Description.Body.FistMove + Environment.NewLine;
 				str += Emotes.CaroO + Description.Body.SecondMoveBot;
 
 				return str;
@@ -170,8 +169,7 @@ namespace TLDBot.Handlers
 		{
 			get
 			{
-				string str = Description.Title + Environment.NewLine;
-				str += Emotes.CaroX + Description.Body.FistMove + Environment.NewLine;
+				string str = Emotes.CaroX + Description.Body.FistMove + Environment.NewLine;
 				str += Emotes.CaroO + Description.Body.SecondMoveDuet;
 
 				return str;

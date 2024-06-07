@@ -17,6 +17,7 @@ namespace TLDBot.Structs
 		{
 			public string Title = string.Empty;
 			public string TitleField = string.Empty;
+			public string ThumbnailUrl = string.Empty;
 			public Body Body = new Body();
 			public State State = new State();
 			public Permission Permission = new Permission();
