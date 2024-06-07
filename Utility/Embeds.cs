@@ -95,8 +95,8 @@ namespace TLDBot.Utility
 		private static EmbedAuthorBuilder H3Author()
 		{
 			EmbedAuthorBuilder author = new EmbedAuthorBuilder();
-			author.WithIconUrl(Helper.HooHeyHow.StartIcon);
-			author.WithName(Helper.HooHeyHow.StartTitle);
+			author.WithIconUrl(Helper.HooHeyHow.Description.StartIcon);
+			author.WithName(Helper.HooHeyHow.Description.StartTitle);
 			return author;
 		}
 
@@ -114,7 +114,7 @@ namespace TLDBot.Utility
 			embed.WithTitle(title);
 			embed.WithThumbnailUrl(thumbnail);
 			embed.WithDescription(description);
-			embed.AddField(Helper.HooHeyHow.Result, strResult);
+			embed.AddField(Helper.HooHeyHow.Description.Result, strResult);
 			embed.WithFooter(H3Footer(user));
 			embed.WithColor(color).WithCurrentTimestamp();
 
@@ -126,7 +126,7 @@ namespace TLDBot.Utility
 		private static EmbedAuthorBuilder T3Author()
 		{
 			EmbedAuthorBuilder author = new EmbedAuthorBuilder();
-			author.WithIconUrl(Helper.HooHeyHow.StartIcon);
+			author.WithIconUrl(Helper.HooHeyHow.Description.StartIcon);
 			author.WithName("Tic Tac Toe");
 			return author;
 		}

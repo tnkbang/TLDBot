@@ -1,27 +1,21 @@
 ﻿{
-	"Vietnamese": {
-		"Deer": "Nai",
-		"Calabash": "Bầu",
-		"Chicken": "Gà",
-		"Fish": "Cá",
-		"Crab": "Cua",
-		"Lobster": "Tôm"
-	},
-	"StartTitle": "Vui lòng chọn một linh vật !",
-	"StartIcon": "https://i.imgur.com/KX58KAP.gif",
-	"Winner": "Xin chúc mừng ",
-	"Loser": "Thật đáng tiếc cho ",
-	"Result": "Kết quả",
-	"ChoiceWin": {
-		"1": "Bạn thật may mắn! Có một ",
-		"2": "Ngon lành! Có đến hai ",
-		"3": "Tuyệt vời! có tận ba "
-	},
-	"ChoiceLose": "Không có ",
-	"JokeWin": {
-		"1": "Bạn đã có Bầu",
-		"2": "Song hỷ lâm môn",
-		"3": "Tam bảo hạ phàm"
-	},
-	"JokeLose": "Tiếc quá bạn không có Bầu"
+	"Description": {
+		"StartTitle": "Vui lòng chọn một linh vật !",
+		"StartIcon": "https://i.imgur.com/KX58KAP.gif",
+		"Winner": "Xin chúc mừng ",
+		"Loser": "Thật đáng tiếc cho ",
+		"Result": "Kết quả",
+		"ChoiceWin": {
+			"One": "Bạn thật may mắn! Có một ",
+			"Two": "Ngon lành! Có đến hai ",
+			"Three": "Tuyệt vời! có tận ba "
+		},
+		"ChoiceLose": "Không có ",
+		"JokeWin": {
+			"One": "Bạn đã có Bầu",
+			"Two": "Song hỷ lâm môn",
+			"Three": "Tam bảo hạ phàm"
+		},
+		"JokeLose": "Tiếc quá bạn không có Bầu"
+	}
 }

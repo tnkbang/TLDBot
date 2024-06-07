@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using TLDBot.Utility;
+using static TLDBot.Structs.HooHeyHow;
 
 namespace TLDBot.Handlers
 {
@@ -27,6 +28,7 @@ namespace TLDBot.Handlers
 		};
 
 		private static Dictionary<ulong, dynamic[]> UserState = new Dictionary<ulong, dynamic[]>();
+		protected static Info Description = Helper.HooHeyHow.Description;
 
 		//Meme thumb embed when user win
 		private static readonly string[] MemeLoser = new string[]
@@ -161,15 +163,15 @@ namespace TLDBot.Handlers
 			if (_userChoice.Equals(CALABASH) && (DateTime.Now.Second % 2 == 0))
 			{
 				rsl += "||";
-				if (_isCorrect) rsl += Helper.HooHeyHow.JokeWin[_countCorrect.ToString()];
-				else rsl += Helper.HooHeyHow.JokeLose;
+				if (_isCorrect) rsl += Description.JokeWin.GetValue(_countCorrect);
+				else rsl += Description.JokeLose;
 				rsl += "||";
 
 				return rsl;
 			}
 
-			if (_isCorrect) rsl += Helper.HooHeyHow.ChoiceWin[_countCorrect.ToString()];
-			else rsl += Helper.HooHeyHow.ChoiceLose;
+			if (_isCorrect) rsl += Description.ChoiceWin.GetValue(_countCorrect);
+			else rsl += Description.ChoiceLose;
 
 			return rsl + Emotes.GetByName(_userChoice!);
 		}
@@ -187,7 +189,7 @@ namespace TLDBot.Handlers
 			if (_baseChoice is null) return new EmbedBuilder().WithDescription("Server Error").Build();
 
 			string thumbnail = _isCorrect ? MemeWiner[new Random().Next(MemeWiner.Length)] : MemeLoser[new Random().Next(MemeLoser.Length)];
-			string title = (_isCorrect ? Helper.HooHeyHow.Winner : Helper.HooHeyHow.Loser) + user.GlobalName;
+			string title = (_isCorrect ? Description.Winner : Description.Loser) + user.GlobalName;
 			string description = FistLine + Emotes.GetByName(_baseChoice[0]) + "ㅤ" + Emotes.GetByName(_baseChoice[1]) + "ㅤ" + Emotes.GetByName(_baseChoice[2]) + LastLine;
 			string strResult = GetChoiceResult();
 			Color color = _isCorrect ? Color.Red : Color.DarkGrey;
