@@ -7,11 +7,6 @@ namespace TLDBot.Handlers
 {
 	public class TicTacToeHandler
 	{
-		public static readonly int BOARD_SIZE	= 5;
-		public static readonly char EMPTY		= '\0';
-		public static readonly char PLAYER_X	= 'X';
-		public static readonly char PLAYER_O	= 'O';
-
 		protected Player _player = new Player(BOARD_SIZE);
 		protected static Dictionary<ulong, Player> T3Player = new Dictionary<ulong, Player>();
 		protected static Info Description = Helper.TicTacToe.Description;
@@ -192,46 +187,21 @@ namespace TLDBot.Handlers
 		}
 
 		/// <summary>
-		/// Init board game
-		/// </summary>
-		public void InitializeBoard()
-		{
-			for (int i = 0; i < BOARD_SIZE; i++)
-			{
-				for (int j = 0; j < BOARD_SIZE; j++)
-				{
-					_player.Board[i, j] = EMPTY;
-				}
-			}
-			_player.SelectChar = EMPTY;
-			_player.BoardSize = BOARD_SIZE;
-		}
-
-		/// <summary>
 		/// Reset game (board, player,....)
 		/// </summary>
 		public void ResetBase()
 		{
-			InitializeBoard();
-
 			if(_player.IsDuet && _player.UserDuet is not null)
 			{
 				Player? player;
 				T3Player.TryGetValue(_player.UserDuet.Id, out player);
 				if (player is not null)
 				{
-					player.MessageId = 0;
-					player.SelectChar = EMPTY;
-					player.BoardSize = BOARD_SIZE;
-					player.UserDuet = null;
+					player.Clear();
 				}
 			}
 
-			_player.MessageId = 0;
-			_player.UserDuet = null;
-			_player.BoardSize = BOARD_SIZE;
-			_player.IsDuet = false;
-			_player.IsFirstTime = true;
+			_player.Clear();
 		}
 
 		/// <summary>
@@ -248,9 +218,7 @@ namespace TLDBot.Handlers
 		private void MakeMove(int row, int col, char player)
 		{
 			if (_isFirstTime) _player.IsFirstTime = false;
-
 			_board[row, col] = player;
-			_player.CheckTurns();
 		}
 
 		/// <summary>
@@ -262,15 +230,8 @@ namespace TLDBot.Handlers
 			T3Player.TryGetValue(User.Id, out player);
 
 			//User first using
-			if (player is null)
-			{
-				InitializeBoard();
-				T3Player[User.Id] = _player;
-			}
-			else
-			{
-				_player = player;
-			}
+			if (player is null) T3Player[User.Id] = _player;
+			else _player = player;
 		}
 
 		/// <summary>
@@ -370,12 +331,14 @@ namespace TLDBot.Handlers
 				if (_player.IsLose) return _player.UserDuet!.Mention + Description.State.Win;
 				if (_player.IsFull) return Description.State.Draws;
 
+				_player.CheckTurns();
 				return string.Empty;
 			}
 			if (_player.IsWin) return Description.State.WinBot;
 			if (_player.IsLose) return Description.State.Lose;
 			if (_player.IsFull) return Description.State.Draws;
 
+			_player.CheckTurns();
 			return string.Empty;
 		}
 
@@ -393,18 +356,10 @@ namespace TLDBot.Handlers
 		/// </summary>
 		private int Minimax(bool isMaximizing, int depth)
 		{
-			if (_player.IsLose)
-			{
-				return 1;
-			}
-			if (_player.IsWin)
-			{
-				return -1;
-			}
-			if (_player.IsFull)
-			{
-				return 0;
-			}
+			if (_player.IsLose) return 1;
+			if (_player.IsWin) return -1;
+			if (_player.IsFull) return 0;
+
 			if (isMaximizing)
 			{
 				int bestScore = int.MinValue;

@@ -1,10 +1,14 @@
 ﻿using Discord.WebSocket;
-using TLDBot.Handlers;
 
 namespace TLDBot.Structs
 {
 	public class TicTacToe
 	{
+		public static readonly int BOARD_SIZE	= 3;
+		public static readonly char EMPTY		= '\0';
+		public static readonly char PLAYER_X	= 'X';
+		public static readonly char PLAYER_O	= 'O';
+
 		public Info Description = new Info();
 
 		public TicTacToe() { }
@@ -48,11 +52,24 @@ namespace TLDBot.Structs
 			public ulong MessageId;
 			public bool IsDuet = false;
 			public bool IsFirstTime = true;
-			public char SelectChar = TicTacToeHandler.EMPTY;
+			public char SelectChar = EMPTY;
 			public SocketUser? UserDuet;
 
-			public int BoardSize = TicTacToeHandler.BOARD_SIZE;
-			public char[,] Board = new char[TicTacToeHandler.BOARD_SIZE, TicTacToeHandler.BOARD_SIZE];
+			public int BoardSize = BOARD_SIZE;
+			public char[,] Board = new char[BOARD_SIZE, BOARD_SIZE];
+
+			public int WinPoint
+			{
+				get
+				{
+					switch (BoardSize)
+					{
+						case 3: return 3;
+						case 5: return 4;
+						default: return 3;
+					}
+				}
+			}
 
 			public bool IsWin { get { return CheckForWinner(Board, SelectChar); } }
 
@@ -60,7 +77,7 @@ namespace TLDBot.Structs
 			{
 				get
 				{
-					return CheckForWinner(Board, SelectChar.Equals(TicTacToeHandler.PLAYER_X) ? TicTacToeHandler.PLAYER_O : TicTacToeHandler.PLAYER_X);
+					return CheckForWinner(Board, SelectChar.Equals(PLAYER_X) ? PLAYER_O : PLAYER_X);
 				}
 			}
 
@@ -79,12 +96,23 @@ namespace TLDBot.Structs
 				IsDuet = isDuet;
 			}
 
+			public void Clear()
+			{
+				MessageId = 0;
+				IsDuet = false;
+				IsFirstTime = true;
+				SelectChar = EMPTY;
+				UserDuet = null;
+				BoardSize = BOARD_SIZE;
+				Board = new char[BOARD_SIZE, BOARD_SIZE];
+			}
+
 			#region Check for winner
 			private bool CheckBoardHorizontal(char[,] board, int row, int col, char player, int count)
 			{
 				for (int i = 0; i < count; i++)
 				{
-					if (col + i < board.GetLength(1) && board[row, col + i].Equals(player)) continue;
+					if (col + i < BoardSize && board[row, col + i].Equals(player)) continue;
 					return false;
 				}
 				return true;
@@ -94,7 +122,7 @@ namespace TLDBot.Structs
 			{
 				for (int i = 0; i < count; i++)
 				{
-					if (row + i < board.GetLength(0) && board[row + i, col].Equals(player)) continue;
+					if (row + i < BoardSize && board[row + i, col].Equals(player)) continue;
 					return false;
 				}
 				return true;
@@ -102,7 +130,7 @@ namespace TLDBot.Structs
 
 			private bool CheckBoardDiagonalX(char[,] board, int row, int col, char player, int count)
 			{
-				if ((row + count <= board.GetLength(0) && col + count <= board.GetLength(1)) is false) return false;
+				if ((row + count <= BoardSize && col + count <= BoardSize) is false) return false;
 
 				for (int i = 0; i < count; i++)
 				{
@@ -114,7 +142,7 @@ namespace TLDBot.Structs
 
 			private bool CheckBoardDiagonalY(char[,] board, int row, int col, char player, int count)
 			{
-				if ((row + 1 >= count && col <= board.GetLength(1) - count) is false) return false;
+				if ((row + 1 >= count && col <= BoardSize - count) is false) return false;
 
 				for (int i = 0; i < count; i++)
 				{
@@ -127,23 +155,23 @@ namespace TLDBot.Structs
 			/// <summary>
 			/// Check user win
 			/// </summary>
-			private bool CheckForWinner(char[,] board, char player, int count = 4)
+			private bool CheckForWinner(char[,] board, char player)
 			{
-				for (int row = 0; row < board.GetLength(0); row++)
+				for (int row = 0; row < BoardSize; row++)
 				{
-					for (int col = 0; col < board.GetLength(1); col++)
+					for (int col = 0; col < BoardSize; col++)
 					{
 						// Check horizontally
-						if (CheckBoardHorizontal(board, row, col, player, count)) return true;
+						if (CheckBoardHorizontal(board, row, col, player, WinPoint)) return true;
 
 						// Check vertically
-						if (CheckBoardVertical(board, row, col, player, count)) return true;
+						if (CheckBoardVertical(board, row, col, player, WinPoint)) return true;
 
 						// Check diagonal left to right
-						if (CheckBoardDiagonalX(board, row, col, player, count)) return true;
+						if (CheckBoardDiagonalX(board, row, col, player, WinPoint)) return true;
 
 						// Check diagonal right to left
-						if (CheckBoardDiagonalY(board, row, col, player, count)) return true;
+						if (CheckBoardDiagonalY(board, row, col, player, WinPoint)) return true;
 					}
 				}
 				return false;
@@ -151,16 +179,19 @@ namespace TLDBot.Structs
 
 			private char[,] FillBoard(char[,] board)
 			{
-				for (int row = 0; row < board.GetLength(0); row++)
+				for (int row = 0; row < BoardSize; row++)
 				{
-					for (int col = 0; col < board.GetLength(1); col++)
+					for (int col = 0; col < BoardSize; col++)
 					{
-						if (board[row, col].Equals(TicTacToeHandler.EMPTY)) board[row, col] = SelectChar;
+						if (board[row, col].Equals(EMPTY)) board[row, col] = SelectChar;
 					}
 				}
 				return board;
 			}
 
+			/// <summary>
+			/// If board has not active turn, move random row or col
+			/// </summary>
 			public void CheckTurns()
 			{
 				char[,] board = (char[,])Board.Clone();
@@ -168,44 +199,47 @@ namespace TLDBot.Structs
 
 				if(!CheckForWinner(board, SelectChar))
 				{
-					if (new Random().Next(1, 10) % 2 is 0) MoveRowLeft();
-					else MoveColLeft();
+					switch (new Random().Next(0, 1))
+					{
+						case 0: MoveRowLeft(); break;
+						case 1: MoveColLeft(); break;
+					}
 				}
 			}
 
 			private void MoveRowLeft()
 			{
 				char[,] board = (char[,])Board.Clone();
-				for (int row = 0; row < Board.GetLength(0) - 1; row++)
+				for (int row = 0; row < BoardSize - 1; row++)
 				{
-					for (int col = 0; col < Board.GetLength(1); col++)
+					for (int col = 0; col < BoardSize; col++)
 					{
 						Board[row, col] = board[row +1, col];
 					}
 				}
 
 				//Last row empty
-				for (int col = 0; col < Board.GetLength(1); col++)
+				for (int col = 0; col < BoardSize; col++)
 				{
-					Board[Board.GetLength(0) - 1, col] = TicTacToeHandler.EMPTY;
+					Board[BoardSize - 1, col] = EMPTY;
 				}
 			}
 
 			private void MoveColLeft()
 			{
 				char[,] board = (char[,])Board.Clone();
-				for (int col = 0; col < Board.GetLength(1) - 1; col++)
+				for (int col = 0; col < BoardSize - 1; col++)
 				{
-					for (int row = 0; row < Board.GetLength(0); row++)
+					for (int row = 0; row < BoardSize; row++)
 					{
 						Board[row, col] = board[row, col + 1];
 					}
 				}
 
 				//Last row empty
-				for (int row = 0; row < Board.GetLength(0); row++)
+				for (int row = 0; row < BoardSize; row++)
 				{
-					Board[row, Board.GetLength(1) - 1] = TicTacToeHandler.EMPTY;
+					Board[row, BoardSize - 1] = EMPTY;
 				}
 			}
 
@@ -218,7 +252,7 @@ namespace TLDBot.Structs
 				{
 					for (int j = 0; j < BoardSize; j++)
 					{
-						if (Board[i, j].Equals(TicTacToeHandler.EMPTY))
+						if (Board[i, j].Equals(EMPTY))
 						{
 							return false;
 						}

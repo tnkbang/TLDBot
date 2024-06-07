@@ -30,7 +30,7 @@ namespace TLDBot.Modules
 			chatHandler = new AIChatHandler();
 			musicHandler = new MessageMusicHandler(_audioService, Context.Message, Context);
 			hooheyhowHandler = new MessageH3Handler(Context.Message);
-			tictactoeHandler = new MessageT3Handler(Context.Message);
+			tictactoeHandler = new MessageT3Handler(Context);
 
 			await Task.CompletedTask;
 		}

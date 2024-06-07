@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using TLDBot.Utility;
@@ -7,11 +8,13 @@ namespace TLDBot.Handlers.Message
 {
 	public class MessageT3Handler : TicTacToeHandler
 	{
+		private readonly SocketCommandContext _context;
 		private readonly SocketUserMessage _userMessage;
 
-		public MessageT3Handler(SocketUserMessage userMessage) : base(userMessage.Author)
+		public MessageT3Handler(SocketCommandContext context) : base(context.Message.Author)
 		{
-			_userMessage = userMessage;
+			_context = context;
+			_userMessage = context.Message;
 		}
 
 		private async Task<bool> IsMentionCorrect(SocketUser user)
@@ -38,10 +41,20 @@ namespace TLDBot.Handlers.Message
 				embed: Embeds.T3StartDuet(_userMessage.Author, DescriptionDuet, duet), components: ComponentChooseXO).ConfigureAwait(false);
 		}
 
+		private SocketUser? GetUserMention()
+		{
+			foreach(SocketUser user in _userMessage.MentionedUsers)
+			{
+				if (user.Id == _context.Client.CurrentUser.Id) continue;
+				return user;
+			}
+			return null;
+		}
+
 		public override async Task RespondAsync()
 		{
 			if (_userMessage is null) return;
-			SocketUser? user = _userMessage.MentionedUsers.FirstOrDefault();
+			SocketUser? user = GetUserMention();
 			SetMode(user);
 
 			RestUserMessage message;
