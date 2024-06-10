@@ -25,7 +25,7 @@ namespace TLDBot.Handlers.Button
 			await _messageComponent.UpdateAsync(msg =>
 			{
 				msg.Content = state;
-				msg.Embed = Embeds.T3Start(_messageComponent.User, BodyBoardPorcess);
+				msg.Embed = Embeds.T3Start(_messageComponent.User, BodyBoardPorcess, IsSetTitle);
 				msg.Components = isOver ? new ComponentBuilder().Build() : Component;
 			});
 			if (isOver) ResetBase();
@@ -43,7 +43,7 @@ namespace TLDBot.Handlers.Button
 
 				await _messageComponent.UpdateAsync(msg =>
 				{
-					msg.Embed = Embeds.T3StartDuet(_messageComponent.User, DescriptionDuet, duet);
+					msg.Embed = Embeds.T3StartDuet(_messageComponent.User, DescriptionDuet, duet, IsSetTitle);
 					msg.Components = ComponentChooseXO;
 				}).ConfigureAwait(false);
 				return;
@@ -51,7 +51,7 @@ namespace TLDBot.Handlers.Button
 
 			await _messageComponent.UpdateAsync(msg =>
 			{
-				msg.Embed = Embeds.T3Start(_messageComponent.User, BodyBoardPorcess);
+				msg.Embed = Embeds.T3Start(_messageComponent.User, BodyBoardPorcess, IsSetTitle);
 				msg.Components = Component;
 			}).ConfigureAwait(false);
 		}

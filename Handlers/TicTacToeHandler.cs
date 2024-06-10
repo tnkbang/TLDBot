@@ -29,6 +29,11 @@ namespace TLDBot.Handlers
 		}
 
 		/// <summary>
+		/// Check title embed
+		/// </summary>
+		public bool IsSetTitle = true;
+
+		/// <summary>
 		/// Board game in process (read from T3Player)
 		/// </summary>
 		protected char[,] _board
@@ -134,6 +139,8 @@ namespace TLDBot.Handlers
 		{
 			get
 			{
+				if (IsSetTitle) IsSetTitle = false; //Check title embed
+
 				string str = Line + Environment.NewLine;
 				for (int i = 0; i < BOARD_SIZE; i++)
 				{

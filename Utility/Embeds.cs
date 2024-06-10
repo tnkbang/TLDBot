@@ -139,12 +139,12 @@ namespace TLDBot.Utility
 			return footer;
 		}
 
-		public static Embed T3Start(SocketUser user, string description)
+		public static Embed T3Start(SocketUser user, string description, bool isTitle)
 		{
 			EmbedBuilder embed = new EmbedBuilder();
 			embed.WithAuthor(T3Author());
 			embed.WithThumbnailUrl(Helper.TicTacToe.Description.ThumbnailUrl);
-			embed.WithTitle(Helper.TicTacToe.Description.Title);
+			embed.WithTitle(isTitle ? Helper.TicTacToe.Description.Title : string.Empty);
 			embed.WithDescription(description);
 			embed.WithFooter(T3Footer(user));
 			embed.WithColor(Color.LightOrange).WithCurrentTimestamp();
@@ -152,12 +152,12 @@ namespace TLDBot.Utility
 			return embed.Build();
 		}
 
-		public static Embed T3StartDuet(SocketUser user, string description, string duetState)
+		public static Embed T3StartDuet(SocketUser user, string description, string duetState, bool isTitle)
 		{
 			EmbedBuilder embed = new EmbedBuilder();
 			embed.WithAuthor(T3Author());
 			embed.WithThumbnailUrl(Helper.TicTacToe.Description.ThumbnailUrl);
-			embed.WithTitle(Helper.TicTacToe.Description.Title);
+			embed.WithTitle(isTitle ? Helper.TicTacToe.Description.Title : string.Empty);
 			embed.WithDescription(description);
 			embed.AddField(Helper.TicTacToe.Description.TitleField, duetState);
 			embed.WithFooter(T3Footer(user));

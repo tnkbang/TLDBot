@@ -38,7 +38,7 @@ namespace TLDBot.Handlers.Message
 			string duet = _userMessage.Author.Mention + ": " + GetStringDuetChoice(_userMessage.Author.Id) + Environment.NewLine;
 			duet += user.Mention + ": " + GetStringDuetChoice(user.Id) + Environment.NewLine;
 			return await _userMessage.Channel.SendMessageAsync(
-				embed: Embeds.T3StartDuet(_userMessage.Author, DescriptionDuet, duet), components: ComponentChooseXO).ConfigureAwait(false);
+				embed: Embeds.T3StartDuet(_userMessage.Author, DescriptionDuet, duet, IsSetTitle), components: ComponentChooseXO).ConfigureAwait(false);
 		}
 
 		private SocketUser? GetUserMention()
@@ -66,7 +66,7 @@ namespace TLDBot.Handlers.Message
 			else
 			{
 				message = await _userMessage.Channel.SendMessageAsync(
-					embed: Embeds.T3Start(_userMessage.Author, DescriptionWithBot), components: ComponentChooseXO).ConfigureAwait(false);
+					embed: Embeds.T3Start(_userMessage.Author, DescriptionWithBot, IsSetTitle), components: ComponentChooseXO).ConfigureAwait(false);
 			}
 
 			SetMessageBoard(message.Id);

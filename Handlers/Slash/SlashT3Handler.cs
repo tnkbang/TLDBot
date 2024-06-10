@@ -19,7 +19,7 @@ namespace TLDBot.Handlers.Slash
 			string duet = _interactionContext.User.Mention + ": " + GetStringDuetChoice(_interactionContext.User.Id) + Environment.NewLine;
 			duet += user.Mention + ": " + GetStringDuetChoice(user.Id) + Environment.NewLine;
 			return await _interactionContext.Interaction.FollowupAsync(
-				embed: Embeds.T3StartDuet(_interactionContext.User, DescriptionDuet, duet), components: ComponentChooseXO).ConfigureAwait(false);
+				embed: Embeds.T3StartDuet(_interactionContext.User, DescriptionDuet, duet, IsSetTitle), components: ComponentChooseXO).ConfigureAwait(false);
 		}
 
 		private async Task<bool> IsMentionCorrect(SocketUser user)
@@ -53,7 +53,7 @@ namespace TLDBot.Handlers.Slash
 			else
 			{
 				message = await _interactionContext.Interaction.FollowupAsync(
-					embed: Embeds.T3Start(_interactionContext.User, DescriptionWithBot), components: ComponentChooseXO).ConfigureAwait(false);
+					embed: Embeds.T3Start(_interactionContext.User, DescriptionWithBot, IsSetTitle), components: ComponentChooseXO).ConfigureAwait(false);
 			}
 
 			SetMessageBoard(message.Id);
