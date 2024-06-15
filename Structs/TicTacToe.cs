@@ -5,13 +5,13 @@ namespace TLDBot.Structs
 	public class TicTacToe
 	{
 		public static readonly int BOARD_SIZE	= 5;
-		public static readonly int DEPTH		= 5;
+		public static readonly int DEPTH		= 3;
 		public static readonly char EMPTY		= '\0';
 		public static readonly char PLAYER_X	= 'X';
 		public static readonly char PLAYER_O	= 'O';
 
-		public static readonly int[] ATK_POINT = { 0, 3, 24, 192, 1536, 12288 };
-		public static readonly int[] DEF_POINT = { 0, 1, 9, 81, 729, 6534 };
+		public static readonly int[] ATK_POINT = { 0, 10, 100, 2000, 40000, 100000 };
+		public static readonly int[] DEF_POINT = { 0, 10, 200, 4000, 80000, 100000 };
 
 		public Info Description = new Info();
 

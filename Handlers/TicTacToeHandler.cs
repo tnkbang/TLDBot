@@ -370,15 +370,19 @@ namespace TLDBot.Handlers
 
 		public class ComputerHandler
 		{
-			public char[,] _board;
-			public Player _player;
-			public char _rivalPlayer;
+			private char[,] _board;
+			private Player _userPlayer;
+			private char _userChar;
+			private char _computerChar;
+			private int _winPoint = 3;
 
-			public ComputerHandler(Player player, char rivalPlayer)
+			public ComputerHandler(Player player, char computer)
 			{
-				_player = player;
-				_board = player.Board;
-				_rivalPlayer = rivalPlayer;
+				_userPlayer		= player;
+				_board			= player.Board;
+				_computerChar	= computer;
+				_userChar		= _userPlayer.SelectChar;
+				_winPoint		= _userPlayer.WinPoint;
 			}
 
 			/// <summary>
@@ -386,7 +390,7 @@ namespace TLDBot.Handlers
 			/// </summary>
 			private int Minimax(bool isMaximizing, int depth, int alpha, int beta)
 			{
-				if (depth >= DEPTH || _player.IsOver) return Evaluate(_player.SelectChar);
+				if (depth >= DEPTH || _userPlayer.IsOver) return Evaluate(_computerChar);
 
 				if (isMaximizing) return MaxValue(depth, alpha, beta);
 				return MinValue(depth, alpha, beta);
@@ -401,7 +405,7 @@ namespace TLDBot.Handlers
 					{
 						if (_board[i, j].Equals(EMPTY))
 						{
-							_board[i, j] = _rivalPlayer;
+							_board[i, j] = _computerChar;
 							int score = Minimax(false, depth + 1, alpha, beta);
 							_board[i, j] = EMPTY;
 							bestScore = Math.Max(bestScore, score);
@@ -425,7 +429,7 @@ namespace TLDBot.Handlers
 					{
 						if (_board[i, j].Equals(EMPTY))
 						{
-							_board[i, j] = _player.SelectChar;
+							_board[i, j] = _userChar;
 							int score = Minimax(true, depth + 1, alpha, beta);
 							_board[i, j] = EMPTY;
 							bestScore = Math.Min(bestScore, score);
@@ -470,7 +474,7 @@ namespace TLDBot.Handlers
 				int score = 0;
 				for (int i = 0; i < BOARD_SIZE; i++)
 				{
-					for (int j = 0; j <= BOARD_SIZE - _player.WinPoint; j++)
+					for (int j = 0; j <= BOARD_SIZE - _winPoint; j++)
 					{
 						score += EvaluateLine(player, i, j, 0, 1);
 					}
@@ -484,7 +488,7 @@ namespace TLDBot.Handlers
 			private int EvaluateVertical(char player)
 			{
 				int score = 0;
-				for (int i = 0; i <= BOARD_SIZE - _player.WinPoint; i++)
+				for (int i = 0; i <= BOARD_SIZE - _winPoint; i++)
 				{
 					for (int j = 0; j < BOARD_SIZE; j++)
 					{
@@ -500,9 +504,9 @@ namespace TLDBot.Handlers
 			private int EvaluateMainDiagonal(char player)
 			{
 				int score = 0;
-				for (int i = 0; i <= BOARD_SIZE - _player.WinPoint; i++)
+				for (int i = 0; i <= BOARD_SIZE - _winPoint; i++)
 				{
-					for (int j = 0; j <= BOARD_SIZE - _player.WinPoint; j++)
+					for (int j = 0; j <= BOARD_SIZE - _winPoint; j++)
 					{
 						score += EvaluateLine(player, i, j, 1, 1);
 					}
@@ -516,9 +520,9 @@ namespace TLDBot.Handlers
 			private int EvaluateExtraDiagonal(char player)
 			{
 				int score = 0;
-				for (int i = 4; i < BOARD_SIZE; i++)
+				for (int i = _winPoint - 1; i < BOARD_SIZE; i++)
 				{
-					for (int j = 0; j <= BOARD_SIZE - _player.WinPoint; j++)
+					for (int j = 0; j <= BOARD_SIZE - _winPoint; j++)
 					{
 						score += EvaluateLine(player, i, j, -1, 1);
 					}
@@ -534,15 +538,14 @@ namespace TLDBot.Handlers
 				int score = 0;
 				int playerCount = 0; // Player choice count
 				int opponentCount = 0; // Rival player choice count
-				char rivalPlayer = _rivalPlayer;
 
-				for (int i = 0; i < _player.WinPoint; i++)
+				for (int i = 0; i < _winPoint; i++)
 				{
 					int r = row + i * dRow;
 					int c = col + i * dCol;
 					if (_board[r, c] == player)
 						playerCount++;
-					else if (_board[r, c] == rivalPlayer)
+					else if (_board[r, c] == _userChar)
 						opponentCount++;
 				}
 
@@ -550,7 +553,7 @@ namespace TLDBot.Handlers
 				if (opponentCount is 0) score += ATK_POINT[playerCount];
 
 				// Calculate points when defending
-				if (playerCount is 0) score -= DEF_POINT[playerCount];
+				if (playerCount is 0) score -= DEF_POINT[opponentCount];
 
 				return score;
 			}
@@ -569,12 +572,11 @@ namespace TLDBot.Handlers
 					{
 						if (_board[i, j].Equals(EMPTY))
 						{
-							_board[i, j] = _rivalPlayer;
+							_board[i, j] = _computerChar;
 							int score = Minimax(false, 0, int.MinValue, int.MaxValue);
 							_board[i, j] = EMPTY;
 							if (score > bestScore)
 							{
-								Console.WriteLine("X= " + i + ";Y= " + j + ": " + score);
 								bestScore = score;
 								bestMoveRow = i;
 								bestMoveCol = j;
