@@ -42,6 +42,7 @@ namespace TLDBot.Structs
 			public string WinBot = string.Empty;
 			public string Lose = string.Empty;
 			public string Draws = string.Empty;
+			public string Already = string.Empty;
 		}
 
 		public class Permission

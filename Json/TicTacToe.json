@@ -14,7 +14,8 @@
 			"Win": " đã chiến thắng!",
 			"WinBot": "Bạn đã thắng!",
 			"Lose": "Bạn đã thua!",
-			"Draws": "Trận đấu hòa!"
+			"Draws": "Trận đấu hòa!",
+			"Already": "Bạn đang ở trong một trò chơi khác!"
 		},
 		"Permission": {
 			"NotAllow": "Bạn không phải là người bắt đầu game này.",
