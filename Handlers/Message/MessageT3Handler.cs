@@ -33,6 +33,19 @@ namespace TLDBot.Handlers.Message
 			return true;
 		}
 
+		private async Task<bool> HasAlreadyGame()
+		{
+			if (_player.MessageId is 0) return false;
+
+			IUserMessage reply = await _userMessage.ReplyAsync(Description.State.Already).ConfigureAwait(false);
+			await Task.Delay(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+
+			await _userMessage.DeleteAsync().ConfigureAwait(false);
+			await reply.DeleteAsync().ConfigureAwait(false);
+
+			return true;
+		}
+
 		private async Task<RestUserMessage> RespondDuetAsync(SocketUser user)
 		{
 			string duet = _userMessage.Author.Mention + ": " + GetStringDuetChoice(_userMessage.Author.Id) + Environment.NewLine;
@@ -54,6 +67,8 @@ namespace TLDBot.Handlers.Message
 		public override async Task RespondAsync()
 		{
 			if (_userMessage is null) return;
+			if (await HasAlreadyGame()) return;
+
 			SocketUser? user = GetUserMention();
 			SetMode(user);
 

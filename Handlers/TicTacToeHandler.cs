@@ -109,8 +109,6 @@ namespace TLDBot.Handlers
 						{
 							builder.WithButton(btnC.GameCaro(i, j, CharToEmoij(_board[i, j])).WithDisabled(true), i);
 						}
-
-						//builder.WithButton(btnC.GameCaro(i, j, CharToEmoij(ComponentChar)).WithDisabled(!_board[i, j].Equals(EMPTY)), i);
 					}
 				}
 				return builder.Build();
@@ -347,7 +345,12 @@ namespace TLDBot.Handlers
 			return string.Empty;
 		}
 
-		#region Machine move handle
+		public virtual async Task RespondAsync()
+		{
+			await Task.CompletedTask;
+		}
+
+		#region Computer move handle
 		/// <summary>
 		/// The first move of bot
 		/// </summary>
@@ -357,15 +360,43 @@ namespace TLDBot.Handlers
 		}
 
 		/// <summary>
-		/// Minimax algorithm
+		/// Set bot move char
 		/// </summary>
-		private int Minimax(bool isMaximizing, int depth)
+		private void ComputerMove()
 		{
-			if (_player.IsLose) return 1;
-			if (_player.IsWin) return -1;
-			if (_player.IsFull) return 0;
+			int[] rowCol = new ComputerHandler(_player, _rivalPlayer).GetMove();
+			MakeMove(rowCol[0], rowCol[1], _rivalPlayer);
+		}
 
-			if (isMaximizing)
+		public class ComputerHandler
+		{
+			private char[,] _board;
+			private Player _userPlayer;
+			private char _userChar;
+			private char _computerChar;
+			private int _winPoint = 3;
+
+			public ComputerHandler(Player player, char computer)
+			{
+				_userPlayer		= player;
+				_board			= player.Board;
+				_computerChar	= computer;
+				_userChar		= _userPlayer.SelectChar;
+				_winPoint		= _userPlayer.WinPoint;
+			}
+
+			/// <summary>
+			/// Minimax algorithm and Alpha–beta pruning
+			/// </summary>
+			private int Minimax(bool isMaximizing, int depth, int alpha, int beta)
+			{
+				if (depth >= DEPTH || _userPlayer.IsOver) return Evaluate(_computerChar);
+
+				if (isMaximizing) return MaxValue(depth, alpha, beta);
+				return MinValue(depth, alpha, beta);
+			}
+
+			private int MaxValue(int depth, int alpha, int beta)
 			{
 				int bestScore = int.MinValue;
 				for (int i = 0; i < BOARD_SIZE; i++)
@@ -374,16 +405,22 @@ namespace TLDBot.Handlers
 					{
 						if (_board[i, j].Equals(EMPTY))
 						{
-							_board[i, j] = _rivalPlayer;
-							int score = Minimax(false, depth + 1);
+							_board[i, j] = _computerChar;
+							int score = Minimax(false, depth + 1, alpha, beta);
 							_board[i, j] = EMPTY;
 							bestScore = Math.Max(bestScore, score);
+
+							// Alpha–beta pruning
+							alpha = Math.Max(alpha, bestScore);
+							if (beta <= alpha) break;
 						}
 					}
+					if (beta <= alpha) break;
 				}
 				return bestScore;
 			}
-			else
+
+			private int MinValue(int depth, int alpha, int beta)
 			{
 				int bestScore = int.MaxValue;
 				for (int i = 0; i < BOARD_SIZE; i++)
@@ -392,50 +429,383 @@ namespace TLDBot.Handlers
 					{
 						if (_board[i, j].Equals(EMPTY))
 						{
-							_board[i, j] = _player.SelectChar;
-							int score = Minimax(true, depth + 1);
+							_board[i, j] = _userChar;
+							int score = Minimax(true, depth + 1, alpha, beta);
 							_board[i, j] = EMPTY;
 							bestScore = Math.Min(bestScore, score);
+
+							// Alpha–beta pruning
+							beta = Math.Min(beta, bestScore);
+							if (beta <= alpha) break;
 						}
 					}
+					if (beta <= alpha) break;
 				}
 				return bestScore;
 			}
-		}
 
-		/// <summary>
-		/// Set bot move char
-		/// </summary>
-		private void ComputerMove()
-		{
-			int bestScore = int.MinValue;
-			int bestMoveRow = -1;
-			int bestMoveCol = -1;
-			for (int i = 0; i < BOARD_SIZE; i++)
+			/// <summary>
+			/// Evaluate score the main board
+			/// </summary>
+			private int Evaluate(char player)
 			{
-				for (int j = 0; j < BOARD_SIZE; j++)
+				int score = 0;
+
+				// Check horizontally
+				score += EvaluateHorizontal(player);
+
+				// Check vertically
+				score += EvaluateVertical(player);
+
+				// Check the main diagonally
+				score += EvaluateMainDiagonal(player);
+
+				// Check the extra diagonally
+				score += EvaluateExtraDiagonal(player);
+
+				return score;
+			}
+
+			/// <summary>
+			/// Check horizontally
+			/// </summary>
+			private int EvaluateHorizontal(char player)
+			{
+				int score = 0;
+				for (int i = 0; i < BOARD_SIZE; i++)
 				{
-					if (_board[i, j].Equals(EMPTY))
+					for (int j = 0; j <= BOARD_SIZE - _winPoint; j++)
 					{
-						_board[i, j] = _rivalPlayer;
-						int score = Minimax(false, 0);
-						_board[i, j] = EMPTY;
-						if (score > bestScore)
+						score += EvaluateLine(player, i, j, 0, 1);
+					}
+				}
+				return score;
+			}
+
+			/// <summary>
+			/// Check vertically
+			/// </summary>
+			private int EvaluateVertical(char player)
+			{
+				int score = 0;
+				for (int i = 0; i <= BOARD_SIZE - _winPoint; i++)
+				{
+					for (int j = 0; j < BOARD_SIZE; j++)
+					{
+						score += EvaluateLine(player, i, j, 1, 0);
+					}
+				}
+				return score;
+			}
+
+			/// <summary>
+			/// Check the main diagonally
+			/// </summary>
+			private int EvaluateMainDiagonal(char player)
+			{
+				int score = 0;
+				for (int i = 0; i <= BOARD_SIZE - _winPoint; i++)
+				{
+					for (int j = 0; j <= BOARD_SIZE - _winPoint; j++)
+					{
+						score += EvaluateLine(player, i, j, 1, 1);
+					}
+				}
+				return score;
+			}
+
+			/// <summary>
+			/// Check the extra diagonally
+			/// </summary>
+			private int EvaluateExtraDiagonal(char player)
+			{
+				int score = 0;
+				for (int i = _winPoint - 1; i < BOARD_SIZE; i++)
+				{
+					for (int j = 0; j <= BOARD_SIZE - _winPoint; j++)
+					{
+						score += EvaluateLine(player, i, j, -1, 1);
+					}
+				}
+				return score;
+			}
+
+			/// <summary>
+			/// Sum score for line
+			/// </summary>
+			private int EvaluateLine(char player, int row, int col, int dRow, int dCol)
+			{
+				int score = 0;
+				int playerCount = 0; // Player choice count
+				int opponentCount = 0; // Rival player choice count
+
+				for (int i = 0; i < _winPoint; i++)
+				{
+					int r = row + i * dRow;
+					int c = col + i * dCol;
+					if (_board[r, c] == player)
+						playerCount++;
+					else if (_board[r, c] == _userChar)
+						opponentCount++;
+				}
+
+				// Calculate points when attacking
+				if (opponentCount is 0) score += ATK_POINT[playerCount];
+
+				// Calculate points when defending
+				if (playerCount is 0) score -= DEF_POINT[opponentCount];
+
+				return score;
+			}
+
+			/// <summary>
+			/// Set bot move char
+			/// </summary>
+			public int[] GetMove()
+			{
+				int bestScore = int.MinValue;
+				int bestMoveRow = -1;
+				int bestMoveCol = -1;
+				for (int i = 0; i < BOARD_SIZE; i++)
+				{
+					for (int j = 0; j < BOARD_SIZE; j++)
+					{
+						if (_board[i, j].Equals(EMPTY))
 						{
-							bestScore = score;
-							bestMoveRow = i;
-							bestMoveCol = j;
+							_board[i, j] = _computerChar;
+							int score = Minimax(false, 0, int.MinValue, int.MaxValue);
+							_board[i, j] = EMPTY;
+							if (score > bestScore)
+							{
+								bestScore = score;
+								bestMoveRow = i;
+								bestMoveCol = j;
+							}
 						}
 					}
 				}
+				return [bestMoveRow, bestMoveCol];
 			}
-			MakeMove(bestMoveRow, bestMoveCol, _rivalPlayer);
 		}
 		#endregion
 
-		public virtual async Task RespondAsync()
+		#region Player handle
+		public class Player
 		{
-			await Task.CompletedTask;
+			public ulong MessageId;
+			public bool IsDuet = false;
+			public bool IsFirstTime = true;
+			public char SelectChar = EMPTY;
+			public SocketUser? UserDuet;
+
+			public int BoardSize = BOARD_SIZE;
+			public char[,] Board = new char[BOARD_SIZE, BOARD_SIZE];
+
+			public int WinPoint
+			{
+				get
+				{
+					switch (BoardSize)
+					{
+						case 3: return 3;
+						case 5: return 4;
+						default: return 3;
+					}
+				}
+			}
+
+			public bool IsWin { get { return CheckForWinner(Board, SelectChar); } }
+
+			public bool IsLose
+			{
+				get
+				{
+					return CheckForWinner(Board, SelectChar.Equals(PLAYER_X) ? PLAYER_O : PLAYER_X);
+				}
+			}
+
+			public bool IsFull { get { return IsBoardFull(); } }
+
+			public bool IsOver { get { return IsWin || IsLose || IsFull; } }
+
+			public Player(int board)
+			{
+				Board = new char[board, board];
+			}
+
+			public Player(SocketUser user, bool isDuet)
+			{
+				UserDuet = user;
+				IsDuet = isDuet;
+			}
+
+			public void Clear()
+			{
+				MessageId = 0;
+				IsDuet = false;
+				IsFirstTime = true;
+				SelectChar = EMPTY;
+				UserDuet = null;
+				BoardSize = BOARD_SIZE;
+				Board = new char[BOARD_SIZE, BOARD_SIZE];
+			}
+
+			#region Check for winner
+			private bool CheckBoardHorizontal(char[,] board, int row, int col, char player, int count)
+			{
+				for (int i = 0; i < count; i++)
+				{
+					if (col + i < BoardSize && board[row, col + i].Equals(player)) continue;
+					return false;
+				}
+				return true;
+			}
+
+			private bool CheckBoardVertical(char[,] board, int row, int col, char player, int count)
+			{
+				for (int i = 0; i < count; i++)
+				{
+					if (row + i < BoardSize && board[row + i, col].Equals(player)) continue;
+					return false;
+				}
+				return true;
+			}
+
+			private bool CheckBoardDiagonalX(char[,] board, int row, int col, char player, int count)
+			{
+				if ((row + count <= BoardSize && col + count <= BoardSize) is false) return false;
+
+				for (int i = 0; i < count; i++)
+				{
+					if (board[row + i, col + i].Equals(player)) continue;
+					return false;
+				}
+				return true;
+			}
+
+			private bool CheckBoardDiagonalY(char[,] board, int row, int col, char player, int count)
+			{
+				if ((row + 1 >= count && col <= BoardSize - count) is false) return false;
+
+				for (int i = 0; i < count; i++)
+				{
+					if (board[row - i, col + i].Equals(player)) continue;
+					return false;
+				}
+				return true;
+			}
+
+			/// <summary>
+			/// Check user win
+			/// </summary>
+			private bool CheckForWinner(char[,] board, char player)
+			{
+				for (int row = 0; row < BoardSize; row++)
+				{
+					for (int col = 0; col < BoardSize; col++)
+					{
+						// Check horizontally
+						if (CheckBoardHorizontal(board, row, col, player, WinPoint)) return true;
+
+						// Check vertically
+						if (CheckBoardVertical(board, row, col, player, WinPoint)) return true;
+
+						// Check diagonal left to right
+						if (CheckBoardDiagonalX(board, row, col, player, WinPoint)) return true;
+
+						// Check diagonal right to left
+						if (CheckBoardDiagonalY(board, row, col, player, WinPoint)) return true;
+					}
+				}
+				return false;
+			}
+			#endregion
+
+			private char[,] FillBoard(char[,] board)
+			{
+				for (int row = 0; row < BoardSize; row++)
+				{
+					for (int col = 0; col < BoardSize; col++)
+					{
+						if (board[row, col].Equals(EMPTY)) board[row, col] = SelectChar;
+					}
+				}
+				return board;
+			}
+
+			/// <summary>
+			/// If board has not active turn, move random row or col
+			/// </summary>
+			public void CheckTurns()
+			{
+				char[,] board = (char[,])Board.Clone();
+				board = FillBoard(board);
+
+				if (!CheckForWinner(board, SelectChar))
+				{
+					switch (new Random().Next(0, 1))
+					{
+						case 0: MoveRowLeft(); break;
+						case 1: MoveColLeft(); break;
+					}
+				}
+			}
+
+			private void MoveRowLeft()
+			{
+				char[,] board = (char[,])Board.Clone();
+				for (int row = 0; row < BoardSize - 1; row++)
+				{
+					for (int col = 0; col < BoardSize; col++)
+					{
+						Board[row, col] = board[row + 1, col];
+					}
+				}
+
+				//Last row empty
+				for (int col = 0; col < BoardSize; col++)
+				{
+					Board[BoardSize - 1, col] = EMPTY;
+				}
+			}
+
+			private void MoveColLeft()
+			{
+				char[,] board = (char[,])Board.Clone();
+				for (int col = 0; col < BoardSize - 1; col++)
+				{
+					for (int row = 0; row < BoardSize; row++)
+					{
+						Board[row, col] = board[row, col + 1];
+					}
+				}
+
+				//Last row empty
+				for (int row = 0; row < BoardSize; row++)
+				{
+					Board[row, BoardSize - 1] = EMPTY;
+				}
+			}
+
+			/// <summary>
+			/// Check board is full (not cell empty)
+			/// </summary>
+			private bool IsBoardFull()
+			{
+				for (int i = 0; i < BoardSize; i++)
+				{
+					for (int j = 0; j < BoardSize; j++)
+					{
+						if (Board[i, j].Equals(EMPTY))
+						{
+							return false;
+						}
+					}
+				}
+
+				return true;
+			}
 		}
+		#endregion
 	}
 }

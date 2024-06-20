@@ -38,10 +38,20 @@ namespace TLDBot.Handlers.Slash
 			return true;
 		}
 
+		private async Task<bool> HasAlreadyGame()
+		{
+			if (_player.MessageId is 0) return false;
+
+			await _interactionContext.Interaction.FollowupAsync(Description.State.Already, ephemeral: true).ConfigureAwait(false);
+			return true;
+		}
+
 		public async Task RespondAsync(SocketUser? user)
 		{
 			if (_interactionContext is null) return;
 			await _interactionContext.Interaction.DeferAsync(true);
+
+			if (await HasAlreadyGame()) return;
 			SetMode(user);
 
 			RestFollowupMessage message;
