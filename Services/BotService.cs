@@ -37,6 +37,7 @@ namespace TLDBot.Services
 		{
 			_Client.InteractionCreated += InteractionCreated;
 			_Client.MessageReceived += MessageReceived;
+			_Client.ButtonExecuted += ButtonExecuted;
 			_Client.Ready += ClientReady;
 			_Client.Log += Log;
 
@@ -52,6 +53,7 @@ namespace TLDBot.Services
 		{
 			_Client.InteractionCreated -= InteractionCreated;
 			_Client.MessageReceived -= MessageReceived;
+			_Client.ButtonExecuted -= ButtonExecuted;
 			_Client.Ready -= ClientReady;
 			_Client.Log -= Log;
 
@@ -97,16 +99,14 @@ namespace TLDBot.Services
 				SocketInteractionContext interactionContext = new SocketInteractionContext(_Client, interaction);
 				await _interactionService.ExecuteCommandAsync(interactionContext, _Provider).ConfigureAwait(false);
 			}
+		}
 
-			//Get button click
-			if(interaction is SocketMessageComponent)
-			{
-				SocketMessageComponent messageComponent = (SocketMessageComponent)interaction;
-				SocketCommandContext commandContext = new SocketCommandContext(_Client, messageComponent.Message);
+		private async Task ButtonExecuted(SocketMessageComponent component)
+		{
+			SocketCommandContext commandContext = new SocketCommandContext(_Client, component.Message);
 
-				ButtonModule buttonModule = new ButtonModule(_Provider.GetService<IAudioService>()!, messageComponent, commandContext);
-				await buttonModule.ExecuteCommandAsync(messageComponent.Data.CustomId).ConfigureAwait(false);
-			}
+			ButtonModule buttonModule = new ButtonModule(_Provider.GetService<IAudioService>()!, component, commandContext);
+			await buttonModule.ExecuteCommandAsync(component.Data.CustomId).ConfigureAwait(false);
 		}
 
 		private async Task ClientReady()
