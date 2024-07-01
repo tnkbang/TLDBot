@@ -13,7 +13,8 @@ Button emoij referenced <a href="https://www.flaticon.com/authors/kp-arts/flat-g
 2. .Net Core 8.0 (C#) and Java runtime 20 or newer
 3. <a href="https://github.com/lavalink-devs/Lavalink"> Lavalink 4</a>
 4. <a href="https://github.com/angelobreuer/Lavalink4NET"> Lavalink4NET</a>
-5. <a href="https://github.com/discord-net/Discord.Net"> Lavalink 4</a>
+5. <a href="https://github.com/discord-net/Discord.Net"> Discord .Net</a>
+6. <a href="https://aistudio.google.com/app"> Google Gemini</a>
 
 ## Getting Started
 
@@ -57,4 +58,5 @@ Gemini key get from: https://aistudio.google.com/app/apikey
 
 - Music playing: play, queue, nowplaying, skip, stop,...
 - TicTactoe game and HooHeyHow game.
+- AI chat bot.
 - And waiting for development :>>
