@@ -47,7 +47,7 @@ Change your `TOKEN`, owner id for `OWNER` and other values....
         "Model": "gemini-1.0-pro" // default value
     },
     "Prefix": ".",
-    "DiscordToken": ""
+    "DiscordToken": "" // replace value with your bot token
 }
 ```
 
