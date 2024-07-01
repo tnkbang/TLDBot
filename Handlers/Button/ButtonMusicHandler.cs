@@ -21,6 +21,7 @@ namespace TLDBot.Handlers.Button
 		protected override async Task SetPlayerAsync(PlayerRetrieveOptions retrieveOptions)
 		{
 			if (_commandContext is null) return;
+			await DeferAsync().ConfigureAwait(false);
 			_playerResult = await _audioService.Players.RetrieveAsync(_commandContext, playerFactory: PlayerFactory.Vote, retrieveOptions).ConfigureAwait(false);
 		}
 
@@ -29,7 +30,7 @@ namespace TLDBot.Handlers.Button
 			if (embed is null && components is null) return;
 			if (_messageComponent is null) return;
 
-			await _messageComponent.RespondAsync(embed: embed, components: components).ConfigureAwait(false);
+			await _messageComponent.FollowupAsync(embed: embed, components: components).ConfigureAwait(false);
 
 			await Task.Delay(TimeSpan.FromSeconds(SECOND_WAIT)).ConfigureAwait(false);
 			await _messageComponent.DeleteOriginalResponseAsync().ConfigureAwait(false);
@@ -38,7 +39,7 @@ namespace TLDBot.Handlers.Button
 		protected override async Task DeferAsync()
 		{
 			if (_messageComponent is null) return;
-			await _messageComponent.DeferAsync().ConfigureAwait(false);
+			await _messageComponent.DeferLoadingAsync().ConfigureAwait(false);
 		}
 	}
 }
