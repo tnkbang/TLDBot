@@ -42,9 +42,11 @@ namespace TLDBot.Modules
 		#endregion
 
 		#region Music
+		[Alias("disconnect", "dc")]
 		[Command(text: "disconnect", Summary = "Disconnects from the current voice channel connected to", RunMode = RunMode.Async)]
 		public async Task DisconnectAsync() => await musicHandler!.DisconnectAsync().ConfigureAwait(false);
 
+		[Alias("play", "p")]
 		[Command(text: "play", Summary = "Plays music", RunMode = RunMode.Async)]
 		public async Task PlayAsync([Remainder] string query = "") => await musicHandler!.PlayAsync(query).ConfigureAwait(false);
 
@@ -52,21 +54,26 @@ namespace TLDBot.Modules
 		[Command(text: "search", Summary = "Plays music", RunMode = RunMode.Async)]
 		public async Task SearchAsync([Remainder] string query = "") => await musicHandler!.SearchAsync(query).ConfigureAwait(false);
 
+		[Alias("position", "poin")]
 		[Command(text: "position", Summary = "Shows the track position", RunMode = RunMode.Async)]
 		public async Task PositionAsync() => await musicHandler!.PositionAsync().ConfigureAwait(false);
 
 		[Command(text: "stop", Summary = "Stops the current track", RunMode = RunMode.Async)]
 		public async Task StopAsync() => await musicHandler!.StopAsync().ConfigureAwait(false);
 
+		[Alias("volume", "vol", "v")]
 		[Command(text: "volume", Summary = "Sets the player volume (0 - 1000%)", RunMode = RunMode.Async)]
 		public async Task VolumeAsync([Remainder] int volume = 100) => await musicHandler!.VolumeAsync(volume).ConfigureAwait(false);
 
+		[Alias("skip", "sk")]
 		[Command(text: "skip", Summary = "Skips the current track", RunMode = RunMode.Async)]
 		public async Task SkipAsync() => await musicHandler!.SkipAsync().ConfigureAwait(false);
 
+		[Alias("loop", "lp")]
 		[Command(text: "loop", Summary = "Loop/Unloop the current track/queue", RunMode = RunMode.Async)]
 		public async Task LoopAsync() => await musicHandler!.LoopAsync().ConfigureAwait(false);
 
+		[Alias("shuffle", "sf")]
 		[Command(text: "shuffle", Summary = "Shuffle/Un shuffle the current queue", RunMode = RunMode.Async)]
 		public async Task ShuffleAsync() => await musicHandler!.ShuffleAsync().ConfigureAwait(false);
 
@@ -80,19 +87,20 @@ namespace TLDBot.Modules
 		[Command(text: "resume", Summary = "Resumes the player.", RunMode = RunMode.Async)]
 		public async Task ResumeAsync() => await musicHandler!.ResumeAsync().ConfigureAwait(false);
 
+		[Alias("queue", "q")]
 		[Command(text: "queue", Summary = "Queue in the player.", RunMode = RunMode.Async)]
 		public async Task QueueAsync() => await musicHandler!.QueueAsync().ConfigureAwait(false);
 		#endregion
 
 		#region HooHeyHow
-		[Command(text: "hooheyhow", Summary = "The hoo hey how game", RunMode = RunMode.Async)]
 		[Alias("bc", "baucua")]
+		[Command(text: "hooheyhow", Summary = "The hoo hey how game", RunMode = RunMode.Async)]
 		public async Task HooheyhowAsync([Remainder] string choice = "") => await hooheyhowHandler!.RespondAsync(choice).ConfigureAwait(false);
 		#endregion
 
 		#region TicTacToe
-		[Command(text: "tictactoe", Summary = "The tic tac toe game", RunMode = RunMode.Async)]
 		[Alias("ttt", "caro")]
+		[Command(text: "tictactoe", Summary = "The tic tac toe game", RunMode = RunMode.Async)]
 		public async Task TicTacToeAsync(string? input = null) => await tictactoeHandler!.RespondAsync().ConfigureAwait(false);
 		#endregion
 	}
