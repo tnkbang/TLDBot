@@ -58,6 +58,7 @@ namespace TLDBot.Handlers.Message
 		protected override async Task FollowupAsync(MessageComponent component)
 		{
 			await _commandContext.Channel.SendMessageAsync(components: component).ConfigureAwait(false);
+			await _userMessage.DeleteAsync().ConfigureAwait(false);
 		}
 
 		protected override async Task SetPlayerAsync(PlayerRetrieveOptions retrieveOptions)
