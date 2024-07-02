@@ -140,7 +140,12 @@ namespace TLDBot.Utility
 
 			if(playerMessage is not null)
 			{
-				await playerMessage.Channel.DeleteMessageAsync(playerMessage.MessageId).ConfigureAwait(false);
+				//await playerMessage.Channel.DeleteMessageAsync(playerMessage.MessageId).ConfigureAwait(false);
+				await playerMessage.Channel.ModifyMessageAsync(playerMessage.MessageId, msg => {
+					msg.Embed = Embeds.Playing(playerMessage.VotePlayer, eventArgs.Player.CurrentTrack!, playerMessage.User);
+					msg.Components = new ComponentBuilder().Build();
+				}).ConfigureAwait(false);
+
 				MusicHandler.GuildPlayer.Remove(eventArgs.Player.GuildId);
 			}
 		}
