@@ -100,6 +100,12 @@ namespace TLDBot.Handlers
 			await FollowupAsync(title: "Playing", message: $"Added to queue: **{track.Title}**", isUpdateEmbed: true).ConfigureAwait(false);
 		}
 
+		/// <summary>
+		/// Add track to queue from menu search
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <param name="user"></param>
+		/// <returns></returns>
 		protected async Task SearchAsync(IReadOnlyCollection<string> collection, SocketUser user)
 		{
 			VoteLavalinkPlayer? player = await GetPlayerAsync(true).ConfigureAwait(false);
@@ -123,6 +129,11 @@ namespace TLDBot.Handlers
 			await FollowupAsync(title: "Playing", message: $"Added **{collection.Count} track** to queue.", isUpdateEmbed: true).ConfigureAwait(false);
 		}
 
+		/// <summary>
+		/// Search tracks from name (limit 10 track)
+		/// </summary>
+		/// <param name="query"></param>
+		/// <returns></returns>
 		public async Task SearchAsync(string query)
 		{
 			await DeferAsync().ConfigureAwait(false);
