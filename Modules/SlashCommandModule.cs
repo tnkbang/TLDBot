@@ -46,6 +46,10 @@ namespace TLDBot.Modules
 		public async Task PlayAsync([Summary(description: "Name or url track")] string query) 
 			=> await _musicHandler!.PlayAsync(query).ConfigureAwait(false);
 
+		[SlashCommand("search", description: "Search music", runMode: RunMode.Async)]
+		public async Task SearchAsync([Summary(description: "Name or url track")] string query)
+			=> await _musicHandler!.SearchAsync(query).ConfigureAwait(false);
+
 		[SlashCommand("position", description: "Shows the track position", runMode: RunMode.Async)]
 		public async Task PositionAsync() => await _musicHandler!.PositionAsync().ConfigureAwait(false);
 

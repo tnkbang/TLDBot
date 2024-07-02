@@ -7,6 +7,7 @@ using Lavalink4NET.Players.Queued;
 using Lavalink4NET.Rest.Entities.Tracks;
 using TLDBot.Utility;
 using TLDBot.Structs;
+using Lavalink4NET.Tracks;
 
 namespace TLDBot.Handlers
 {
@@ -82,14 +83,14 @@ namespace TLDBot.Handlers
 			VoteLavalinkPlayer? player = await GetPlayerAsync(true).ConfigureAwait(false);
 			if (player is null) return;
 
-			var track = await _audioService.Tracks.LoadTrackAsync(query, TrackSearchMode.YouTube).ConfigureAwait(false);
+			LavalinkTrack? track = await _audioService.Tracks.LoadTrackAsync(query, TrackSearchMode.YouTube).ConfigureAwait(false);
 			if (track is null)
 			{
 				await FollowupAsync(title: "Search Playing", message: "No results.").ConfigureAwait(false);
 				return;
 			}
 
-			var position = await player.PlayAsync(track).ConfigureAwait(false);
+			int position = await player.PlayAsync(track).ConfigureAwait(false);
 			if (position is 0)
 			{
 				await FollowupAsync(components: GetComponent(isPause: false), embed: Embeds.Playing(player, track, user), isPlaying: true, isUpdateEmbed: true).ConfigureAwait(false);
@@ -97,6 +98,51 @@ namespace TLDBot.Handlers
 			}
 
 			await FollowupAsync(title: "Playing", message: $"Added to queue: **{track.Title}**", isUpdateEmbed: true).ConfigureAwait(false);
+		}
+
+		protected async Task SearchAsync(IReadOnlyCollection<string> collection, SocketUser user)
+		{
+			VoteLavalinkPlayer? player = await GetPlayerAsync(true).ConfigureAwait(false);
+			if (player is null) return;
+
+			LavalinkTrack? ftrack = null;
+			foreach (string item in collection)
+			{
+				LavalinkTrack? track = await _audioService.Tracks.LoadTrackAsync(item, TrackSearchMode.YouTube).ConfigureAwait(false);
+				if (track is null) continue;
+
+				int position = await player.PlayAsync(track).ConfigureAwait(false);
+				if (position is 0) ftrack = track;
+			}
+
+			if (ftrack is not null)
+			{
+				await FollowupAsync(components: GetComponent(isPause: false), embed: Embeds.Playing(player, ftrack, user), isPlaying: true, isUpdateEmbed: true).ConfigureAwait(false);
+				return;
+			}
+			await FollowupAsync(title: "Playing", message: $"Added **{collection.Count} track** to queue.", isUpdateEmbed: true).ConfigureAwait(false);
+		}
+
+		public async Task SearchAsync(string query)
+		{
+			await DeferAsync().ConfigureAwait(false);
+			VoteLavalinkPlayer? player = await GetPlayerAsync(true).ConfigureAwait(false);
+			if (player is null) return;
+
+			TrackLoadResult tracks = await _audioService.Tracks.LoadTracksAsync(query, TrackSearchMode.YouTube).ConfigureAwait(false);
+			if (tracks.Count is 0) return;
+
+			SelectMenuBuilder menuBuilder = new SelectMenuBuilder().WithPlaceholder("Chọn các bài hát muốn phát").WithCustomId("Search").WithMaxValues(10);
+
+			int count = 0;
+			foreach (LavalinkTrack track in tracks.Tracks)
+			{
+				if (count >= 10) break; count++;
+				menuBuilder.AddOption(track.Title, track.Uri!.ToString(), track.Duration.ToString());
+			}
+
+			MessageComponent component = new ComponentBuilder().WithSelectMenu(menuBuilder).Build();
+			await FollowupAsync(component: component).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -173,7 +219,7 @@ namespace TLDBot.Handlers
 
 			await player.SkipAsync().ConfigureAwait(false);
 
-			var track = player.CurrentItem;
+			ITrackQueueItem track = player.CurrentItem;
 			if (track is not null)
 			{
 				await RespondAsync(title: "Skipped", message: $"Now playing: **{track.Track!.Title}**").ConfigureAwait(false);
@@ -300,12 +346,12 @@ namespace TLDBot.Handlers
 		/// <returns>A task that represents the asynchronous operation. The task result is the lavalink player.</returns>
 		private async ValueTask<VoteLavalinkPlayer?> GetPlayerAsync(bool connectToVoiceChannel = false)
 		{
-			var retrieveOptions = new PlayerRetrieveOptions(ChannelBehavior: connectToVoiceChannel ? PlayerChannelBehavior.Join : PlayerChannelBehavior.None);
+			PlayerRetrieveOptions retrieveOptions = new PlayerRetrieveOptions(ChannelBehavior: connectToVoiceChannel ? PlayerChannelBehavior.Join : PlayerChannelBehavior.None);
 			await SetPlayerAsync(retrieveOptions).ConfigureAwait(false);
 
 			if (!_playerResult.IsSuccess)
 			{
-				var errorMessage = _playerResult.Status switch
+				string errorMessage = _playerResult.Status switch
 				{
 					PlayerRetrieveStatus.UserNotInVoiceChannel => "You are not connected to a voice channel.",
 					PlayerRetrieveStatus.BotNotConnected => "The bot is currently not connected.",
@@ -329,7 +375,12 @@ namespace TLDBot.Handlers
 		{
 			await Task.CompletedTask;
 		}
-		
+
+		protected virtual async Task FollowupAsync(MessageComponent component)
+		{
+			await Task.CompletedTask;
+		}
+
 		private async Task RespondAsync(string? title = null, string? message = null, bool isUpdateEmbed = false, bool isUpdateComponent = false)
 		{
 			if (isUpdateEmbed || isUpdateComponent)

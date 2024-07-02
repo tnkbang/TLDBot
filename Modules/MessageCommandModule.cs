@@ -48,6 +48,10 @@ namespace TLDBot.Modules
 		[Command(text: "play", Summary = "Plays music", RunMode = RunMode.Async)]
 		public async Task PlayAsync([Remainder] string query = "") => await musicHandler!.PlayAsync(query).ConfigureAwait(false);
 
+		[Alias("search", "s")]
+		[Command(text: "search", Summary = "Plays music", RunMode = RunMode.Async)]
+		public async Task SearchAsync([Remainder] string query = "") => await musicHandler!.SearchAsync(query).ConfigureAwait(false);
+
 		[Command(text: "position", Summary = "Shows the track position", RunMode = RunMode.Async)]
 		public async Task PositionAsync() => await musicHandler!.PositionAsync().ConfigureAwait(false);
 

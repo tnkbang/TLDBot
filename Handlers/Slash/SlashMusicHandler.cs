@@ -57,6 +57,11 @@ namespace TLDBot.Handlers.Slash
 			await followupMessage.DeleteAsync().ConfigureAwait(false);
 		}
 
+		protected override async Task FollowupAsync(MessageComponent component)
+		{
+			await _interactionContext.Interaction.FollowupAsync(components: component).ConfigureAwait(false);
+		}
+
 		protected override async Task RespondAsync(int wait, Embed? embed = null, MessageComponent? components = null)
 		{
 			if (embed is null && components is null) return;

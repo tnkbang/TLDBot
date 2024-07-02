@@ -38,6 +38,7 @@ namespace TLDBot.Services
 			_Client.InteractionCreated += InteractionCreated;
 			_Client.MessageReceived += MessageReceived;
 			_Client.ButtonExecuted += ButtonExecuted;
+			_Client.SelectMenuExecuted += SelectMenuExecuted;
 			_Client.Ready += ClientReady;
 			_Client.Log += Log;
 
@@ -54,6 +55,7 @@ namespace TLDBot.Services
 			_Client.InteractionCreated -= InteractionCreated;
 			_Client.MessageReceived -= MessageReceived;
 			_Client.ButtonExecuted -= ButtonExecuted;
+			_Client.SelectMenuExecuted -= SelectMenuExecuted;
 			_Client.Ready -= ClientReady;
 			_Client.Log -= Log;
 
@@ -99,6 +101,14 @@ namespace TLDBot.Services
 				SocketInteractionContext interactionContext = new SocketInteractionContext(_Client, interaction);
 				await _interactionService.ExecuteCommandAsync(interactionContext, _Provider).ConfigureAwait(false);
 			}
+		}
+
+		private async Task SelectMenuExecuted(SocketMessageComponent component)
+		{
+			SocketCommandContext commandContext = new SocketCommandContext(_Client, component.Message);
+
+			SelectMenuModule menuModule = new SelectMenuModule(_Provider.GetService<IAudioService>()!, component, commandContext);
+			await menuModule.ExecuteCommandAsync(component.Data.CustomId).ConfigureAwait(false);
 		}
 
 		private async Task ButtonExecuted(SocketMessageComponent component)
