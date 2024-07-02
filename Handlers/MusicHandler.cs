@@ -146,9 +146,11 @@ namespace TLDBot.Handlers
 			SelectMenuBuilder menuBuilder = new SelectMenuBuilder().WithPlaceholder("Chọn các bài hát muốn phát").WithCustomId("Search").WithMaxValues(10);
 
 			int count = 0;
-			foreach (LavalinkTrack track in tracks.Tracks)
+			foreach (LavalinkTrack track in tracks.Tracks.DistinctBy(x => x.Uri))
 			{
+				if (track is null && track!.Uri is null) continue;
 				if (count >= 10) break; count++;
+
 				menuBuilder.AddOption(track.Title, track.Uri!.ToString(), track.Duration.ToString());
 			}
 
