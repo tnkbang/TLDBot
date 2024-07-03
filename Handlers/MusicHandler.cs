@@ -152,7 +152,8 @@ namespace TLDBot.Handlers
 				if (track is null || track.Uri is null) continue;
 				if (count >= 10) break; count++;
 
-				menuBuilder.AddOption(track.Title.Contains("@") ? track.Title.Split("@")[0] : track.Title, track.Uri.OriginalString, track.Duration.ToString());
+				string title = Helper.SanitizeText(track.Title);
+				menuBuilder.AddOption(title, track.Uri.OriginalString, track.Duration.ToString());
 			}
 
 			MessageComponent component = new ComponentBuilder().WithSelectMenu(menuBuilder).Build();

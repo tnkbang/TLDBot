@@ -6,6 +6,7 @@ using Lavalink4NET.Players;
 using Newtonsoft.Json;
 using TLDBot.Handlers;
 using TLDBot.Structs;
+using System.Text.RegularExpressions;
 
 namespace TLDBot.Utility
 {
@@ -68,6 +69,18 @@ namespace TLDBot.Utility
 		public static string GetDescription(string cmd)
 		{
 			return CommandInfo.description[cmd] ?? "Command not description.";
+		}
+
+		/// <summary>
+		/// Convert text removes special characters
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public static string SanitizeText(string input)
+		{
+			var pattern = @"[^\u0000-\u007F\x00-\x7F\u0080-\u024F\u1E00-\u1EF9]";
+			Regex regex = new Regex(pattern);
+			return regex.Replace(input, "");
 		}
 
 		/// <summary>
