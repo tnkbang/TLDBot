@@ -32,7 +32,7 @@ namespace TLDBot.Handlers.Button
 
 			await _messageComponent.FollowupAsync(embed: embed, components: components).ConfigureAwait(false);
 
-			await Task.Delay(TimeSpan.FromSeconds(SECOND_WAIT)).ConfigureAwait(false);
+			await Task.Delay(TimeSpan.FromSeconds(wait)).ConfigureAwait(false);
 			await _messageComponent.DeleteOriginalResponseAsync().ConfigureAwait(false);
 		}
 

@@ -109,6 +109,8 @@ namespace TLDBot.Handlers
 		/// <returns></returns>
 		protected async Task SearchAsync(IReadOnlyCollection<string> collection, SocketUser user)
 		{
+			await DeferAsync().ConfigureAwait(false);
+
 			VoteLavalinkPlayer? player = await GetPlayerAsync(true).ConfigureAwait(false);
 			if (player is null) return;
 
@@ -138,6 +140,7 @@ namespace TLDBot.Handlers
 		public async Task SearchAsync(string query)
 		{
 			await DeferAsync().ConfigureAwait(false);
+
 			VoteLavalinkPlayer? player = await GetPlayerAsync(true).ConfigureAwait(false);
 			if (player is null) return;
 

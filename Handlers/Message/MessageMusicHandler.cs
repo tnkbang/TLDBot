@@ -75,7 +75,7 @@ namespace TLDBot.Handlers.Message
 			await _userMessage.DeleteAsync().ConfigureAwait(false);
 			RestUserMessage reply = await _userMessage.Channel.SendMessageAsync(embed: embed, components: components).ConfigureAwait(false);
 
-			await Task.Delay(TimeSpan.FromSeconds(SECOND_WAIT)).ConfigureAwait(false);
+			await Task.Delay(TimeSpan.FromSeconds(wait)).ConfigureAwait(false);
 			await reply.DeleteAsync().ConfigureAwait(false);
 		}
 	}
