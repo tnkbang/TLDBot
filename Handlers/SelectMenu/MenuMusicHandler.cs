@@ -11,25 +11,25 @@ namespace TLDBot.Handlers.SelectMenu
 {
 	public class MenuMusicHandler : MusicHandler
 	{
-		private readonly SocketCommandContext _context;
+		private readonly SocketCommandContext _commandContext;
 
 		public MenuMusicHandler(IAudioService audioService, SocketCommandContext context) : base(audioService)
 		{
-			_context = context;
+			_commandContext = context;
 		}
 
 		public async Task SearchAsync(IReadOnlyCollection<string> collection)
 		{
 			if (collection is null) return;
 
-			await _context.Message.DeleteAsync().ConfigureAwait(false);
-			await SearchAsync(collection, _context.User).ConfigureAwait(false);
+			await _commandContext.Message.DeleteAsync().ConfigureAwait(false);
+			await SearchAsync(collection, _commandContext.User).ConfigureAwait(false);
 		}
 
 		protected override async Task SetPlayerAsync(PlayerRetrieveOptions retrieveOptions)
 		{
-			if (_context is null) return;
-			_playerResult = await _audioService.Players.RetrieveAsync(_context, playerFactory: PlayerFactory.Vote, retrieveOptions).ConfigureAwait(false);
+			if (_commandContext is null) return;
+			_playerResult = await _audioService.Players.RetrieveAsync(_commandContext, playerFactory: PlayerFactory.Vote, retrieveOptions).ConfigureAwait(false);
 		}
 
 		private async Task<bool> SetGuildPlayer(string? message = null, MessageComponent? components = null, Embed? embed = null)
@@ -40,14 +40,14 @@ namespace TLDBot.Handlers.SelectMenu
 			GuildPlayer.TryGetValue(_playerResult.Player.GuildId, out playerMessage);
 			if (playerMessage is not null) return false;
 
-			RestUserMessage replyMessage = await _context.Channel.SendMessageAsync(message, components: components, embed: embed).ConfigureAwait(false);
-			GuildPlayer.Add(_context.Guild.Id, new GuildPlayerMessage(_context.Channel, replyMessage.Id, _playerResult.Player, _context.User));
+			RestUserMessage replyMessage = await _commandContext.Channel.SendMessageAsync(message, components: components, embed: embed).ConfigureAwait(false);
+			GuildPlayer.Add(_commandContext.Guild.Id, new GuildPlayerMessage(_commandContext.Channel, replyMessage.Id, _playerResult.Player, _commandContext.User));
 			return true;
 		}
 
 		protected override async Task FollowupAsync(string? title = null, string? message = null, MessageComponent? components = null, Embed? embed = null, bool isPlaying = false, bool isUpdateEmbed = false)
 		{
-			if (_context is null) return;
+			if (_commandContext is null) return;
 			if (_playerResult.Player is null || _playerResult.Player.CurrentTrack is null) return;
 			if (isPlaying && await SetGuildPlayer(message, components, embed)) return;
 
@@ -56,7 +56,7 @@ namespace TLDBot.Handlers.SelectMenu
 				await Helper.UpdatePlayingAsync(_playerResult.Player, _playerResult.Player.CurrentTrack, isUpdateEmbed: isUpdateEmbed, isUpdateComponent: true).ConfigureAwait(false);
 			}
 
-			RestUserMessage replyMessage = await _context.Channel
+			RestUserMessage replyMessage = await _commandContext.Channel
 				.SendMessageAsync(embed: Embeds.Info(title, isPlaying ? "Playing track: **" + _playerResult.Player.CurrentTrack.Title + "**" : message)).ConfigureAwait(false);
 
 			await Task.Delay(TimeSpan.FromSeconds(SECOND_WAIT)).ConfigureAwait(false);

@@ -8,12 +8,12 @@ namespace TLDBot.Handlers.Message
 {
 	public class MessageT3Handler : TicTacToeHandler
 	{
-		private readonly SocketCommandContext _context;
+		private readonly SocketCommandContext _commandContext;
 		private readonly SocketUserMessage _userMessage;
 
 		public MessageT3Handler(SocketCommandContext context) : base(context.Message.Author)
 		{
-			_context = context;
+			_commandContext = context;
 			_userMessage = context.Message;
 		}
 
@@ -58,7 +58,7 @@ namespace TLDBot.Handlers.Message
 		{
 			foreach(SocketUser user in _userMessage.MentionedUsers)
 			{
-				if (user.Id == _context.Client.CurrentUser.Id) continue;
+				if (user.Id == _commandContext.Client.CurrentUser.Id) continue;
 				return user;
 			}
 			return null;
