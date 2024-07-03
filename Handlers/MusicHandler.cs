@@ -15,6 +15,7 @@ namespace TLDBot.Handlers
 	{
 		//Action
 		public static readonly string PLAY		= "Play";
+		public static readonly string SEARCH	= "Search";
 		public static readonly string PAUSE		= "Pause";
 		public static readonly string RESUME	= "Resume";
 		public static readonly string LOOP		= "Loop";
@@ -143,15 +144,15 @@ namespace TLDBot.Handlers
 			TrackLoadResult tracks = await _audioService.Tracks.LoadTracksAsync(query, TrackSearchMode.YouTube).ConfigureAwait(false);
 			if (tracks.Count is 0) return;
 
-			SelectMenuBuilder menuBuilder = new SelectMenuBuilder().WithPlaceholder("Chọn các bài hát muốn phát").WithCustomId("Search").WithMaxValues(10);
+			SelectMenuBuilder menuBuilder = new SelectMenuBuilder().WithPlaceholder("Chọn các bài hát muốn phát").WithCustomId(SEARCH).WithMaxValues(10);
 
 			int count = 0;
 			foreach (LavalinkTrack track in tracks.Tracks.DistinctBy(x => x.Uri))
 			{
-				if (track is null && track!.Uri is null) continue;
+				if (track is null || track.Uri is null) continue;
 				if (count >= 10) break; count++;
 
-				menuBuilder.AddOption(track.Title, track.Uri!.ToString(), track.Duration.ToString());
+				menuBuilder.AddOption(track.Title.Contains("@") ? track.Title.Split("@")[0] : track.Title, track.Uri.OriginalString, track.Duration.ToString());
 			}
 
 			MessageComponent component = new ComponentBuilder().WithSelectMenu(menuBuilder).Build();
