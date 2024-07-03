@@ -155,8 +155,9 @@ namespace TLDBot.Handlers
 				if (track is null || track.Uri is null) continue;
 				if (count >= 10) break; count++;
 
-				string title = Helper.SanitizeText(track.Title);
-				menuBuilder.AddOption(title, track.Uri.OriginalString, track.Duration.ToString());
+				string lable = Helper.SanitizeText(track.Title);
+				string description = track.Duration + " - " + track.Author;
+				menuBuilder.AddOption(label: lable, value: track.Uri.OriginalString, description: description);
 			}
 
 			MessageComponent component = new ComponentBuilder().WithSelectMenu(menuBuilder).Build();
