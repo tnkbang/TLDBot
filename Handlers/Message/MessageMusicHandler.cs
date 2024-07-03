@@ -28,8 +28,10 @@ namespace TLDBot.Handlers.Message
 
 		private async Task<bool> SetGuildPlayer(string? message = null, MessageComponent? components = null, Embed? embed = null)
 		{
+			if (_playerResult.Player is null) return false;
+
 			GuildPlayerMessage? playerMessage;
-			GuildPlayer.TryGetValue(_playerResult.Player!.GuildId, out playerMessage);
+			GuildPlayer.TryGetValue(_playerResult.Player.GuildId, out playerMessage);
 			if (playerMessage is not null) return false;
 
 			RestUserMessage replyMessage = await _commandContext.Channel.SendMessageAsync(message, components: components, embed: embed).ConfigureAwait(false);
@@ -40,16 +42,18 @@ namespace TLDBot.Handlers.Message
 		protected override async Task FollowupAsync(string? title = null, string? message = null, MessageComponent? components = null, Embed? embed = null, bool isPlaying = false, bool isUpdateEmbed = false)
 		{
 			if (_commandContext is null) return;
+			if (_playerResult.Player is null || _playerResult.Player.CurrentTrack is null) return;
+
 			await _commandContext.Message.DeleteAsync().ConfigureAwait(false);
 			if (isPlaying && await SetGuildPlayer(message, components, embed)) return;
 
 			if (isUpdateEmbed)
 			{
-				await Helper.UpdatePlayingAsync(_playerResult.Player!, _playerResult.Player!.CurrentTrack!, isUpdateEmbed: isUpdateEmbed, isUpdateComponent: true).ConfigureAwait(false);
+				await Helper.UpdatePlayingAsync(_playerResult.Player, _playerResult.Player.CurrentTrack, isUpdateEmbed: isUpdateEmbed, isUpdateComponent: true).ConfigureAwait(false);
 			}
 
 			RestUserMessage replyMessage = await _commandContext.Channel
-				.SendMessageAsync(embed: Embeds.Info(title, isPlaying ? "Playing track: **" + _playerResult.Player!.CurrentTrack!.Title + "**" : message)).ConfigureAwait(false);
+				.SendMessageAsync(embed: Embeds.Info(title, isPlaying ? "Playing track: **" + _playerResult.Player.CurrentTrack.Title + "**" : message)).ConfigureAwait(false);
 
 			await Task.Delay(TimeSpan.FromSeconds(SECOND_WAIT)).ConfigureAwait(false);
 			await replyMessage.DeleteAsync().ConfigureAwait(false);

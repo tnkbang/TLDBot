@@ -23,8 +23,10 @@ namespace TLDBot.Utility
 		{
 			EmbedBuilder embed = new EmbedBuilder();
 
+			if (track.Uri is null) return embed.Build();
+
 			embed.WithAuthor(new EmbedAuthorBuilder { Name = track.Author });
-			embed.WithTitle(track.Title).WithUrl(track.Uri!.OriginalString);
+			embed.WithTitle(track.Title).WithUrl(track.Uri.OriginalString);
 			embed.WithThumbnailUrl(track.ArtworkUri?.OriginalString);
 			embed.AddField("Duration", track.Duration, inline: true);
 			embed.AddField("Loop", player.RepeatMode, inline: true);

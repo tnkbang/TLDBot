@@ -403,7 +403,8 @@ namespace TLDBot.Handlers
 		{
 			if (isUpdateEmbed || isUpdateComponent)
 			{
-				await Helper.UpdatePlayingAsync(_playerResult.Player!, _playerResult.Player!.CurrentTrack!, isUpdateEmbed, isUpdateComponent).ConfigureAwait(false);
+				if (_playerResult.Player is null || _playerResult.Player.CurrentTrack is null) return;
+				await Helper.UpdatePlayingAsync(_playerResult.Player, _playerResult.Player.CurrentTrack, isUpdateEmbed, isUpdateComponent).ConfigureAwait(false);
 			}
 
 			await RespondAsync(wait: SECOND_WAIT, embed: Embeds.Info(title, message)).ConfigureAwait(false);

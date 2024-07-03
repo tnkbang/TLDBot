@@ -36,7 +36,7 @@ namespace TLDBot.Handlers.Button
 			if (await IsPermission() is false) return;
 
 			SetChooseXO(name);
-			if (_player.IsDuet && GetStringDuetChoice(_player.UserDuet!.Id).Equals(Description.State.NotSelect))
+			if (_player.IsDuet && _player.UserDuet is not null && GetStringDuetChoice(_player.UserDuet.Id).Equals(Description.State.NotSelect))
 			{
 				string duet = _messageComponent.User.Mention + ": " + GetStringDuetChoice(_messageComponent.User.Id) + Environment.NewLine;
 				duet += _player.UserDuet.Mention + ": " + GetStringDuetChoice(_player.UserDuet.Id) + Environment.NewLine;

@@ -142,7 +142,8 @@ namespace TLDBot.Handlers
 				else if (_baseChoice.Contains(_userChoice) is false)
 				{
 					//If user lose 3 round then user will win
-					_baseChoice[new Random().Next(0, 2)] = _userChoice!;
+					if (_userChoice is null) return;
+					_baseChoice[new Random().Next(0, 2)] = _userChoice;
 				}
 			}
 
@@ -173,7 +174,7 @@ namespace TLDBot.Handlers
 			if (_isCorrect) rsl += Description.ChoiceWin.GetValue(_countCorrect);
 			else rsl += Description.ChoiceLose;
 
-			return rsl + Emotes.GetByName(_userChoice!);
+			return rsl + Emotes.GetByName(_userChoice);
 		}
 
 		/// <summary>

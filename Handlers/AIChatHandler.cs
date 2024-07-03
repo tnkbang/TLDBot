@@ -19,8 +19,11 @@ namespace TLDBot.Handlers
 		{
 			try
 			{
-				GenerateContentResponse response = await Model!.GenerateContent(prompt).ConfigureAwait(false);
-				return response.Text!.ToString() ?? "Bad request";
+				if (Model is null) return "Model is null";
+				GenerateContentResponse response = await Model.GenerateContent(prompt).ConfigureAwait(false);
+
+				if (response.Text is null) return "Bad request";
+				return response.Text;
 			}
 			catch { return "Your API key error!"; }
 		}

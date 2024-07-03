@@ -17,20 +17,23 @@ namespace TLDBot.Services
 		private readonly CommandService _commandService;
 		private readonly IServiceProvider _Provider;
 		private readonly IConfiguration _Config;
+		private readonly IAudioService _AudioService;
 
-		public BotService(DiscordSocketClient Client, InteractionService Interaction, CommandService Command, IServiceProvider Provider, IConfiguration Config)
+		public BotService(DiscordSocketClient Client, InteractionService Interaction, CommandService Command, IServiceProvider Provider, IConfiguration Config, IAudioService audioService)
 		{
 			ArgumentNullException.ThrowIfNull(Client);
 			ArgumentNullException.ThrowIfNull(Interaction);
 			ArgumentNullException.ThrowIfNull(Command);
 			ArgumentNullException.ThrowIfNull(Provider);
 			ArgumentNullException.ThrowIfNull(Config);
+			ArgumentNullException.ThrowIfNull(audioService);
 
 			_Client = Client;
 			_interactionService = Interaction;
 			_commandService = Command;
 			_Provider = Provider;
 			_Config = Config;
+			_AudioService = audioService;
 		}
 
 		public async Task StartAsync(CancellationToken cancellationToken)
@@ -42,9 +45,9 @@ namespace TLDBot.Services
 			_Client.Ready += ClientReady;
 			_Client.Log += Log;
 
-			_Provider.GetService<IAudioService>()!.TrackStarted += Helper.TrackStartedAsync;
-			_Provider.GetService<IAudioService>()!.TrackEnded += Helper.TrackEndedAsync;
-			_Provider.GetService<IAudioService>()!.Players.PlayerDestroyed += Helper.PlayerDestroyedAsync;
+			_AudioService.TrackStarted += Helper.TrackStartedAsync;
+			_AudioService.TrackEnded += Helper.TrackEndedAsync;
+			_AudioService.Players.PlayerDestroyed += Helper.PlayerDestroyedAsync;
 
 			await _Client.LoginAsync(TokenType.Bot, _Config["DiscordToken"]).ConfigureAwait(false);
 			await _Client.StartAsync().ConfigureAwait(false);
@@ -59,9 +62,9 @@ namespace TLDBot.Services
 			_Client.Ready -= ClientReady;
 			_Client.Log -= Log;
 
-			_Provider.GetService<IAudioService>()!.TrackStarted -= Helper.TrackStartedAsync;
-			_Provider.GetService<IAudioService>()!.TrackEnded -= Helper.TrackEndedAsync;
-			_Provider.GetService<IAudioService>()!.Players.PlayerDestroyed -= Helper.PlayerDestroyedAsync;
+			_AudioService.TrackStarted -= Helper.TrackStartedAsync;
+			_AudioService.TrackEnded -= Helper.TrackEndedAsync;
+			_AudioService.Players.PlayerDestroyed -= Helper.PlayerDestroyedAsync;
 
 			Lavalink.Stop();
 			await _Client.StopAsync().ConfigureAwait(false);
@@ -107,7 +110,7 @@ namespace TLDBot.Services
 		{
 			SocketCommandContext commandContext = new SocketCommandContext(_Client, component.Message);
 
-			SelectMenuModule menuModule = new SelectMenuModule(_Provider.GetService<IAudioService>()!, component, commandContext);
+			SelectMenuModule menuModule = new SelectMenuModule(_AudioService, component, commandContext);
 			await menuModule.ExecuteCommandAsync(component.Data.CustomId).ConfigureAwait(false);
 		}
 
@@ -115,7 +118,7 @@ namespace TLDBot.Services
 		{
 			SocketCommandContext commandContext = new SocketCommandContext(_Client, component.Message);
 
-			ButtonModule buttonModule = new ButtonModule(_Provider.GetService<IAudioService>()!, component, commandContext);
+			ButtonModule buttonModule = new ButtonModule(_AudioService, component, commandContext);
 			await buttonModule.ExecuteCommandAsync(component.Data.CustomId).ConfigureAwait(false);
 		}
 

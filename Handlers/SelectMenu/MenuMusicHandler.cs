@@ -34,8 +34,10 @@ namespace TLDBot.Handlers.SelectMenu
 
 		private async Task<bool> SetGuildPlayer(string? message = null, MessageComponent? components = null, Embed? embed = null)
 		{
+			if (_playerResult.Player is null) return false;
+
 			GuildPlayerMessage? playerMessage;
-			GuildPlayer.TryGetValue(_playerResult.Player!.GuildId, out playerMessage);
+			GuildPlayer.TryGetValue(_playerResult.Player.GuildId, out playerMessage);
 			if (playerMessage is not null) return false;
 
 			RestUserMessage replyMessage = await _context.Channel.SendMessageAsync(message, components: components, embed: embed).ConfigureAwait(false);
@@ -46,15 +48,16 @@ namespace TLDBot.Handlers.SelectMenu
 		protected override async Task FollowupAsync(string? title = null, string? message = null, MessageComponent? components = null, Embed? embed = null, bool isPlaying = false, bool isUpdateEmbed = false)
 		{
 			if (_context is null) return;
+			if (_playerResult.Player is null || _playerResult.Player.CurrentTrack is null) return;
 			if (isPlaying && await SetGuildPlayer(message, components, embed)) return;
 
 			if (isUpdateEmbed)
 			{
-				await Helper.UpdatePlayingAsync(_playerResult.Player!, _playerResult.Player!.CurrentTrack!, isUpdateEmbed: isUpdateEmbed, isUpdateComponent: true).ConfigureAwait(false);
+				await Helper.UpdatePlayingAsync(_playerResult.Player, _playerResult.Player.CurrentTrack, isUpdateEmbed: isUpdateEmbed, isUpdateComponent: true).ConfigureAwait(false);
 			}
 
 			RestUserMessage replyMessage = await _context.Channel
-				.SendMessageAsync(embed: Embeds.Info(title, isPlaying ? "Playing track: **" + _playerResult.Player!.CurrentTrack!.Title + "**" : message)).ConfigureAwait(false);
+				.SendMessageAsync(embed: Embeds.Info(title, isPlaying ? "Playing track: **" + _playerResult.Player.CurrentTrack.Title + "**" : message)).ConfigureAwait(false);
 
 			await Task.Delay(TimeSpan.FromSeconds(SECOND_WAIT)).ConfigureAwait(false);
 			await replyMessage.DeleteAsync().ConfigureAwait(false);

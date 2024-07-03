@@ -34,7 +34,9 @@ namespace TLDBot.Utility
 				using (StreamReader r = new StreamReader("Json/CommandInfo.json"))
 				{
 					string json = r.ReadToEnd();
-					dynamic data = JsonConvert.DeserializeObject(json)!;
+					dynamic? data = JsonConvert.DeserializeObject(json);
+
+					if (data is null) return "Load json err!";
 					return data;
 				}
 			}
@@ -47,7 +49,9 @@ namespace TLDBot.Utility
 				using (StreamReader r = new StreamReader("Json/HooHeyHow.json"))
 				{
 					string json = r.ReadToEnd();
-					HooHeyHow data = JsonConvert.DeserializeObject<HooHeyHow>(json)!;
+					HooHeyHow? data = JsonConvert.DeserializeObject<HooHeyHow>(json);
+					
+					if (data is null) return new HooHeyHow();
 					return data;
 				}
 			}
@@ -60,7 +64,9 @@ namespace TLDBot.Utility
 				using (StreamReader r = new StreamReader("Json/TicTacToe.json"))
 				{
 					string json = r.ReadToEnd();
-					TicTacToe data = JsonConvert.DeserializeObject<TicTacToe>(json)!;
+					TicTacToe? data = JsonConvert.DeserializeObject<TicTacToe>(json);
+					
+					if (data is null) return new TicTacToe();
 					return data;
 				}
 			}
@@ -153,13 +159,18 @@ namespace TLDBot.Utility
 
 			if(playerMessage is not null)
 			{
-				//await playerMessage.Channel.DeleteMessageAsync(playerMessage.MessageId).ConfigureAwait(false);
+				MusicHandler.GuildPlayer.Remove(eventArgs.Player.GuildId);
+
+				if (eventArgs.Player.CurrentTrack is null)
+				{
+					await playerMessage.Channel.DeleteMessageAsync(playerMessage.MessageId).ConfigureAwait(false);
+					return;
+				}
+
 				await playerMessage.Channel.ModifyMessageAsync(playerMessage.MessageId, msg => {
-					msg.Embed = Embeds.Playing(playerMessage.VotePlayer, eventArgs.Player.CurrentTrack!, playerMessage.User);
+					msg.Embed = Embeds.Playing(playerMessage.VotePlayer, eventArgs.Player.CurrentTrack, playerMessage.User);
 					msg.Components = new ComponentBuilder().Build();
 				}).ConfigureAwait(false);
-
-				MusicHandler.GuildPlayer.Remove(eventArgs.Player.GuildId);
 			}
 		}
 	}

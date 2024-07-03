@@ -40,10 +40,10 @@ namespace TLDBot.Handlers
 		{
 			get
 			{
-				if (_player.IsDuet)
+				if (_player.IsDuet && _player.UserDuet is not null)
 				{
 					Player? player;
-					T3Player.TryGetValue(_player.UserDuet!.Id, out player);
+					T3Player.TryGetValue(_player.UserDuet.Id, out player);
 
 					if(player is not null) player.Board = _player.Board;
 				}
@@ -55,10 +55,10 @@ namespace TLDBot.Handlers
 		{
 			get
 			{
-				if (_player.IsDuet)
+				if (_player.IsDuet && _player.UserDuet is not null)
 				{
 					Player? player;
-					T3Player.TryGetValue(_player.UserDuet!.Id, out player);
+					T3Player.TryGetValue(_player.UserDuet.Id, out player);
 
 					if (player is not null) player.IsFirstTime = _player.IsFirstTime;
 				}
@@ -287,10 +287,10 @@ namespace TLDBot.Handlers
 		protected void SetMessageBoard(ulong mid)
 		{
 			_player.MessageId = mid;
-			if (!_player.IsDuet && _player.UserDuet is null) return;
+			if (!_player.IsDuet || _player.UserDuet is null) return;
 
 			Player? player;
-			T3Player.TryGetValue(_player.UserDuet!.Id, out player);
+			T3Player.TryGetValue(_player.UserDuet.Id, out player);
 			if (player is not null)
 			{
 				player.MessageId = mid;
@@ -328,10 +328,10 @@ namespace TLDBot.Handlers
 		{
 			PlayBoard(row, col);
 
-			if (_player.IsDuet)
+			if (_player.IsDuet && _player.UserDuet is not null)
 			{
 				if (_player.IsWin) return User.Mention + Description.State.Win;
-				if (_player.IsLose) return _player.UserDuet!.Mention + Description.State.Win;
+				if (_player.IsLose) return _player.UserDuet.Mention + Description.State.Win;
 				if (_player.IsFull) return Description.State.Draws;
 
 				_player.CheckTurns();
