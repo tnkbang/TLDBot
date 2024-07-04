@@ -17,7 +17,7 @@ namespace TLDBot.Modules
 			ArgumentNullException.ThrowIfNull(messageComponent);
 			ArgumentNullException.ThrowIfNull(context);
 
-			_musicHandler = new MenuMusicHandler(audioService, context);
+			_musicHandler = new MenuMusicHandler(audioService, messageComponent, context);
 			_component = messageComponent;
 		}
 

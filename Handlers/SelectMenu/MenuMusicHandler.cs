@@ -6,15 +6,18 @@ using Discord;
 using Discord.Rest;
 using TLDBot.Utility;
 using TLDBot.Structs;
+using Discord.WebSocket;
 
 namespace TLDBot.Handlers.SelectMenu
 {
 	public class MenuMusicHandler : MusicHandler
 	{
+		private readonly SocketMessageComponent _messageComponent;
 		private readonly SocketCommandContext _commandContext;
 
-		public MenuMusicHandler(IAudioService audioService, SocketCommandContext context) : base(audioService)
+		public MenuMusicHandler(IAudioService audioService, SocketMessageComponent messageComponent, SocketCommandContext context) : base(audioService)
 		{
+			_messageComponent = messageComponent;
 			_commandContext = context;
 		}
 
@@ -23,7 +26,7 @@ namespace TLDBot.Handlers.SelectMenu
 			if (collection is null) return;
 
 			await _commandContext.Message.DeleteAsync().ConfigureAwait(false);
-			await SearchAsync(collection, _commandContext.User).ConfigureAwait(false);
+			await SearchAsync(collection, _messageComponent.User).ConfigureAwait(false);
 		}
 
 		protected override async Task SetPlayerAsync(PlayerRetrieveOptions retrieveOptions)
@@ -41,7 +44,7 @@ namespace TLDBot.Handlers.SelectMenu
 			if (playerMessage is not null) return false;
 
 			RestUserMessage replyMessage = await _commandContext.Channel.SendMessageAsync(message, components: components, embed: embed).ConfigureAwait(false);
-			GuildPlayer.Add(_commandContext.Guild.Id, new GuildPlayerMessage(_commandContext.Channel, replyMessage.Id, _playerResult.Player, _commandContext.User));
+			GuildPlayer.Add(_commandContext.Guild.Id, new GuildPlayerMessage(_commandContext.Channel, replyMessage.Id, _playerResult.Player, _messageComponent.User));
 			return true;
 		}
 
