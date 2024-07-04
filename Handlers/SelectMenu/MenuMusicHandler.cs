@@ -57,7 +57,7 @@ namespace TLDBot.Handlers.SelectMenu
 			}
 
 			RestUserMessage replyMessage = await _commandContext.Channel
-				.SendMessageAsync(embed: Embeds.Info(title, isPlaying ? "Playing track: **" + _playerResult.Player.CurrentTrack.Title + "**" : message)).ConfigureAwait(false);
+				.SendMessageAsync(embed: Embeds.Info(title, isPlaying ? Description.Play.GetBody(_playerResult.Player.CurrentTrack.Title) : message)).ConfigureAwait(false);
 
 			await Task.Delay(TimeSpan.FromSeconds(SECOND_WAIT)).ConfigureAwait(false);
 			await replyMessage.DeleteAsync().ConfigureAwait(false);

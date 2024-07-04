@@ -54,7 +54,7 @@ namespace TLDBot.Handlers.Slash
 			}
 
 			RestFollowupMessage followupMessage = await _interactionContext.Interaction
-				.FollowupAsync(embed: Embeds.Info(title, isPlaying ? "Playing track: **" + _playerResult.Player.CurrentTrack.Title + "**" : message)).ConfigureAwait(false);
+				.FollowupAsync(embed: Embeds.Info(title, isPlaying ? Description.Play.GetBody(_playerResult.Player.CurrentTrack.Title) : message)).ConfigureAwait(false);
 
 			await Task.Delay(TimeSpan.FromSeconds(SECOND_WAIT)).ConfigureAwait(false);
 			await followupMessage.DeleteAsync().ConfigureAwait(false);

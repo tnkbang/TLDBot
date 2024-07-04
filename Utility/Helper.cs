@@ -42,6 +42,21 @@ namespace TLDBot.Utility
 			}
 		}
 
+		public static Music Music
+		{
+			get
+			{
+				using (StreamReader r = new StreamReader("Json/Music.json"))
+				{
+					string json = r.ReadToEnd();
+					Music? data = JsonConvert.DeserializeObject<Music>(json);
+
+					if(data is null) return new Music();
+					return data;
+				}
+			}
+		}
+
 		public static HooHeyHow HooHeyHow
 		{
 			get

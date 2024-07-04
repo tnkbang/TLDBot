@@ -1,0 +1,97 @@
+{
+	"Description": {
+		"Nothing": "Hiện không có bài hát nào đang phát!",
+		"Duration": "Thời lượng",
+		"Author": "Tạo bởi {username}",
+		"State": {
+			"Title": "Trạng thái",
+			"On": "Bật",
+			"Off": "Tắt",
+			"Track": "Bài hát",
+			"Queue": "Hàng đợi",
+			"Destroyed": "Đã hủy",
+			"NotPlaying": "Ngừng phát",
+			"Playing": "Đang phát",
+			"Paused": "Tạm dừng"
+		},
+		"Status": {
+			"NotInVoice": "Bạn hiện tại không có ở trong kênh thoại nào.",
+			"NotSameVoice": "Bạn không ở cùng kênh thoại với bot.",
+			"BotNotConnect": "Bot chưa tham gia kênh thoại.",
+			"Unknown": "Lỗi không xác định!"
+		},
+		"Disconnect": {
+			"Body": "Đã ngắt kết nối."
+		},
+		"Play": {
+			"Title": "Phát nhạc",
+			"Body": "Bắt đầu phát: **{track}**",
+			"AddTitle": "Thêm vào hàng đợi",
+			"AddBody": "Đã thêm bài hát: **{track}**",
+			"ErrTitle": "Lỗi tìm kiếm",
+			"ErrBody": "Không tìm thấy bài hát với từ khóa: **{query}**"
+		},
+		"Search": {
+			"Title": "Thêm vào hàng đợi",
+			"Body": "Đã thêm **{count}** bài hát vào hàng đợi.",
+			"Info": "Chọn các bài hát muốn phát"
+		},
+		"Position": {
+			"Title": "Trình phát nhạc",
+			"Body": "Trạng thái: **{state}**"
+		},
+		"Stop": {
+			"Title": "Stop",
+			"Body": "Đã dừng trình phát nhạc!"
+		},
+		"Volume": {
+			"Title": "Âm lượng",
+			"Body": "Âm lượng đặt thành: **{volume}%**",
+			"ErrTitle": "Lỗi dữ liệu",
+			"ErrBody": "Chỉ nhận các giá trị là số từ 0 đến 1000"
+		},
+		"Skip": {
+			"Title": "Skipped",
+			"Body": "Bắt đầu phát: **{track}**",
+			"Empty": "Trình phát nhạc đã dừng vì không có bài hát nào trong hàng đợi!"
+		},
+		"Loop": {
+			"Title": "Lặp",
+			"Track": "Lặp lại bài hát hiện tại đang **bật**.",
+			"Queue": "Lặp lại hàng đợi hiện tại đang **bật**.",
+			"None": "Lặp lại hiện tại đang **tắt**.",
+			"Type": {
+				"Track": "Bài hát",
+				"Queue": "Danh sách",
+				"None": "Không"
+			}
+		},
+		"Shuffle": {
+			"Title": "Trộn",
+			"Body": "Chế độ trộn bài đang **{state}**.",
+			"On": "Bật",
+			"Off": "Tắt"
+		},
+		"Seek": {
+			"Title": "Điều chỉnh",
+			"Body": "Đã điều chỉnh thời gian phát đến: **{time}**"
+		},
+		"Pause": {
+			"Title": "Tạm dừng",
+			"Already": "Hiện tại trình phát nhạc đang tạm dừng.",
+			"Done": "Đã tạm dừng trình phát nhạc."
+		},
+		"Resume": {
+			"Title": "Tiếp tục",
+			"Already": "Trình phát nhạc hiện đang phát.",
+			"Done": "Đã tiếp tục trình phát nhạc."
+		},
+		"Queue": {
+			"Title": "Danh sách phát",
+			"Info": "Danh sách phát: **{count}** bài hát",
+			"Play": "Bài hát đang phát",
+			"InQueue": "Hàng đợi",
+			"IsNull": "Không có bài hát nào trong hàng đợi."
+		}
+	}
+}

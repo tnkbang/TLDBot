@@ -32,7 +32,8 @@ namespace TLDBot.Handlers
 		public static readonly int QUEUE_WAIT	= 20;
 
 		public static Dictionary<ulong, GuildPlayerMessage> GuildPlayer = new Dictionary<ulong, GuildPlayerMessage>();
-
+		
+		protected Music.Info Description = Helper.Music.Description;
 		protected PlayerResult<VoteLavalinkPlayer> _playerResult;
 		protected readonly IAudioService _audioService;
 
@@ -69,7 +70,7 @@ namespace TLDBot.Handlers
 			if (player is null) return;
 
 			await player.DisconnectAsync().ConfigureAwait(false);
-			await FollowupAsync(message: "Disconnect.").ConfigureAwait(false);
+			await FollowupAsync(message: Description.Disconnect.Body).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -87,7 +88,7 @@ namespace TLDBot.Handlers
 			LavalinkTrack? track = await _audioService.Tracks.LoadTrackAsync(query, TrackSearchMode.YouTube).ConfigureAwait(false);
 			if (track is null)
 			{
-				await FollowupAsync(title: "Search Playing", message: "No results.").ConfigureAwait(false);
+				await FollowupAsync(title: Description.Play.ErrTitle, message: Description.Play.GetErrBody(query)).ConfigureAwait(false);
 				return;
 			}
 
@@ -98,7 +99,7 @@ namespace TLDBot.Handlers
 				return;
 			}
 
-			await FollowupAsync(title: "Playing", message: $"Added to queue: **{track.Title}**", isUpdateEmbed: true).ConfigureAwait(false);
+			await FollowupAsync(title: Description.Play.AddTitle, message: Description.Play.GetAddBody(track.Title), isUpdateEmbed: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -129,7 +130,7 @@ namespace TLDBot.Handlers
 				await FollowupAsync(components: GetComponent(isPause: false), embed: Embeds.Playing(player, ftrack, user), isPlaying: true, isUpdateEmbed: true).ConfigureAwait(false);
 				return;
 			}
-			await FollowupAsync(title: "Playing", message: $"Added **{collection.Count} track** to queue.", isUpdateEmbed: true).ConfigureAwait(false);
+			await FollowupAsync(title: Description.Search.Title, message: Description.Search.GetBody(collection.Count), isUpdateEmbed: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -147,7 +148,7 @@ namespace TLDBot.Handlers
 			TrackLoadResult tracks = await _audioService.Tracks.LoadTracksAsync(query, TrackSearchMode.YouTube).ConfigureAwait(false);
 			if (tracks.Count is 0) return;
 
-			SelectMenuBuilder menuBuilder = new SelectMenuBuilder().WithPlaceholder("Chọn các bài hát muốn phát").WithCustomId(SEARCH).WithMaxValues(10);
+			SelectMenuBuilder menuBuilder = new SelectMenuBuilder().WithPlaceholder(Description.Search.Info).WithCustomId(SEARCH).WithMaxValues(10);
 
 			int count = 0;
 			foreach (LavalinkTrack track in tracks.Tracks.DistinctBy(x => x.Uri))
@@ -175,11 +176,11 @@ namespace TLDBot.Handlers
 
 			if (player.CurrentItem is null)
 			{
-				await RespondAsync(message: "Nothing playing!").ConfigureAwait(false);
+				await RespondAsync(message: Description.Nothing).ConfigureAwait(false);
 				return;
 			}
 
-			await RespondAsync(title: "Track position", message: $"Position: {player.Position?.Position.ToString(@"hh\:mm\:ss")} / {player.CurrentTrack?.Duration}.").ConfigureAwait(false);
+			await RespondAsync(title: Description.Position.Title, message: Description.Position.GetBody($"{player.Position?.Position.ToString(@"hh\:mm\:ss")} / {player.CurrentTrack?.Duration}")).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -193,12 +194,12 @@ namespace TLDBot.Handlers
 
 			if (player.CurrentItem is null)
 			{
-				await RespondAsync(message: "Nothing playing!").ConfigureAwait(false);
+				await RespondAsync(message: Description.Nothing).ConfigureAwait(false);
 				return;
 			}
 
 			await player.StopAsync().ConfigureAwait(false);
-			await RespondAsync(message: "Stopped playing.").ConfigureAwait(false);
+			await RespondAsync(message: Description.Stop.Body).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -210,7 +211,7 @@ namespace TLDBot.Handlers
 		{
 			if (volume is > 1000 or < 0)
 			{
-				await RespondAsync(title: "Volume err", message: "Volume out of range: 0% - 1000%!").ConfigureAwait(false);
+				await RespondAsync(title: Description.Volume.ErrTitle, message: Description.Volume.ErrBody).ConfigureAwait(false);
 				return;
 			}
 
@@ -218,7 +219,7 @@ namespace TLDBot.Handlers
 			if (player is null) return;
 
 			await player.SetVolumeAsync(volume / 100f).ConfigureAwait(false);
-			await RespondAsync(title: "Volume", message: $"Volume updated: {volume}%", isUpdateEmbed: true).ConfigureAwait(false);
+			await RespondAsync(title: Description.Volume.Title, message: Description.Volume.GetBody(volume), isUpdateEmbed: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -232,7 +233,7 @@ namespace TLDBot.Handlers
 
 			if (player.CurrentItem is null)
 			{
-				await RespondAsync(message: "Nothing playing!").ConfigureAwait(false);
+				await RespondAsync(message: Description.Nothing).ConfigureAwait(false);
 				return;
 			}
 
@@ -241,11 +242,11 @@ namespace TLDBot.Handlers
 			ITrackQueueItem track = player.CurrentItem;
 			if (track is not null)
 			{
-				await RespondAsync(title: "Skipped", message: $"Now playing: **{track.Track!.Title}**").ConfigureAwait(false);
+				await RespondAsync(title: Description.Skip.Title, message: Description.Skip.GetBody(track.Track!.Title)).ConfigureAwait(false);
 				return;
 			}
 
-			await RespondAsync(title: "Skipped", message: "Stopped playing because the queue is now empty.").ConfigureAwait(false);
+			await RespondAsync(title: Description.Skip.Title, message: Description.Skip.Empty).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -261,15 +262,15 @@ namespace TLDBot.Handlers
 			{
 				case TrackRepeatMode.None:
 					player.RepeatMode = TrackRepeatMode.Track;
-					await RespondAsync(title: "Loop", message: "Loop the current track.", isUpdateEmbed: true).ConfigureAwait(false);
+					await RespondAsync(title: Description.Loop.Title, message: Description.Loop.Track, isUpdateEmbed: true).ConfigureAwait(false);
 					break;
 				case TrackRepeatMode.Track:
 					player.RepeatMode = TrackRepeatMode.Queue;
-					await RespondAsync(title: "Loop", message: "Loop the current queue.", isUpdateEmbed: true).ConfigureAwait(false);
+					await RespondAsync(title: Description.Loop.Title, message: Description.Loop.Queue, isUpdateEmbed: true).ConfigureAwait(false);
 					break;
 				case TrackRepeatMode.Queue:
 					player.RepeatMode = TrackRepeatMode.None;
-					await RespondAsync(title: "Loop", message: "Unloop the current queue.", isUpdateEmbed: true).ConfigureAwait(false);
+					await RespondAsync(title: Description.Loop.Title, message: Description.Loop.None, isUpdateEmbed: true).ConfigureAwait(false);
 					break;
 			}
 		}
@@ -285,7 +286,7 @@ namespace TLDBot.Handlers
 
 			player.Shuffle = !player.Shuffle;
 
-			await RespondAsync(title: "Shuffle", message: (player.Shuffle ? "Shuffle" : "Un shuffle") + " the current queue.", isUpdateEmbed: true).ConfigureAwait(false);
+			await RespondAsync(title: Description.Shuffle.Title, message: Description.Shuffle.GetBody(player.Shuffle), isUpdateEmbed: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -300,12 +301,12 @@ namespace TLDBot.Handlers
 
 			if (player.CurrentItem is null)
 			{
-				await RespondAsync(message: "Nothing playing!").ConfigureAwait(false);
+				await RespondAsync(message: Description.Nothing).ConfigureAwait(false);
 				return;
 			}
 			
 			await player.SeekAsync(time, isBegin ? SeekOrigin.Begin : SeekOrigin.Current).ConfigureAwait(false);
-			await RespondAsync(title: "Seek", message: $"The track is play duration: {player.Position?.Position.ToString(@"hh\:mm\:ss")}").ConfigureAwait(false);
+			await RespondAsync(title: Description.Seek.Title, message: Description.Seek.GetBody(time)).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -319,12 +320,12 @@ namespace TLDBot.Handlers
 
 			if (player.State is PlayerState.Paused)
 			{
-				await RespondAsync(message: "Player is already paused.").ConfigureAwait(false);
+				await RespondAsync(message: Description.Pause.Already).ConfigureAwait(false);
 				return;
 			}
 
 			await player.PauseAsync().ConfigureAwait(false);
-			await RespondAsync(message: "Paused.", isUpdateEmbed: true, isUpdateComponent: true).ConfigureAwait(false);
+			await RespondAsync(message: Description.Pause.Done, isUpdateEmbed: true, isUpdateComponent: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -338,12 +339,12 @@ namespace TLDBot.Handlers
 
 			if (player.State is not PlayerState.Paused)
 			{
-				await RespondAsync(message: "Player is not paused.").ConfigureAwait(false);
+				await RespondAsync(message: Description.Resume.Already).ConfigureAwait(false);
 				return;
 			}
 
 			await player.ResumeAsync().ConfigureAwait(false);
-			await RespondAsync(message: "Resumed.", isUpdateEmbed: true, isUpdateComponent: true).ConfigureAwait(false);
+			await RespondAsync(message: Description.Resume.Done, isUpdateEmbed: true, isUpdateComponent: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -372,9 +373,10 @@ namespace TLDBot.Handlers
 			{
 				string errorMessage = _playerResult.Status switch
 				{
-					PlayerRetrieveStatus.UserNotInVoiceChannel => "You are not connected to a voice channel.",
-					PlayerRetrieveStatus.BotNotConnected => "The bot is currently not connected.",
-					_ => "Unknown error.",
+					PlayerRetrieveStatus.UserNotInVoiceChannel => Description.Status.NotInVoice,
+					PlayerRetrieveStatus.BotNotConnected => Description.Status.BotNotConnect,
+					PlayerRetrieveStatus.UserInSameVoiceChannel => Description.Status.NotSameVoice,
+					_ => Description.Status.Unknown,
 				};
 
 				if (connectToVoiceChannel) await FollowupAsync(errorMessage).ConfigureAwait(false);

@@ -1,7 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using TLDBot.Structs;
 using TLDBot.Utility;
-using static TLDBot.Structs.HooHeyHow;
 
 namespace TLDBot.Handlers
 {
@@ -28,7 +28,7 @@ namespace TLDBot.Handlers
 		};
 
 		private static Dictionary<ulong, dynamic[]> UserState = new Dictionary<ulong, dynamic[]>();
-		protected static Info Description = Helper.HooHeyHow.Description;
+		protected static HooHeyHow.Info Description = Helper.HooHeyHow.Description;
 
 		//Meme thumb embed when user win
 		private static readonly string[] MemeLoser = new string[]

@@ -4,12 +4,15 @@ using Lavalink4NET.Players;
 using Lavalink4NET.Players.Queued;
 using Lavalink4NET.Players.Vote;
 using Lavalink4NET.Tracks;
+using TLDBot.Structs;
 
 namespace TLDBot.Utility
 {
 	public class Embeds
 	{
 		public Embeds() { }
+
+		private static readonly Music.Info Music = Helper.Music.Description;
 
 		#region Music
 		/// <summary>
@@ -28,14 +31,14 @@ namespace TLDBot.Utility
 			embed.WithAuthor(new EmbedAuthorBuilder { Name = track.Author });
 			embed.WithTitle(track.Title).WithUrl(track.Uri.OriginalString);
 			embed.WithThumbnailUrl(track.ArtworkUri?.OriginalString);
-			embed.AddField("Duration", track.Duration, inline: true);
-			embed.AddField("Loop", player.RepeatMode, inline: true);
-			embed.AddField("Shuffle", player.Shuffle, inline: true);
-			embed.AddField("Volume", (player.Volume * 100) + "%", inline: true);
-			embed.AddField("Queue", player.State is PlayerState.NotPlaying ? player.Queue.Count : player.Queue.Count + 1, inline: true);
-			embed.AddField("Player Status", player.State, inline: true);
+			embed.AddField(Music.Duration, track.Duration, inline: true);
+			embed.AddField(Music.Loop.Title, Music.Loop.GetType(player.RepeatMode), inline: true);
+			embed.AddField(Music.Shuffle.Title, Music.Shuffle.GetState(player.Shuffle), inline: true);
+			embed.AddField(Music.Volume.Title, (player.Volume * 100) + "%", inline: true);
+			embed.AddField(Music.Queue.Title, player.State is PlayerState.NotPlaying ? player.Queue.Count : player.Queue.Count + 1, inline: true);
+			embed.AddField(Music.State.Title, Music.GetPlayerState(player.State), inline: true);
 			embed.WithColor(Color.Red);
-			embed.WithFooter(new EmbedFooterBuilder { Text = "Author by " + user.Username, IconUrl = user.GetAvatarUrl() });
+			embed.WithFooter(new EmbedFooterBuilder { Text = Music.GetAuthor(user.Username), IconUrl = user.GetAvatarUrl() });
 			embed.WithCurrentTimestamp();
 
 			return embed.Build();
@@ -45,9 +48,9 @@ namespace TLDBot.Utility
 		{
 			EmbedBuilder embed = new EmbedBuilder();
 
-			embed.WithTitle("Queue: " + (player.Queue.Count + 1) + " track");
-			embed.AddField("Track playing", player.CurrentTrack?.Title, inline: false);
-			embed.AddField("Track in queue", GenerateListQueue(player.Queue), inline: false);
+			embed.WithTitle(Music.Queue.GetInfo(player.Queue.Count + 1));
+			embed.AddField(Music.Queue.Play, player.CurrentTrack?.Title, inline: false);
+			embed.AddField(Music.Queue.InQueue, GenerateListQueue(player.Queue), inline: false);
 			embed.WithColor(Color.Red).WithCurrentTimestamp();
 
 			return embed.Build();
@@ -57,7 +60,7 @@ namespace TLDBot.Utility
 		{
 			if (queue is null || queue.Count is 0)
 			{
-				return "No track in queue.";
+				return Music.Queue.IsNull;
 			}
 
 			string rsl = "";
