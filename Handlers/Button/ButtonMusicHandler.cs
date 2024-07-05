@@ -4,6 +4,7 @@ using Discord;
 using Lavalink4NET.DiscordNet;
 using Lavalink4NET.Players;
 using Lavalink4NET;
+using TLDBot.Utility;
 
 namespace TLDBot.Handlers.Button
 {
@@ -18,10 +19,35 @@ namespace TLDBot.Handlers.Button
 			_commandContext = commandContext;
 		}
 
+		private async Task<bool> IsSameVoice()
+		{
+			SocketGuildUser? voiceBot = _commandContext.Message.Author as SocketGuildUser;
+			SocketGuildUser? voiceUser = _messageComponent.User as SocketGuildUser;
+
+			if (voiceUser is null || voiceUser.VoiceChannel is null)
+			{
+				await RespondAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.NotInVoice)).ConfigureAwait(false);
+				return false;
+			}
+
+			if (voiceBot is null || voiceBot.VoiceChannel is null)
+			{
+				await RespondAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.BotNotConnect)).ConfigureAwait(false);
+				return false;
+			}
+
+			if (voiceBot.VoiceChannel.Id.Equals(voiceUser.VoiceChannel.Id)) return true;
+
+			await RespondAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.NotSameVoice)).ConfigureAwait(false);
+			return false;
+		}
+
 		protected override async Task SetPlayerAsync(PlayerRetrieveOptions retrieveOptions)
 		{
 			if (_commandContext is null) return;
 			await DeferAsync().ConfigureAwait(false);
+			if (await IsSameVoice() is false) return;
+
 			_playerResult = await _audioService.Players.RetrieveAsync(_commandContext, playerFactory: PlayerFactory.Vote, retrieveOptions).ConfigureAwait(false);
 		}
 

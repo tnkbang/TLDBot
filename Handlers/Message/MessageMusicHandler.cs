@@ -65,9 +65,34 @@ namespace TLDBot.Handlers.Message
 			await _userMessage.DeleteAsync().ConfigureAwait(false);
 		}
 
+		private async Task<bool> IsSameVoice()
+		{
+			SocketGuildUser? voiceBot = _commandContext.Message.Author as SocketGuildUser;
+			SocketGuildUser? voiceUser = _commandContext.User as SocketGuildUser;
+
+			if (voiceUser is null || voiceUser.VoiceChannel is null)
+			{
+				await RespondAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.NotInVoice)).ConfigureAwait(false);
+				return false;
+			}
+
+			if (voiceBot is null || voiceBot.VoiceChannel is null)
+			{
+				await RespondAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.BotNotConnect)).ConfigureAwait(false);
+				return false;
+			}
+
+			if (voiceBot.VoiceChannel.Id.Equals(voiceUser.VoiceChannel.Id)) return true;
+
+			await RespondAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.NotSameVoice)).ConfigureAwait(false);
+			return false;
+		}
+
 		protected override async Task SetPlayerAsync(PlayerRetrieveOptions retrieveOptions)
 		{
 			if (_commandContext is null) return;
+			if (await IsSameVoice() is false) return;
+
 			_playerResult = await _audioService.Players.RetrieveAsync(_commandContext, playerFactory: PlayerFactory.Vote, retrieveOptions).ConfigureAwait(false);
 		}
 

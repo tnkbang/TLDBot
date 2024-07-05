@@ -6,6 +6,7 @@ using Lavalink4NET.DiscordNet;
 using Lavalink4NET.Players;
 using TLDBot.Structs;
 using TLDBot.Utility;
+using Discord.WebSocket;
 
 namespace TLDBot.Handlers.Slash
 {
@@ -23,9 +24,34 @@ namespace TLDBot.Handlers.Slash
 			return base.PlayAsync(query, _interactionContext.User);
 		}
 
+		private async Task<bool> IsSameVoice()
+		{
+			SocketGuildUser? voiceBot = _interactionContext.Guild.CurrentUser as SocketGuildUser;
+			SocketGuildUser? voiceUser = _interactionContext.User as SocketGuildUser;
+
+			if (voiceUser is null || voiceUser.VoiceChannel is null)
+			{
+				await FollowupAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.NotInVoice)).ConfigureAwait(false);
+				return false;
+			}
+
+			if (voiceBot is null || voiceBot.VoiceChannel is null)
+			{
+				await FollowupAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.BotNotConnect)).ConfigureAwait(false);
+				return false;
+			}
+
+			if (voiceBot.VoiceChannel.Id.Equals(voiceUser.VoiceChannel.Id)) return true;
+
+			await FollowupAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.NotSameVoice)).ConfigureAwait(false);
+			return false;
+		}
+
 		protected override async Task SetPlayerAsync(PlayerRetrieveOptions retrieveOptions)
 		{
 			if (_interactionContext is null) return;
+			if (await IsSameVoice() is false) return;
+
 			_playerResult = await _audioService.Players.RetrieveAsync(_interactionContext, playerFactory: PlayerFactory.Vote, retrieveOptions).ConfigureAwait(false);
 		}
 
@@ -63,6 +89,14 @@ namespace TLDBot.Handlers.Slash
 		protected override async Task FollowupAsync(MessageComponent component)
 		{
 			await _interactionContext.Interaction.FollowupAsync(components: component).ConfigureAwait(false);
+		}
+
+		protected async Task FollowupAsync(int wait, Embed embed)
+		{
+			await _interactionContext.Interaction.FollowupAsync(embed: embed).ConfigureAwait(false);
+
+			await Task.Delay(TimeSpan.FromSeconds(wait)).ConfigureAwait(false);
+			await _interactionContext.Interaction.DeleteOriginalResponseAsync().ConfigureAwait(false);
 		}
 
 		protected override async Task RespondAsync(int wait, Embed? embed = null, MessageComponent? components = null)
