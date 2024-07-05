@@ -156,7 +156,7 @@ namespace TLDBot.Handlers
 			}
 
 			MessageComponent component = new ComponentBuilder().WithSelectMenu(menuBuilder).Build();
-			await SendMessageAsync(wait: SECOND_WAIT, components: component).ConfigureAwait(false);
+			await SendMessageAsync(components: component).ConfigureAwait(false);
 		}
 
 		/// <summary>

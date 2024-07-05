@@ -72,7 +72,7 @@ namespace TLDBot.Handlers.SelectMenu
 			if (wait is 0) return followupMessage;
 
 			await Task.Delay(TimeSpan.FromSeconds(wait)).ConfigureAwait(false);
-			await _messageComponent.DeleteOriginalResponseAsync().ConfigureAwait(false);
+			await followupMessage.DeleteAsync().ConfigureAwait(false);
 			return followupMessage;
 		}
 
