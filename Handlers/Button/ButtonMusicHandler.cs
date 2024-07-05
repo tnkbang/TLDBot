@@ -4,7 +4,7 @@ using Discord;
 using Lavalink4NET.DiscordNet;
 using Lavalink4NET.Players;
 using Lavalink4NET;
-using TLDBot.Utility;
+using Discord.Rest;
 
 namespace TLDBot.Handlers.Button
 {
@@ -17,46 +17,47 @@ namespace TLDBot.Handlers.Button
 		{
 			_messageComponent = messageComponent;
 			_commandContext = commandContext;
+
+			SetVoiceMembers();
 		}
 
-		private async Task<bool> IsSameVoice()
+		private void SetVoiceMembers()
 		{
-			SocketGuildUser? voiceBot = _commandContext.Message.Author as SocketGuildUser;
-			SocketGuildUser? voiceUser = _messageComponent.User as SocketGuildUser;
-
-			if (voiceUser is null || voiceUser.VoiceChannel is null)
-			{
-				await RespondAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.NotInVoice)).ConfigureAwait(false);
-				return false;
-			}
-
-			if (voiceBot is null || voiceBot.VoiceChannel is null)
-			{
-				await RespondAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.BotNotConnect)).ConfigureAwait(false);
-				return false;
-			}
-
-			if (voiceBot.VoiceChannel.Id.Equals(voiceUser.VoiceChannel.Id)) return true;
-
-			await RespondAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.NotSameVoice)).ConfigureAwait(false);
-			return false;
+			Bot = _commandContext.Guild.CurrentUser as SocketGuildUser;
+			User = _messageComponent.User as SocketGuildUser;
 		}
 
 		protected override async Task SetPlayerAsync(PlayerRetrieveOptions retrieveOptions)
 		{
 			if (_commandContext is null) return;
-			await DeferAsync().ConfigureAwait(false);
-			if (await IsSameVoice() is false) return;
-
 			_playerResult = await _audioService.Players.RetrieveAsync(_commandContext, playerFactory: PlayerFactory.Vote, retrieveOptions).ConfigureAwait(false);
 		}
 
-		protected override async Task RespondAsync(int wait, Embed? embed = null, MessageComponent? components = null)
+		protected override async Task SendMessageAsync(int wait = 0, string? text = null, bool ephemeral = false, MessageComponent? components = null, Embed? embed = null)
 		{
-			if (embed is null && components is null) return;
-			if (_messageComponent is null) return;
+			if (_messageComponent.HasResponded)
+			{
+				await FollowupAsync(wait, text, ephemeral, components, embed).ConfigureAwait(false);
+				return;
+			}
 
-			await _messageComponent.FollowupAsync(embed: embed, components: components).ConfigureAwait(false);
+			await RespondAsync(wait, text, ephemeral, components, embed).ConfigureAwait(false);
+		}
+
+		private async Task<RestFollowupMessage> FollowupAsync(int wait = 0, string? text = null, bool ephemeral = false, MessageComponent? components = null, Embed? embed = null)
+		{
+			RestFollowupMessage followupMessage = await _messageComponent.FollowupAsync(text: text, ephemeral: ephemeral, components: components, embed: embed).ConfigureAwait(false);
+			if (wait is 0) return followupMessage;
+
+			await Task.Delay(TimeSpan.FromSeconds(wait)).ConfigureAwait(false);
+			await _messageComponent.DeleteOriginalResponseAsync().ConfigureAwait(false);
+			return followupMessage;
+		}
+
+		private async Task RespondAsync(int wait = 0, string? text = null, bool ephemeral = false, MessageComponent? components = null, Embed? embed = null)
+		{
+			await _messageComponent.RespondAsync(text: text, ephemeral: ephemeral, components: components, embed: embed).ConfigureAwait(false);
+			if (wait is 0) return;
 
 			await Task.Delay(TimeSpan.FromSeconds(wait)).ConfigureAwait(false);
 			await _messageComponent.DeleteOriginalResponseAsync().ConfigureAwait(false);
@@ -64,8 +65,8 @@ namespace TLDBot.Handlers.Button
 
 		protected override async Task DeferAsync()
 		{
-			if (_messageComponent is null) return;
-			await _messageComponent.DeferLoadingAsync().ConfigureAwait(false);
+			if (_messageComponent is null || _commandContext is null) return;
+			await _messageComponent.DeferAsync().ConfigureAwait(false);
 		}
 	}
 }

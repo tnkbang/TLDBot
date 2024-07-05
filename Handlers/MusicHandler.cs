@@ -37,6 +37,9 @@ namespace TLDBot.Handlers
 		protected PlayerResult<VoteLavalinkPlayer> _playerResult;
 		protected readonly IAudioService _audioService;
 
+		protected SocketGuildUser? Bot;
+		protected SocketGuildUser? User;
+
 		public MusicHandler(IAudioService audioService)
 		{
 			_audioService = audioService;
@@ -45,8 +48,6 @@ namespace TLDBot.Handlers
 		/// <summary>
 		/// Button is playing message
 		/// </summary>
-		/// <param name="isPause"></param>
-		/// <returns></returns>
 		public static MessageComponent GetComponent(bool isPause)
 		{
 
@@ -61,7 +62,6 @@ namespace TLDBot.Handlers
 		/// <summary>
 		/// Disconnects from the current voice channel connected to asynchronously.
 		/// </summary>
-		/// <returns>A task that represents the asynchronous operation</returns>
 		public async Task DisconnectAsync()
 		{
 			await DeferAsync().ConfigureAwait(false);
@@ -70,14 +70,13 @@ namespace TLDBot.Handlers
 			if (player is null) return;
 
 			await player.DisconnectAsync().ConfigureAwait(false);
-			await FollowupAsync(message: Description.Disconnect.Body).ConfigureAwait(false);
+			await SendMessageAsync(message: Description.Disconnect.Body).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Plays music asynchronously.
 		/// </summary>
 		/// <param name="query">The search query</param>
-		/// <returns>A task that represents the asynchronous operation</returns>
 		public async Task PlayAsync(string query, SocketUser user)
 		{
 			await DeferAsync().ConfigureAwait(false);
@@ -88,26 +87,23 @@ namespace TLDBot.Handlers
 			LavalinkTrack? track = await _audioService.Tracks.LoadTrackAsync(query, TrackSearchMode.YouTube).ConfigureAwait(false);
 			if (track is null)
 			{
-				await FollowupAsync(title: Description.Play.ErrTitle, message: Description.Play.GetErrBody(query)).ConfigureAwait(false);
+				await SendMessageAsync(title: Description.Play.ErrTitle, message: Description.Play.GetErrBody(query)).ConfigureAwait(false);
 				return;
 			}
 
 			int position = await player.PlayAsync(track).ConfigureAwait(false);
 			if (position is 0)
 			{
-				await FollowupAsync(components: GetComponent(isPause: false), embed: Embeds.Playing(player, track, user), isPlaying: true, isUpdateEmbed: true).ConfigureAwait(false);
+				await SetGuildPlayer(components: GetComponent(isPause: false), embed: Embeds.Playing(player, track, user)).ConfigureAwait(false);
 				return;
 			}
 
-			await FollowupAsync(title: Description.Play.AddTitle, message: Description.Play.GetAddBody(track.Title), isUpdateEmbed: true).ConfigureAwait(false);
+			await SendMessageAsync(title: Description.Play.AddTitle, message: Description.Play.GetAddBody(track.Title), isUpdateEmbed: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Add track to queue from menu search
 		/// </summary>
-		/// <param name="collection"></param>
-		/// <param name="user"></param>
-		/// <returns></returns>
 		protected async Task SearchAsync(IReadOnlyCollection<string> collection, SocketUser user)
 		{
 			await DeferAsync().ConfigureAwait(false);
@@ -127,17 +123,15 @@ namespace TLDBot.Handlers
 
 			if (ftrack is not null)
 			{
-				await FollowupAsync(components: GetComponent(isPause: false), embed: Embeds.Playing(player, ftrack, user), isPlaying: true, isUpdateEmbed: true).ConfigureAwait(false);
+				await SetGuildPlayer(components: GetComponent(isPause: false), embed: Embeds.Playing(player, ftrack, user)).ConfigureAwait(false);
 				return;
 			}
-			await FollowupAsync(title: Description.Search.Title, message: Description.Search.GetBody(collection.Count), isUpdateEmbed: true).ConfigureAwait(false);
+			await SendMessageAsync(title: Description.Search.Title, message: Description.Search.GetBody(collection.Count), isUpdateEmbed: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Search tracks from name (limit 10 track)
 		/// </summary>
-		/// <param name="query"></param>
-		/// <returns></returns>
 		public async Task SearchAsync(string query)
 		{
 			await DeferAsync().ConfigureAwait(false);
@@ -162,13 +156,12 @@ namespace TLDBot.Handlers
 			}
 
 			MessageComponent component = new ComponentBuilder().WithSelectMenu(menuBuilder).Build();
-			await FollowupAsync(component: component).ConfigureAwait(false);
+			await SendMessageAsync(wait: SECOND_WAIT, components: component).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Shows the track position asynchronously.
 		/// </summary>
-		/// <returns>A task that represents the asynchronous operation</returns>
 		public async Task PositionAsync()
 		{
 			VoteLavalinkPlayer? player = await GetPlayerAsync().ConfigureAwait(false);
@@ -176,17 +169,16 @@ namespace TLDBot.Handlers
 
 			if (player.CurrentItem is null)
 			{
-				await RespondAsync(message: Description.Nothing).ConfigureAwait(false);
+				await SendMessageAsync(message: Description.Nothing).ConfigureAwait(false);
 				return;
 			}
 
-			await RespondAsync(title: Description.Position.Title, message: Description.Position.GetBody($"{player.Position?.Position.ToString(@"hh\:mm\:ss")} / {player.CurrentTrack?.Duration}")).ConfigureAwait(false);
+			await SendMessageAsync(title: Description.Position.Title, message: Description.Position.GetBody($"{player.Position?.Position.ToString(@"hh\:mm\:ss")} / {player.CurrentTrack?.Duration}")).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Stops the current track asynchronously.
 		/// </summary>
-		/// <returns>A task that represents the asynchronous operation</returns>
 		public async Task StopAsync()
 		{
 			VoteLavalinkPlayer? player = await GetPlayerAsync().ConfigureAwait(false);
@@ -194,24 +186,23 @@ namespace TLDBot.Handlers
 
 			if (player.CurrentItem is null)
 			{
-				await RespondAsync(message: Description.Nothing).ConfigureAwait(false);
+				await SendMessageAsync(message: Description.Nothing).ConfigureAwait(false);
 				return;
 			}
 
 			await player.StopAsync().ConfigureAwait(false);
-			await RespondAsync(message: Description.Stop.Body).ConfigureAwait(false);
+			await SendMessageAsync(message: Description.Stop.Body).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Updates the player volume asynchronously.
 		/// </summary>
 		/// <param name="volume">The volume (1 - 1000)</param>
-		/// <returns>A task that represents the asynchronous operation</returns>
 		public async Task VolumeAsync(int volume = 100)
 		{
 			if (volume is > 1000 or < 0)
 			{
-				await RespondAsync(title: Description.Volume.ErrTitle, message: Description.Volume.ErrBody).ConfigureAwait(false);
+				await SendMessageAsync(title: Description.Volume.ErrTitle, message: Description.Volume.ErrBody).ConfigureAwait(false);
 				return;
 			}
 
@@ -219,13 +210,12 @@ namespace TLDBot.Handlers
 			if (player is null) return;
 
 			await player.SetVolumeAsync(volume / 100f).ConfigureAwait(false);
-			await RespondAsync(title: Description.Volume.Title, message: Description.Volume.GetBody(volume), isUpdateEmbed: true).ConfigureAwait(false);
+			await SendMessageAsync(title: Description.Volume.Title, message: Description.Volume.GetBody(volume), isUpdateEmbed: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Skip to next songs in queues
 		/// </summary>
-		/// <returns>A task that represents the asynchronous operation</returns>
 		public async Task SkipAsync()
 		{
 			VoteLavalinkPlayer? player = await GetPlayerAsync().ConfigureAwait(false);
@@ -233,7 +223,7 @@ namespace TLDBot.Handlers
 
 			if (player.CurrentItem is null)
 			{
-				await RespondAsync(message: Description.Nothing).ConfigureAwait(false);
+				await SendMessageAsync(message: Description.Nothing).ConfigureAwait(false);
 				return;
 			}
 
@@ -242,17 +232,16 @@ namespace TLDBot.Handlers
 			ITrackQueueItem track = player.CurrentItem;
 			if (track is not null)
 			{
-				await RespondAsync(title: Description.Skip.Title, message: Description.Skip.GetBody(track.Track!.Title)).ConfigureAwait(false);
+				await SendMessageAsync(title: Description.Skip.Title, message: Description.Skip.GetBody(track.Track!.Title)).ConfigureAwait(false);
 				return;
 			}
 
-			await RespondAsync(title: Description.Skip.Title, message: Description.Skip.Empty).ConfigureAwait(false);
+			await SendMessageAsync(title: Description.Skip.Title, message: Description.Skip.Empty).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Loop or unloop the current track and queue.
 		/// </summary>
-		/// <returns>A task that represents the asynchronous operation</returns>
 		public async Task LoopAsync()
 		{
 			VoteLavalinkPlayer? player = await GetPlayerAsync().ConfigureAwait(false);
@@ -262,15 +251,15 @@ namespace TLDBot.Handlers
 			{
 				case TrackRepeatMode.None:
 					player.RepeatMode = TrackRepeatMode.Track;
-					await RespondAsync(title: Description.Loop.Title, message: Description.Loop.Track, isUpdateEmbed: true).ConfigureAwait(false);
+					await SendMessageAsync(title: Description.Loop.Title, message: Description.Loop.Track, isUpdateEmbed: true).ConfigureAwait(false);
 					break;
 				case TrackRepeatMode.Track:
 					player.RepeatMode = TrackRepeatMode.Queue;
-					await RespondAsync(title: Description.Loop.Title, message: Description.Loop.Queue, isUpdateEmbed: true).ConfigureAwait(false);
+					await SendMessageAsync(title: Description.Loop.Title, message: Description.Loop.Queue, isUpdateEmbed: true).ConfigureAwait(false);
 					break;
 				case TrackRepeatMode.Queue:
 					player.RepeatMode = TrackRepeatMode.None;
-					await RespondAsync(title: Description.Loop.Title, message: Description.Loop.None, isUpdateEmbed: true).ConfigureAwait(false);
+					await SendMessageAsync(title: Description.Loop.Title, message: Description.Loop.None, isUpdateEmbed: true).ConfigureAwait(false);
 					break;
 			}
 		}
@@ -278,7 +267,6 @@ namespace TLDBot.Handlers
 		/// <summary>
 		/// Shuffle queue
 		/// </summary>
-		/// <returns></returns>
 		public async Task ShuffleAsync()
 		{
 			VoteLavalinkPlayer? player = await GetPlayerAsync().ConfigureAwait(false);
@@ -286,14 +274,12 @@ namespace TLDBot.Handlers
 
 			player.Shuffle = !player.Shuffle;
 
-			await RespondAsync(title: Description.Shuffle.Title, message: Description.Shuffle.GetBody(player.Shuffle), isUpdateEmbed: true).ConfigureAwait(false);
+			await SendMessageAsync(title: Description.Shuffle.Title, message: Description.Shuffle.GetBody(player.Shuffle), isUpdateEmbed: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Seek the current track
 		/// </summary>
-		/// <param name="time"></param>
-		/// <returns></returns>
 		public async Task SeekAsync(TimeSpan time, bool isBegin = false)
 		{
 			VoteLavalinkPlayer? player = await GetPlayerAsync().ConfigureAwait(false);
@@ -301,18 +287,17 @@ namespace TLDBot.Handlers
 
 			if (player.CurrentItem is null)
 			{
-				await RespondAsync(message: Description.Nothing).ConfigureAwait(false);
+				await SendMessageAsync(message: Description.Nothing).ConfigureAwait(false);
 				return;
 			}
 			
 			await player.SeekAsync(time, isBegin ? SeekOrigin.Begin : SeekOrigin.Current).ConfigureAwait(false);
-			await RespondAsync(title: Description.Seek.Title, message: Description.Seek.GetBody(time)).ConfigureAwait(false);
+			await SendMessageAsync(title: Description.Seek.Title, message: Description.Seek.GetBody(time)).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Pause song in playing
 		/// </summary>
-		/// <returns>A task that represents the asynchronous operation</returns>
 		public async Task PauseAsync()
 		{
 			VoteLavalinkPlayer? player = await GetPlayerAsync().ConfigureAwait(false);
@@ -320,18 +305,17 @@ namespace TLDBot.Handlers
 
 			if (player.State is PlayerState.Paused)
 			{
-				await RespondAsync(message: Description.Pause.Already).ConfigureAwait(false);
+				await SendMessageAsync(message: Description.Pause.Already).ConfigureAwait(false);
 				return;
 			}
 
 			await player.PauseAsync().ConfigureAwait(false);
-			await RespondAsync(message: Description.Pause.Done, isUpdateEmbed: true, isUpdateComponent: true).ConfigureAwait(false);
+			await SendMessageAsync(message: Description.Pause.Done, isUpdateEmbed: true, isUpdateComponent: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Resume song in playing
 		/// </summary>
-		/// <returns>A task that represents the asynchronous operation</returns>
 		public async Task ResumeAsync()
 		{
 			VoteLavalinkPlayer? player = await GetPlayerAsync().ConfigureAwait(false);
@@ -339,24 +323,23 @@ namespace TLDBot.Handlers
 
 			if (player.State is not PlayerState.Paused)
 			{
-				await RespondAsync(message: Description.Resume.Already).ConfigureAwait(false);
+				await SendMessageAsync(message: Description.Resume.Already).ConfigureAwait(false);
 				return;
 			}
 
 			await player.ResumeAsync().ConfigureAwait(false);
-			await RespondAsync(message: Description.Resume.Done, isUpdateEmbed: true, isUpdateComponent: true).ConfigureAwait(false);
+			await SendMessageAsync(message: Description.Resume.Done, isUpdateEmbed: true, isUpdateComponent: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Get queue in the player
 		/// </summary>
-		/// <returns></returns>
 		public async Task QueueAsync()
 		{
 			VoteLavalinkPlayer? player = await GetPlayerAsync().ConfigureAwait(false);
 			if (player is null) return;
 
-			await RespondAsync(QUEUE_WAIT, embed: Embeds.Queue(player)).ConfigureAwait(false);
+			await SendMessageAsync(wait: QUEUE_WAIT, embed: Embeds.Queue(player)).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -368,6 +351,7 @@ namespace TLDBot.Handlers
 		{
 			PlayerRetrieveOptions retrieveOptions = new PlayerRetrieveOptions(ChannelBehavior: connectToVoiceChannel ? PlayerChannelBehavior.Join : PlayerChannelBehavior.None);
 			await SetPlayerAsync(retrieveOptions).ConfigureAwait(false);
+			if (await IsSameVoice() is false) return null;
 
 			if (!_playerResult.IsSuccess)
 			{
@@ -379,30 +363,40 @@ namespace TLDBot.Handlers
 					_ => Description.Status.Unknown,
 				};
 
-				if (connectToVoiceChannel) await FollowupAsync(errorMessage).ConfigureAwait(false);
-				else await RespondAsync(errorMessage).ConfigureAwait(false);
+				await SendMessageAsync(wait: SECOND_WAIT, text: errorMessage).ConfigureAwait(false);
 				return null;
 			}
 
 			return _playerResult.Player;
 		}
 
-		protected virtual async Task SetPlayerAsync(PlayerRetrieveOptions retrieveOptions)
+		/// <summary>
+		/// Handle check user in same voice channel as the bot then can use music commands
+		/// </summary>
+		protected async Task<bool> IsSameVoice()
 		{
-			await Task.CompletedTask;
+			if (User is null || User.VoiceChannel is null)
+			{
+				await SendMessageAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.NotInVoice)).ConfigureAwait(false);
+				return false;
+			}
+
+			if (Bot is null || Bot.VoiceChannel is null)
+			{
+				await SendMessageAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.BotNotConnect)).ConfigureAwait(false);
+				return false;
+			}
+
+			if (Bot.VoiceChannel.Id.Equals(User.VoiceChannel.Id)) return true;
+
+			await SendMessageAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.NotSameVoice)).ConfigureAwait(false);
+			return false;
 		}
 
-		protected virtual async Task FollowupAsync(string? title = null, string? message = null, MessageComponent? components = null, Embed? embed = null, bool isPlaying = false, bool isUpdateEmbed = false)
-		{
-			await Task.CompletedTask;
-		}
-
-		protected virtual async Task FollowupAsync(MessageComponent component)
-		{
-			await Task.CompletedTask;
-		}
-
-		private async Task RespondAsync(string? title = null, string? message = null, bool isUpdateEmbed = false, bool isUpdateComponent = false)
+		/// <summary>
+		/// Send massage to discord client
+		/// </summary>
+		private async Task SendMessageAsync(string? title = null, string? message = null, bool isUpdateEmbed = false, bool isUpdateComponent = false)
 		{
 			if (isUpdateEmbed || isUpdateComponent)
 			{
@@ -410,10 +404,21 @@ namespace TLDBot.Handlers
 				await Helper.UpdatePlayingAsync(_playerResult.Player, _playerResult.Player.CurrentTrack, isUpdateEmbed, isUpdateComponent).ConfigureAwait(false);
 			}
 
-			await RespondAsync(wait: SECOND_WAIT, embed: Embeds.Info(title, message)).ConfigureAwait(false);
+			await SendMessageAsync(wait: SECOND_WAIT, embed: Embeds.Info(title, message)).ConfigureAwait(false);
 		}
 
-		protected virtual async Task RespondAsync(int wait, Embed? embed = null, MessageComponent? components = null)
+		protected virtual async Task SetPlayerAsync(PlayerRetrieveOptions retrieveOptions)
+		{
+			await Task.CompletedTask;
+		}
+
+		protected virtual async Task<bool> SetGuildPlayer(MessageComponent? components = null, Embed? embed = null)
+		{
+			await Task.CompletedTask;
+			return false;
+		}
+
+		protected virtual async Task SendMessageAsync(int wait = 0, string? text = null, bool ephemeral = false, MessageComponent? components = null, Embed? embed = null)
 		{
 			await Task.CompletedTask;
 		}

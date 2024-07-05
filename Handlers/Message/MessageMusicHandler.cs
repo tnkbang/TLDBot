@@ -6,7 +6,6 @@ using Lavalink4NET.Players;
 using Lavalink4NET.DiscordNet;
 using Discord.Rest;
 using TLDBot.Structs;
-using TLDBot.Utility;
 
 namespace TLDBot.Handlers.Message
 {
@@ -19,6 +18,14 @@ namespace TLDBot.Handlers.Message
 		{
 			_userMessage = userMessage;
 			_commandContext = context;
+
+			SetVoiceMembers();
+		}
+
+		private void SetVoiceMembers()
+		{
+			Bot = _commandContext.Guild.CurrentUser as SocketGuildUser;
+			User = _commandContext.User as SocketGuildUser;
 		}
 
 		public Task PlayAsync(string query)
@@ -26,7 +33,13 @@ namespace TLDBot.Handlers.Message
 			return base.PlayAsync(query, _userMessage.Author);
 		}
 
-		private async Task<bool> SetGuildPlayer(string? message = null, MessageComponent? components = null, Embed? embed = null)
+		protected override async Task SetPlayerAsync(PlayerRetrieveOptions retrieveOptions)
+		{
+			if (_commandContext is null) return;
+			_playerResult = await _audioService.Players.RetrieveAsync(_commandContext, playerFactory: PlayerFactory.Vote, retrieveOptions).ConfigureAwait(false);
+		}
+
+		protected override async Task<bool> SetGuildPlayer(MessageComponent? components = null, Embed? embed = null)
 		{
 			if (_playerResult.Player is null) return false;
 
@@ -34,78 +47,31 @@ namespace TLDBot.Handlers.Message
 			GuildPlayer.TryGetValue(_playerResult.Player.GuildId, out playerMessage);
 			if (playerMessage is not null) return false;
 
-			RestUserMessage replyMessage = await _commandContext.Channel.SendMessageAsync(message, components: components, embed: embed).ConfigureAwait(false);
+			RestUserMessage replyMessage = await _commandContext.Channel.SendMessageAsync(components: components, embed: embed).ConfigureAwait(false);
 			GuildPlayer.Add(_commandContext.Guild.Id, new GuildPlayerMessage(_commandContext.Channel, replyMessage.Id, _playerResult.Player, _commandContext.User));
 			return true;
 		}
 
-		protected override async Task FollowupAsync(string? title = null, string? message = null, MessageComponent? components = null, Embed? embed = null, bool isPlaying = false, bool isUpdateEmbed = false)
+		protected override async Task SendMessageAsync(int wait = 0, string? text = null, bool ephemeral = false, MessageComponent? components = null, Embed? embed = null)
 		{
-			if (_commandContext is null) return;
-			if (_playerResult.Player is null || _playerResult.Player.CurrentTrack is null) return;
-
-			await _commandContext.Message.DeleteAsync().ConfigureAwait(false);
-			if (isPlaying && await SetGuildPlayer(message, components, embed)) return;
-
-			if (isUpdateEmbed)
-			{
-				await Helper.UpdatePlayingAsync(_playerResult.Player, _playerResult.Player.CurrentTrack, isUpdateEmbed: isUpdateEmbed, isUpdateComponent: true).ConfigureAwait(false);
-			}
-
-			RestUserMessage replyMessage = await _commandContext.Channel
-				.SendMessageAsync(embed: Embeds.Info(title, isPlaying ? Description.Play.GetBody(_playerResult.Player.CurrentTrack.Title) : message)).ConfigureAwait(false);
-
-			await Task.Delay(TimeSpan.FromSeconds(SECOND_WAIT)).ConfigureAwait(false);
-			await replyMessage.DeleteAsync().ConfigureAwait(false);
-		}
-
-		protected override async Task FollowupAsync(MessageComponent component)
-		{
-			await _commandContext.Channel.SendMessageAsync(components: component).ConfigureAwait(false);
 			await _userMessage.DeleteAsync().ConfigureAwait(false);
+			await SendMessageAsync(wait: wait, text: text, components: components, embed: embed).ConfigureAwait(false);
 		}
 
-		private async Task<bool> IsSameVoice()
+		private async Task<RestUserMessage> SendMessageAsync(int wait = 0, string? text = null, MessageComponent? components = null, Embed? embed = null)
 		{
-			SocketGuildUser? voiceBot = _commandContext.Message.Author as SocketGuildUser;
-			SocketGuildUser? voiceUser = _commandContext.User as SocketGuildUser;
-
-			if (voiceUser is null || voiceUser.VoiceChannel is null)
-			{
-				await RespondAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.NotInVoice)).ConfigureAwait(false);
-				return false;
-			}
-
-			if (voiceBot is null || voiceBot.VoiceChannel is null)
-			{
-				await RespondAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.BotNotConnect)).ConfigureAwait(false);
-				return false;
-			}
-
-			if (voiceBot.VoiceChannel.Id.Equals(voiceUser.VoiceChannel.Id)) return true;
-
-			await RespondAsync(wait: SECOND_WAIT, embed: Embeds.Info(description: Description.Status.NotSameVoice)).ConfigureAwait(false);
-			return false;
-		}
-
-		protected override async Task SetPlayerAsync(PlayerRetrieveOptions retrieveOptions)
-		{
-			if (_commandContext is null) return;
-			if (await IsSameVoice() is false) return;
-
-			_playerResult = await _audioService.Players.RetrieveAsync(_commandContext, playerFactory: PlayerFactory.Vote, retrieveOptions).ConfigureAwait(false);
-		}
-
-		protected override async Task RespondAsync(int wait, Embed? embed = null, MessageComponent? components = null)
-		{
-			if (embed is null && components is null) return;
-			if (_userMessage is null) return;
-
-			await _userMessage.DeleteAsync().ConfigureAwait(false);
-			RestUserMessage reply = await _userMessage.Channel.SendMessageAsync(embed: embed, components: components).ConfigureAwait(false);
+			RestUserMessage userMessage = await _commandContext.Channel.SendMessageAsync(text: text, components: components, embed: embed).ConfigureAwait(false);
+			if (wait is 0) return userMessage;
 
 			await Task.Delay(TimeSpan.FromSeconds(wait)).ConfigureAwait(false);
-			await reply.DeleteAsync().ConfigureAwait(false);
+			await userMessage.DeleteAsync().ConfigureAwait(false);
+			return userMessage;
+		}
+
+		protected override async Task DeferAsync()
+		{
+			if (_commandContext is null || _userMessage is null) return;
+			await _commandContext.Channel.TriggerTypingAsync().ConfigureAwait(false);
 		}
 	}
 }
