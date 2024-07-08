@@ -13,6 +13,8 @@ namespace TLDBot.Utility
 		public Embeds() { }
 
 		private static readonly Music.Info Music = Helper.Music.Description;
+		private static readonly HooHeyHow.Info HooHeyHow = Helper.HooHeyHow.Description;
+		private static readonly TicTacToe.Info TicTacToe = Helper.TicTacToe.Description;
 
 		#region Music
 		/// <summary>
@@ -100,8 +102,8 @@ namespace TLDBot.Utility
 		private static EmbedAuthorBuilder H3Author()
 		{
 			EmbedAuthorBuilder author = new EmbedAuthorBuilder();
-			author.WithIconUrl(Helper.HooHeyHow.Description.StartIcon);
-			author.WithName(Helper.HooHeyHow.Description.StartTitle);
+			author.WithIconUrl(HooHeyHow.StartIcon);
+			author.WithName(HooHeyHow.StartTitle);
 			return author;
 		}
 
@@ -119,7 +121,7 @@ namespace TLDBot.Utility
 			embed.WithTitle(title);
 			embed.WithThumbnailUrl(thumbnail);
 			embed.WithDescription(description);
-			embed.AddField(Helper.HooHeyHow.Description.Result, strResult);
+			embed.AddField(HooHeyHow.Result, strResult);
 			embed.WithFooter(H3Footer(user));
 			embed.WithColor(color).WithCurrentTimestamp();
 
@@ -131,7 +133,7 @@ namespace TLDBot.Utility
 		private static EmbedAuthorBuilder T3Author()
 		{
 			EmbedAuthorBuilder author = new EmbedAuthorBuilder();
-			author.WithIconUrl(Helper.HooHeyHow.Description.StartIcon);
+			author.WithIconUrl(HooHeyHow.StartIcon);
 			author.WithName("Tic Tac Toe");
 			return author;
 		}
@@ -148,8 +150,8 @@ namespace TLDBot.Utility
 		{
 			EmbedBuilder embed = new EmbedBuilder();
 			embed.WithAuthor(T3Author());
-			embed.WithThumbnailUrl(Helper.TicTacToe.Description.ThumbnailUrl);
-			embed.WithTitle(isTitle ? Helper.TicTacToe.Description.Title : string.Empty);
+			embed.WithThumbnailUrl(TicTacToe.ThumbnailUrl);
+			embed.WithTitle(isTitle ? TicTacToe.Title : string.Empty);
 			embed.WithDescription(description);
 			embed.WithFooter(T3Footer(user));
 			embed.WithColor(Color.LightOrange).WithCurrentTimestamp();
@@ -161,10 +163,10 @@ namespace TLDBot.Utility
 		{
 			EmbedBuilder embed = new EmbedBuilder();
 			embed.WithAuthor(T3Author());
-			embed.WithThumbnailUrl(Helper.TicTacToe.Description.ThumbnailUrl);
-			embed.WithTitle(isTitle ? Helper.TicTacToe.Description.Title : string.Empty);
+			embed.WithThumbnailUrl(TicTacToe.ThumbnailUrl);
+			embed.WithTitle(isTitle ? TicTacToe.Title : string.Empty);
 			embed.WithDescription(description);
-			embed.AddField(Helper.TicTacToe.Description.TitleField, duetState);
+			embed.AddField(TicTacToe.TitleField, duetState);
 			embed.WithFooter(T3Footer(user));
 			embed.WithColor(Color.LightOrange).WithCurrentTimestamp();
 
