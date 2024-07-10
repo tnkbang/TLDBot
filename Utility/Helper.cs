@@ -128,7 +128,8 @@ namespace TLDBot.Utility
 		/// <returns></returns>
 		public static async Task TrackStartedAsync(object sender, TrackStartedEventArgs eventArgs)
 		{
-			await UpdatePlayingAsync(eventArgs.Player, eventArgs.Track, isUpdateEmbed: true).ConfigureAwait(false);
+			await Task.Delay(TimeSpan.FromSeconds(0.2)).ConfigureAwait(false); // await 0.2s for player running
+			await UpdatePlayingAsync(eventArgs.Player, eventArgs.Track, isUpdateEmbed: true, isUpdateComponent: true).ConfigureAwait(false);
 		}
 
 		public static async Task TrackEndedAsync(object sender, TrackEndedEventArgs eventArgs)

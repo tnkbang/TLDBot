@@ -43,7 +43,11 @@ namespace TLDBot.Handlers.Slash
 
 			GuildPlayerMessage? playerMessage;
 			GuildPlayer.TryGetValue(_playerResult.Player.GuildId, out playerMessage);
-			if (playerMessage is not null) return false;
+			if (playerMessage is not null)
+			{
+				await SendMessageAsync(wait: SECOND_WAIT, text: Description.Play.GetAddBody(_playerResult.Player.CurrentTrack!.Title)).ConfigureAwait(false);
+				return false;
+			}
 			
 			RestFollowupMessage followupMessage = await FollowupAsync(components: components, embed: embed).ConfigureAwait(false);
 			GuildPlayer.Add(_interactionContext.Guild.Id, new GuildPlayerMessage(_interactionContext.Channel, followupMessage.Id, _playerResult.Player, _interactionContext.User));
